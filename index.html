@@ -1,202 +1,628 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#C8102E">
 <title>Dashboard de Medios | Presidencia de la República</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <style>
-:root{--red:#C8102E;--dk:#8f0b21;--bg:#f6f2f3;--card:#fff;--soft:#fbf7f8;--soft2:#ece6e8;--bd:#e5dcde;--tx:#1f1417;--mu:#6b5d61}
-:root[data-theme="dark"]{--bg:#171012;--card:#241a1d;--soft:#2c2023;--soft2:#3a2c30;--bd:#40303a;--tx:#f4eaec;--mu:#b9a8ad}
+:root{--red:#C8102E;--dk:#8f0b21;--bg:#f6f2f3;--bd:#e5dcde;--tx:#1f1417;--mu:#6b5d61}
 *{box-sizing:border-box;font-family:Inter,system-ui,sans-serif}
 body{margin:0;background:var(--bg);color:var(--tx);font-size:13px}
-header{background:linear-gradient(135deg,var(--red),var(--dk));color:#fff;padding:12px 4%;display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:4px solid #fff;box-shadow:0 2px 10px #0003;flex-wrap:wrap}
-h1{margin:0;font-size:18px;font-weight:800;text-transform:uppercase}.sb{font-size:11px;opacity:.9;font-weight:600;margin-top:2px}
-.hr{display:flex;align-items:center;gap:8px;flex-wrap:wrap}#dc{font-size:12px;font-weight:600}
-nav{display:flex;gap:6px;overflow-x:auto;background:var(--card);padding:8px 4%;border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:20}
-.tab{border:1px solid var(--bd);background:var(--card);color:var(--mu);font-weight:700;font-size:13px;padding:9px 18px;border-radius:22px;cursor:pointer;white-space:nowrap}
+header{background:linear-gradient(135deg,var(--red),var(--dk));color:#fff;padding:12px 4%;display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:4px solid #fff;box-shadow:0 2px 10px #0003}
+.hl{display:flex;align-items:center;gap:12px;min-width:0}
+.logo{width:64px;height:48px;flex:none;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:4px}
+.logo img{max-width:100%;max-height:100%;object-fit:contain}
+h1{margin:0;font-size:18px;font-weight:800;text-transform:uppercase;line-height:1.15}
+.sb{font-size:11px;opacity:.9;font-weight:600;margin-top:2px}
+#dc{font-size:12px;font-weight:600;text-align:right;opacity:.95}
+nav{display:flex;gap:6px;overflow-x:auto;background:#fff;padding:8px 4%;border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:20;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+.tab{border:1px solid var(--bd);background:#fff;color:var(--mu);font-weight:700;font-size:13px;padding:9px 18px;border-radius:22px;cursor:pointer;white-space:nowrap}
 .tab.on{background:var(--red);border-color:var(--red);color:#fff}
-.main{max-width:1320px;margin:14px auto;padding:0 12px}
+.main{max-width:1280px;margin:14px auto;padding:0 12px}
 .view{display:none}.view.on{display:block}
-label{display:block;font-size:10px;font-weight:700;color:var(--mu);text-transform:uppercase;margin-bottom:3px}
-input[type=search],input[type=date]{width:100%;padding:8px;border:1px solid var(--bd);border-radius:8px;font-size:13px;background:var(--card);color:var(--tx);outline:none}
-.ba{border:0;border-radius:6px;font-size:11px;font-weight:700;color:#fff;background:var(--red);text-transform:uppercase;padding:9px 11px;cursor:pointer}.ba.g{background:#6b5d61}.ba.x{background:#10b981}.ba.d{background:var(--dk)}.ba.w{background:#fff3}
-.seg{display:inline-flex;border-radius:8px;overflow:hidden;border:1px solid var(--bd)}.seg button{border:0;background:var(--card);color:var(--mu);font-weight:700;font-size:11px;padding:9px 12px;cursor:pointer;text-transform:uppercase}.seg button.on{background:var(--red);color:#fff}
-.ct{background:var(--card);padding:12px;border-radius:12px;box-shadow:0 2px 10px #0001;margin-bottom:12px;display:grid;gap:8px 10px;grid-template-columns:repeat(6,1fr);border-top:3px solid var(--red)}
-.s2{grid-column:span 2}.s6{grid-column:1/-1}
-.ms{position:relative}.ms summary{padding:8px;border:1px solid var(--bd);border-radius:8px;background:var(--card);cursor:pointer;font-size:13px;list-style:none}.ms summary::-webkit-details-marker{display:none}.ms summary::after{content:' ▾';float:right}
-.op{position:absolute;z-index:30;background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:6px;max-height:260px;overflow:auto;min-width:100%;width:max-content;max-width:320px;box-shadow:0 6px 18px #0003}
-.op label{display:flex;gap:6px;align-items:center;text-transform:none;font-size:12px;color:var(--tx);font-weight:600;padding:4px;margin:0;cursor:pointer}.op input{width:auto}
-.sc{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px}
-.cd{padding:14px;border-radius:12px;text-align:center;border:1px solid var(--bd);background:var(--card)}
+.mbar{display:none;align-items:center;gap:8px;margin-bottom:12px;font-weight:700;font-size:12px;color:var(--mu);text-transform:uppercase}.mbar.on{display:flex}
+.mbar select{width:auto;min-width:170px}
+label{display:block;font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;margin-bottom:5px}
+select,input{width:100%;padding:10px;border:1px solid var(--bd);border-radius:8px;font-size:14px;background:#fff;color:var(--tx);outline:none}
+select:focus,input:focus{border-color:var(--red)}
+.ab{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;justify-content:flex-end}
+.bx{padding:8px 11px;border:0;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;color:#fff;text-transform:uppercase}
+.bx.g{background:#6b5d61}.bx.w{background:#25D366}.bx.v{background:#8b5cf6}.bx.x{background:#10b981}.bx.p{background:var(--dk)}
+.sc{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.cd{padding:14px;border-radius:12px;text-align:center;border:1px solid var(--bd);background:#fff}
 .cd .t{font-size:11px;font-weight:700;margin-bottom:8px;text-transform:uppercase;color:var(--mu)}.cd .v{font-size:28px;font-weight:800;line-height:1}
-.cd.p{background:#86efac;border-color:#4ade80}.cd.n{background:#fde047;border-color:#facc15}.cd.x{background:#fc8181;border-color:#f87171}.cd.p *,.cd.n *,.cd.x *{color:#1a1a1a}
-.note{font-weight:700;color:var(--mu);margin:0 2px 10px}
-.err{display:none;background:#fee2e2;color:#7f1d1d;border:2px solid #b91c1c;padding:12px;border-radius:10px;margin-bottom:12px;font-weight:600}
-.gr{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
-.cc{grid-column:span 12;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px 16px;box-shadow:0 2px 10px #0001}
-.cc h3{margin:0 0 10px;font-size:12px;color:var(--mu);text-transform:uppercase;letter-spacing:.4px}.cv{position:relative;height:280px}.cv.t{height:340px}
-@media(min-width:1000px){.c3{grid-column:span 3}.c4{grid-column:span 4}.c6{grid-column:span 6}.c8{grid-column:span 8}}
-.kb{background:linear-gradient(135deg,var(--red),var(--dk));color:#fff;border-radius:14px;padding:22px;height:100%}.kb h4{margin:0;font-size:12px;opacity:.9;text-transform:uppercase}.kb h2{margin:8px 0;font-size:34px;font-weight:800}.kb small{background:#fff3;border-radius:20px;padding:4px 10px;font-weight:700}
-.ab{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;justify-content:flex-end}
-.tbx{background:var(--card);border-radius:12px;border:1px solid var(--bd);overflow:hidden}
+.cd.p{background:#86efac;border-color:#4ade80}.cd.n{background:#fde047;border-color:#facc15}.cd.x{background:#fc8181;border-color:#f87171}
+.cd.p *,.cd.n *,.cd.x *{color:#1a1a1a}
+.ct{background:#fff;padding:12px;border-radius:12px;box-shadow:0 2px 10px #0001;margin-bottom:12px;display:grid;gap:8px 10px;grid-template-columns:repeat(6,1fr);border-top:3px solid var(--red)}.s3{grid-column:span 3}.ct select,.ct input{padding:8px;font-size:13px}.ct label{font-size:10px;margin-bottom:3px}
+.dc{display:flex;gap:5px;flex-wrap:wrap}.dc input{flex:1;min-width:130px}
+.ba{border:0;border-radius:6px;font-size:11px;font-weight:700;color:#fff;background:var(--red);text-transform:uppercase;padding:9px 11px;cursor:pointer}.ba.g{background:#6b5d61}.ba.d{background:var(--dk)}
+.rb{grid-column:1/-1;display:none;gap:10px;flex-wrap:wrap;background:#fbf7f8;border:1px dashed var(--bd);border-radius:10px;padding:12px}.rb.on{display:flex}.rb>div{flex:1;min-width:140px}
+.tbx{background:#fff;border-radius:12px;border:1px solid var(--bd);overflow:hidden}
 table{width:100%;border-collapse:collapse;table-layout:fixed;word-wrap:break-word}
-th{background:var(--soft);padding:12px;text-align:left;font-size:11px;color:var(--mu);border-bottom:1px solid var(--bd);text-transform:uppercase}
-td{padding:12px;border-bottom:1px solid var(--bd);font-size:13px;line-height:1.45;vertical-align:top;color:#1a1a1a}
-.tt{font-weight:800;margin-bottom:5px}.mt{font-size:10px;font-weight:800;text-transform:uppercase;color:#444}.sm{font-size:10px;font-weight:600;margin-top:3px}.rs{font-weight:600}
-.bd{padding:4px 8px;border-radius:6px;font-size:10px;font-weight:700;text-transform:uppercase;display:inline-block;color:#fff}.bd.p{background:#15803d}.bd.x{background:#b91c1c}.bd.n{background:#a16207}.bd.s{background:#64748b}
-.tg{font-size:10px;font-weight:700;margin-top:4px;color:#333}.tg b{color:#7f1d1d}
-.bl{color:#fff;background:#475569;text-decoration:none;padding:7px 12px;border-radius:6px;font-size:11px;font-weight:700;display:inline-block}
-.mg{display:grid;grid-template-columns:1.1fr 1fr;gap:14px}@media(max-width:900px){.mg{grid-template-columns:1fr}}
-.pn{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;position:relative}
-#map{width:100%;height:auto;max-height:640px;display:block}#map path{stroke:#fff;stroke-width:.8;cursor:pointer;transition:opacity .15s}#map path:hover,#map circle:hover{opacity:.75}#map path.sel,#map circle.sel{stroke:#1f1417;stroke-width:2.2}
-#map text{font-size:11px;font-weight:800;fill:#1f1417;pointer-events:none;paint-order:stroke;stroke:#fff;stroke-width:2.5px}
-.mz{position:absolute;top:12px;right:12px;display:none}.mz.on{display:block}
-.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.chip{border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer}.chip.on{background:var(--red);border-color:var(--red);color:#fff}
-.lgd{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mu);margin-top:8px}.lgd i{width:90px;height:10px;border-radius:3px;background:linear-gradient(90deg,rgba(200,16,46,.18),rgba(200,16,46,1))}
-.ri{padding:9px 10px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;gap:8px;cursor:pointer}.ri:hover{background:var(--soft)}
-.mi{padding:10px 0;border-bottom:1px solid var(--bd)}.mi b{display:block;margin-bottom:3px}.mu{color:var(--mu)}
-.tb{height:8px;border-radius:4px;overflow:hidden;display:flex;margin:6px 0}
-@media(max-width:768px){h1{font-size:14px}.sc{grid-template-columns:repeat(2,1fr);gap:8px}.ct{grid-template-columns:1fr 1fr}.s2,.s6{grid-column:1/-1}th:nth-child(4),td:nth-child(4){display:none}}
-@media print{*{-webkit-print-color-adjust:exact;print-color-adjust:exact}nav,.ct,.ab,.hr,#mas,.err{display:none!important}th:nth-child(4),td:nth-child(4){display:table-cell!important}.sc{grid-template-columns:repeat(4,1fr)!important}.view:not(.on){display:none!important}}
+th{background:#fbf7f8;padding:14px;text-align:left;font-size:11px;color:var(--mu);border-bottom:1px solid var(--bd);text-transform:uppercase}
+td{padding:14px;border-bottom:1px solid var(--bd);font-size:13px;line-height:1.5;vertical-align:top}
+.bd{padding:4px 8px;border-radius:6px;font-size:10px;font-weight:700;text-transform:uppercase;display:inline-block;color:#fff}
+.bd.p{background:#15803d}.bd.x{background:#b91c1c}.bd.n{background:#a16207}
+.bl{border:0;cursor:pointer;font-family:inherit;color:#fff;background:#475569;text-decoration:none;padding:7px 12px;border-radius:6px;font-size:11px;font-weight:700;display:inline-block}
+.err{text-align:center;padding:40px;color:#b91c1c}
+.gr{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+.cc{grid-column:span 6;background:#fff;border:1px solid var(--bd);border-radius:14px;padding:14px 16px;box-shadow:0 2px 10px #0001}.cc.w{grid-column:span 12}.cc.k{grid-column:span 4}.cc.w8{grid-column:span 8}
+.cc h3{margin:0 0 10px;font-size:12px;color:var(--mu);text-transform:uppercase;letter-spacing:.4px}
+.cv{position:relative;height:280px}
+.kb{background:linear-gradient(135deg,var(--red),var(--dk));color:#fff;border-radius:14px;padding:22px;position:relative;overflow:hidden}
+.kb h4{margin:0;font-size:12px;opacity:.9;text-transform:uppercase;letter-spacing:.5px}.kb h2{margin:8px 0;font-size:44px;font-weight:800}
+.kb small{background:#fff3;border-radius:20px;padding:4px 10px;font-weight:700}
+.mp{display:grid;grid-template-columns:minmax(300px,440px) 1fr;gap:14px}
+.pn{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:14px}
+#map{width:100%;max-height:72vh;display:block}
+.rg{stroke:#8d8186;stroke-width:calc(var(--k,1)*.8px);stroke-linejoin:round;cursor:pointer;transition:fill .15s}.rg:hover{stroke:#111;stroke-width:calc(var(--k,1)*2px)}.rg.on{stroke:#111;stroke-width:calc(var(--k,1)*3px)}.lg{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;color:var(--mu);margin-top:10px}.lg i{flex:1;height:10px;border-radius:6px;background:linear-gradient(90deg,#fdcdd4,#C8102E,#780618)}
+#map text.lo{fill:#222;stroke:transparent;stroke-width:calc(var(--k,1)*12px);font-size:calc(var(--k,1)*10px);font-weight:800;text-anchor:end;pointer-events:auto;cursor:pointer}#map text{font-size:calc(var(--k,1)*14px);font-weight:800;fill:#fff;text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:#0008;stroke-width:calc(var(--k,1)*2px)}
+.ch{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.chip{border:1px solid var(--bd);background:#fbf7f8;border-radius:20px;padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer}.chip.on{border-color:var(--red);color:var(--red)}
+.ph{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center}.ph h2{margin:0;font-size:20px;color:var(--red)}
+.st{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:12px 0}.st b{font-size:18px}.st .p{background:#86efac}.st .n{background:#fde047}.st .x{background:#fc8181}.st div{background:#fbf7f8;color:#1a1a1a;border-radius:10px;padding:9px}.st b{display:block;font-size:19px}.st span{font-size:10px;color:#333;font-weight:700;text-transform:uppercase}
+.tb{display:flex;height:9px;border-radius:6px;overflow:hidden;background:#eee}.tb i{display:block}
+.br{display:grid;grid-template-columns:1fr 90px 26px;gap:8px;align-items:center;margin:5px 0;font-size:12px}.br div{background:#eee;height:7px;border-radius:5px}.br div i{display:block;height:100%;background:var(--red);border-radius:5px}
+.ls{margin-top:12px;max-height:52vh;overflow:auto;display:grid;gap:8px}
+.it{border:1px solid var(--bd);border-left-width:6px;border-radius:10px;padding:10px;color:#1f1f1f}.it small,.it p{color:#1f1f1f}.it a{color:#1a1a1a}.it b{display:block}.mu{color:var(--mu)}.it small{color:#222}.it p{margin:6px 0 0;color:#222;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.it a{color:#111}
+@media(max-width:860px){.mp{grid-template-columns:1fr}.cc,.cc.k,.cc.w8{grid-column:span 12}.cv{height:300px}}
+@media(max-width:768px){
+h1{font-size:14px}.logo{width:52px;height:40px}#dc{font-size:10px;max-width:120px}
+.sc{grid-template-columns:repeat(4,1fr);gap:6px}.cd{padding:8px 3px}.cd .t{font-size:9px;margin-bottom:5px}.cd .v{font-size:20px}.ct{grid-template-columns:1fr 1fr;gap:8px;padding:10px}.s3{grid-column:1/-1}.ab{justify-content:center}
+table,thead,tbody,th,td,tr{display:block}thead tr{display:none}.tbx{border:0;background:transparent}
+tr{margin-bottom:12px;border-radius:10px;border:1px solid #cbd5e1;box-shadow:0 2px 5px #0001;padding:12px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 0}
+td{padding:0;border:0}
+td:nth-child(1){width:50%;order:1;font-size:11px}td:nth-child(3){width:50%;order:2;text-align:right}
+td:nth-child(2){width:100%;order:3}td:nth-child(4){width:100%;order:4;font-size:12px}td:nth-child(5){width:100%;order:5;margin-top:5px}.bl{display:block;text-align:center}
+.dc input{width:100%;flex:none}.rb>div{min-width:100%}.kb h2{font-size:36px}}
+.c3{grid-column:span 3}.c4{grid-column:span 4}.c6{grid-column:span 6}.c8{grid-column:span 8}.c12{grid-column:span 12}
+@media(max-width:999px){.c3,.c4,.c6,.c8{grid-column:span 12}}
+@media(min-width:1000px){body.fit{height:100vh;overflow:hidden;display:flex;flex-direction:column}body.fit .main{flex:1;min-height:0;display:flex;flex-direction:column;margin:8px auto;width:100%;max-width:1600px}body.fit .view.on{flex:1;min-height:0}body.fit .gr{height:100%;grid-template-rows:1fr 1fr;gap:10px}body.fit .cc{display:flex;flex-direction:column;min-height:0;padding:10px 14px}body.fit .cc h3{margin:0 0 4px}body.fit .cv{flex:1;height:auto;min-height:0}body.fit .kb{height:100%;display:flex;flex-direction:column;justify-content:center;padding:14px}body.fit .kb h2{font-size:clamp(28px,5.5vh,50px);margin:6px 0}body.fit .mbar{margin-bottom:8px}body.fit nav{padding-top:6px;padding-bottom:6px}}
+.mz{position:absolute;top:10px;right:10px;display:none;z-index:2;box-shadow:0 2px 8px #0003}.mz.on{display:block}
+.ext{display:block;text-align:center;font-size:11px;color:#6b5d61;margin-top:6px;font-weight:700}
+.vw{position:fixed;inset:0;background:#000c;z-index:100;display:none;align-items:center;justify-content:center;padding:16px}.vw.on{display:flex}
+.vb{background:#fff;border-radius:14px;width:min(920px,100%);max-height:94vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 10px 40px #0008}
+.vh{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;padding:12px 16px;border-bottom:3px solid var(--red)}
+.vt{font-weight:800;font-size:15px;line-height:1.3}.vme{color:var(--mu);font-size:11px;font-weight:700;text-transform:uppercase;margin-top:4px}
+.vx{border:0;background:#eee;border-radius:50%;width:34px;height:34px;font-size:16px;cursor:pointer;flex:none}
+.vc{padding:14px 16px;overflow:auto;flex:1;display:flex;flex-direction:column;align-items:center;gap:12px}
+.vc iframe,.vc video{border:0;border-radius:10px;background:#000;width:100%}.vc audio{width:100%}
+.vr-w{aspect-ratio:16/9}.vr-v{width:min(100%,360px)!important;height:min(70vh,640px)}.vr-a{height:180px;background:none!important}
+.vs{width:100%;font-size:13px;line-height:1.5;color:#333;background:#f6f2f3;border-radius:10px;padding:10px 12px;max-height:20vh;overflow:auto}
+.vg{background:#fbf7f8;border:1px dashed var(--bd);border-radius:10px;padding:16px;text-align:center;width:100%}
+.vf{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--bd);flex-wrap:wrap}
+@media(max-width:768px){.vw{padding:0}.vb{width:100%;height:100%;max-height:100%;border-radius:0}}
+@media print{
+@page{size:A4 portrait;margin:8mm}
+*{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body,body.fit{background:#fff;height:auto!important;overflow:visible!important;display:block!important}
+nav,.mbar,.ab,#ayer-c,.vw,.mz,#resumen-preview{display:none!important}
+header{box-shadow:none;padding:8px 12px}
+.main{margin:8px 0;padding:0;max-width:none}
+.sc{gap:8px;margin-bottom:8px}.cd{padding:6px}.cd .v{font-size:20px}
+.ct{box-shadow:none;border:1px solid #cbd5e1;grid-template-columns:repeat(3,1fr);gap:6px 8px;padding:8px;break-inside:avoid}.s3{grid-column:1/-1}
+table,thead,tbody,th,td,tr{display:block!important}thead tr{display:none!important}
+.tbx{border:0;background:none;overflow:visible}
+tr{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px 0;margin:0 0 12px!important;border-radius:10px;border:1px solid #cbd5e1!important;padding:12px!important;break-inside:avoid;box-shadow:none!important}
+td{padding:0!important;border:0!important}
+td:nth-child(1){width:50%!important;order:1;font-size:11px}td:nth-child(3){width:50%!important;order:2;text-align:right!important}
+td:nth-child(2){width:100%!important;order:3}td:nth-child(4){width:100%!important;order:4;font-size:12px}td:nth-child(5){width:100%!important;order:5;margin-top:5px}
+.bl{display:none!important}
+.ext{display:block!important;background:#475569;color:#fff!important;text-align:center;font-size:12px;font-weight:700;padding:9px;border-radius:8px;margin:0;text-decoration:none}
+.ar{display:none}
+}
+.vg2{width:100%}.vtb{display:flex;gap:8px;margin-bottom:10px}.vbody iframe{width:100%}
+.rd{text-align:left;font-size:14px;line-height:1.65;max-height:55vh;overflow:auto;background:#fff;border:1px solid var(--bd);border-radius:10px;padding:14px 16px}.rd p{margin:0 0 10px}
+.fcs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}.fc{background:#f6f2f3;border-radius:14px;padding:4px 10px;font-size:11px;color:#333}
+.vg2 iframe{background:#fff}
+
+.tg{font-size:10px;font-weight:700;color:#444;margin-top:5px;line-height:1.5}.tg b{color:#7f1d1d}
+.vd{font-size:10px;font-weight:800;margin-top:4px;color:#14532d}
+.mbar .sp{margin-left:14px}
+#rf{background:#fff3;border:0;color:#fff;border-radius:8px;padding:7px 10px;font-weight:700;font-size:11px;cursor:pointer;margin-left:8px}
+.warn{background:#fff7ed;border:1px solid #fdba74;color:#7c2d12;border-radius:10px;padding:10px 12px;margin-bottom:10px;font-weight:600;display:none}
 </style></head><body>
-<header><div><h1>Dashboard de Medios</h1><div class="sb">PRESIDENCIA DE LA REPÚBLICA DEL PERÚ</div></div><div class="hr"><span id="dc">Cargando…</span><button class="ba w" id="rf">↻ Actualizar</button><button class="ba w" id="th">🌙 Oscuro</button></div></header>
-<nav><button class="tab on" data-t="tabla">Tabla</button><button class="tab" data-t="gen">General</button><button class="tab" data-t="sem">Semáforo</button><button class="tab" data-t="mapa">Mapa</button></nav>
+<header><div class="hl"><div class="logo"><img src="presidencia.png" alt="Logo Presidencia" onerror="this.style.display='none'"></div><div><h1>Dashboard de Medios</h1><div class="sb">PRESIDENCIA DE LA REPÚBLICA DEL PERÚ</div></div></div><div style="display:flex;align-items:center"><div id="dc">Conectando…</div><button id="rf" onclick="init(true)">↻</button></div></header>
+<nav><button class="tab on" data-t="tabla">Tabla</button><button class="tab" data-t="general">General</button><button class="tab" data-t="semaforo">Semáforo</button><button class="tab" data-t="ahorro">Ahorro</button><button class="tab" data-t="mapa">Mapa</button><button class="tab" data-t="analisis">Análisis</button></nav>
 <div class="main">
-<div class="err" id="er"></div>
-<div class="ct">
-<div class="s2"><label>Buscar (titular, resumen, programa)</label><input type="search" id="q" placeholder="Ej. Premier, penal…"></div>
-<div><label>Desde</label><input type="date" id="d0"></div><div><label>Hasta</label><input type="date" id="d1"></div>
-<div class="s2"><label>Qué menciones contar</label><div class="seg" id="bs"><button data-b="val" class="on">Solo validadas</button><button data-b="all">Todas</button></div></div>
-<div id="fl" style="display:contents"></div>
-<div class="s6" style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><button class="ba d" id="ult">Último día</button><button class="ba g" id="rst">Restablecer filtros</button></div>
-</div>
-<div class="note" id="nt"></div>
+<div class="mbar" id="mbar"><label style="margin:0">Mes:</label><select id="mes"></select><label style="margin:0" class="sp">Contar:</label><select id="est2"><option value="val">Solo validadas</option><option value="todas">Todas</option><option value="pend">Solo pendientes</option></select></div>
+<div class="warn" id="warn"></div>
+<section class="view on" id="v-tabla">
+<div class="ab"><button class="bx w" id="btn-whatsapp-resumen" onclick="generarResumenWhatsApp()">📋 Copiar resumen</button><button class="bx g" onclick="resetT()">🔄 Restablecer</button><button class="bx x" onclick="excel()">📊 Excel</button><button class="bx p" onclick="pdf()">🖨️ Imprimir / PDF</button></div>
+<div id="resumen-preview" style="display:none;background:#fff;border-radius:12px;border:1px solid var(--bd);padding:16px;margin-bottom:12px;white-space:pre-wrap;font-family:Menlo,Consolas,monospace;font-size:13px;line-height:1.7;position:relative"><button onclick="document.getElementById('resumen-preview').style.display='none'" style="position:absolute;top:10px;right:10px;background:#6b5d61;color:#fff;border:0;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer">✕ Cerrar</button><div style="font-size:11px;font-weight:800;color:#6b5d61;text-transform:uppercase;margin-bottom:10px">Vista previa del resumen (ya copiado al portapapeles)</div><div id="resumen-preview-text"></div></div>
 <div class="sc"><div class="cd"><div class="t"># Menciones</div><div class="v" id="n-t">0</div></div><div class="cd p"><div class="t"># Positivas</div><div class="v" id="n-p">0</div></div><div class="cd n"><div class="t"># Neutras</div><div class="v" id="n-n">0</div></div><div class="cd x"><div class="t"># Negativas</div><div class="v" id="n-x">0</div></div></div>
-
-<section class="view on" id="v-tabla"><div class="ab"><button class="ba x" id="xl">Excel</button><button class="ba d" onclick="print()">Imprimir / PDF</button></div>
-<div class="tbx"><table><thead><tr><th style="width:11%">Fecha</th><th style="width:27%">Titular / Medio</th><th style="width:20%">Clasificación</th><th style="width:32%">Resumen</th><th style="width:10%">Enlace</th></tr></thead><tbody id="tb"></tbody></table></div>
-<div style="text-align:center;margin:14px 0 30px"><button class="ba g" id="mas" style="display:none">Mostrar más</button></div></section>
-
-<section class="view" id="v-gen"><div class="gr">
-<div class="cc c3" style="padding:0;border:0;background:none"><div class="kb"><h4>Ahorro publicitario</h4><h2 id="a-tot">US$ 0</h2><small>Solo menciones positivas</small></div></div>
-<div class="cc c3" style="padding:0;border:0;background:none"><div class="kb" style="background:linear-gradient(135deg,#1f2937,#111827)"><h4>Avance de revisión</h4><h2 id="a-av">0%</h2><small id="a-avs"></small></div></div>
-<div class="cc c3"><h3>Pendientes vs validadas</h3><div class="cv" style="height:130px"><canvas id="g-pv"></canvas></div></div>
-<div class="cc c3"><h3>Validadas por integrante</h3><div class="cv" style="height:130px"><canvas id="g-av"></canvas></div></div>
-<div class="cc c8"><h3>Evolución temporal por tono</h3><div class="cv"><canvas id="g-time"></canvas></div></div>
-<div class="cc c4"><h3>Tipo de medio</h3><div class="cv"><canvas id="g-tipo"></canvas></div></div>
-<div class="cc c6"><h3>Ejes de gestión</h3><div class="cv t"><canvas id="g-eje"></canvas></div></div>
-<div class="cc c6"><h3>Temas (etiquetas)</h3><div class="cv t"><canvas id="g-eti"></canvas></div></div>
-<div class="cc c6"><h3>Origen del posicionamiento</h3><div class="cv"><canvas id="g-ori"></canvas></div></div>
-<div class="cc c6"><h3>Ámbito geográfico (top 10)</h3><div class="cv"><canvas id="g-amb"></canvas></div></div>
-<div class="cc c6"><h3>Medios con más menciones (top 10)</h3><div class="cv"><canvas id="g-medio"></canvas></div></div>
-<div class="cc c6"><h3>Tono por tier</h3><div class="cv"><canvas id="g-tier"></canvas></div></div></div></section>
-
-<section class="view" id="v-sem"><div class="ab"><button class="ba x" id="wa">Copiar para WhatsApp</button><button class="ba d" onclick="print()">Imprimir / PDF</button></div><div class="gr">
-<div class="cc c3" style="padding:0;border:0;background:none"><div class="kb"><h4>Ahorro publicitario</h4><h2 id="s-aho">US$ 0</h2><small>Solo menciones positivas</small></div></div>
-<div class="cc c6"><h3>Línea de tiempo por tono</h3><div class="cv"><canvas id="s-time"></canvas></div></div>
-<div class="cc c3"><h3>Proporción</h3><div class="cv"><canvas id="s-pie"></canvas></div></div>
-<div class="cc c4"><h3>Medios con más menciones negativas</h3><div class="cv"><canvas id="s-neg"></canvas></div></div>
-<div class="cc c4"><h3>Tono por tipo de medio</h3><div class="cv"><canvas id="s-tipo"></canvas></div></div>
-<div class="cc c4"><h3>Tono por eje de gestión</h3><div class="cv"><canvas id="s-eje"></canvas></div></div></div></section>
-
-<section class="view" id="v-mapa"><div class="mg"><div class="pn"><button class="ba g mz" id="mz">⤢ Ver todo el Perú</button><svg id="map" viewBox="0 0 750 1099"></svg><div class="lgd"><span>Pocas</span><i></i><span id="lg1">más menciones</span></div><div class="chips" id="chips"></div></div><div class="pn" id="panel"></div></div></section>
+<div class="ct">
+<div class="s3"><label>Buscar (titular o resumen)</label><input id="q" placeholder="Ej. Premier, obras…" oninput="runT()"></div>
+<div class="s3"><label>Fecha</label><div class="dc"><button class="ba" onclick="mode_('hoy')">Hoy</button><button class="ba d" onclick="mode_('ayer')">Ayer+Hoy</button><button class="ba g" onclick="mode_('month')">Mes</button><button class="ba" style="background:#f97316" onclick="mode_('rango')">Rango</button><input type="date" id="fd" onchange="mode_('specific')"></div></div>
+<div><label>Hora (desde)</label><input type="time" id="fh" oninput="runT()"></div>
+<div><label>Etiqueta (tema)</label><select id="f-etq" onchange="runT()"></select></div>
+<div><label>Criterio</label><select id="f-tono" onchange="runT()"></select></div>
+<div><label>Tipo de medio</label><select id="f-tipo" onchange="runT()"></select></div>
+<div><label>Eje de gestión</label><select id="f-eje" onchange="runT()"></select></div>
+<div><label>Región</label><select id="f-reg" onchange="runT()"></select></div>
+<div><label>Origen</label><select id="f-ori" onchange="runT()"></select></div>
+<div><label>Medio</label><select id="f-med" onchange="runT()"></select></div>
+<div><label>Tier</label><select id="f-tier" onchange="runT()"></select></div>
+<div><label>Revisado por</label><select id="f-por" onchange="runT()"></select></div>
+<div><label>Contar</label><select id="f-est" onchange="setEst(this.value)"><option value="val">Solo validadas</option><option value="todas">Todas</option><option value="pend">Solo pendientes</option></select></div>
+<div class="rb" id="rb"><div><label>Desde</label><input type="date" id="rd" onchange="runT()"></div><div><label>Hasta</label><input type="date" id="rh" onchange="runT()"></div></div>
 </div>
+<div class="mu" id="stt" style="margin:0 2px 8px;font-weight:600"></div>
+<div class="tbx" id="pdfbox"><table><thead><tr><th style="width:11%">Fecha</th><th style="width:27%">Titular / Medio</th><th style="width:10%">Tono</th><th style="width:42%">Resumen</th><th style="width:10%">Enlace</th></tr></thead><tbody id="tbody"><tr><td colspan="5" style="text-align:center;padding:50px;color:#6b5d61;font-weight:700">Sincronizando datos, un momento…</td></tr></tbody></table></div>
+<div style="text-align:center;margin:14px 0 30px"><button class="ba g" id="mas" style="display:none;padding:10px 20px" onclick="LIM+=200;runT(true)">Mostrar más</button></div>
+</section>
+
+<section class="view" id="v-general"><div class="gr">
+<div class="cc c3"><div class="kb"><h4>Total menciones</h4><h2 id="g-tot">0</h2><small id="g-tr">--</small></div></div>
+<div class="cc c6"><h3>Menciones en el tiempo</h3><div class="cv"><canvas id="c-time"></canvas></div></div>
+<div class="cc c3"><h3>Tipo de medio (%)</h3><div class="cv"><canvas id="c-tipo"></canvas></div></div>
+<div class="cc c4"><h3>Temas (etiquetas)</h3><div class="cv"><canvas id="c-etq"></canvas></div></div>
+<div class="cc c4"><h3>Eje de gestión</h3><div class="cv"><canvas id="c-eje"></canvas></div></div>
+<div class="cc c4"><h3>Origen de posicionamiento</h3><div class="cv"><canvas id="c-ori"></canvas></div></div>
+</div></section>
+
+<section class="view" id="v-semaforo"><div class="gr">
+<div class="cc c8"><h3>Línea de tiempo por criterio de imagen</h3><div class="cv"><canvas id="s-time"></canvas></div></div>
+<div class="cc c4"><h3>Proporción</h3><div class="cv"><canvas id="s-pie"></canvas></div></div>
+<div class="cc c4"><h3>Medios con más menciones negativas</h3><div class="cv"><canvas id="s-neg"></canvas></div></div>
+<div class="cc c4"><h3>Criterio por eje de gestión</h3><div class="cv"><canvas id="s-eje"></canvas></div></div>
+<div class="cc c4"><h3>Criterio por tipo de medio</h3><div class="cv"><canvas id="s-tipo"></canvas></div></div>
+</div></section>
+
+<section class="view" id="v-ahorro"><div class="gr">
+<div class="cc c4"><div class="kb"><h4>Ahorro publicitario</h4><h2 id="a-tot">US$ 0</h2><small>Solo menciones positivas</small></div></div>
+<div class="cc c8"><h3>Ahorro por tipo de medio</h3><div class="cv"><canvas id="a-tipo"></canvas></div></div>
+<div class="cc c12"><h3>Ahorro por eje de gestión</h3><div class="cv"><canvas id="a-eje"></canvas></div></div>
+</div></section>
+
+<section class="view" id="v-mapa"><div class="mp"><div class="pn" style="position:relative"><button class="ba mz" id="mz" onclick="sel=null;draw()">↺ Ver todo el Perú</button><svg id="map" viewBox="-3 -4 386 560"></svg><div class="lg"><span>Sin menciones</span><span style="width:14px;height:10px;background:#e3e0e1;border:1px solid #8d8186;border-radius:2px"></span><i></i><span id="lg1">1</span></div><div class="ch" id="chips"></div></div><div class="pn" id="panel"></div></div></section>
+
+<section class="view" id="v-analisis"><div class="gr">
+<div class="cc c4"><div class="kb"><h4>Avance de revisión</h4><h2 id="v-tot">0%</h2><small id="v-sub">--</small></div></div>
+<div class="cc c4"><h3>Pendientes vs validadas</h3><div class="cv"><canvas id="v-pv"></canvas></div></div>
+<div class="cc c4"><h3>Validadas por integrante</h3><div class="cv"><canvas id="v-por"></canvas></div></div>
+<div class="cc c6"><h3>Criterio de imagen por tema (etiqueta)</h3><div class="cv"><canvas id="x-etq"></canvas></div></div>
+<div class="cc c6"><h3>Criterio de imagen por origen de posicionamiento</h3><div class="cv"><canvas id="x-ori"></canvas></div></div>
+<div class="cc c6"><h3>Ámbito geográfico (top 10)</h3><div class="cv"><canvas id="x-amb"></canvas></div></div>
+<div class="cc c6"><h3>Medios con más menciones (top 10)</h3><div class="cv"><canvas id="x-med"></canvas></div></div>
+<div class="cc c6"><h3>Criterio de imagen por tier</h3><div class="cv"><canvas id="x-tier"></canvas></div></div>
+<div class="cc c6"><h3>Menciones por hora del día</h3><div class="cv"><canvas id="x-hora"></canvas></div></div>
+<div class="cc c6"><h3>Ahorro por tema (etiqueta)</h3><div class="cv"><canvas id="x-aet"></canvas></div></div>
+<div class="cc c6"><h3>Ahorro por medio (top 10)</h3><div class="cv"><canvas id="x-amed"></canvas></div></div>
+</div></section>
+</div>
+<div class="vw" id="vw"><div class="vb"><div class="vh"><div><div class="vt" id="vt"></div><div class="vme" id="vme"></div></div><button class="vx" id="vx" aria-label="Cerrar">✕</button></div><div class="vc" id="vc"></div><div class="vf"><button class="ba g" id="vp">← Anterior</button><span id="vi" class="mu" style="font-weight:700"></span><button class="ba g" id="vn">Siguiente →</button><a class="bl" id="vo" target="_blank" rel="noopener" style="text-decoration:none">Abrir en nueva pestaña ↗</a></div></div></div>
 <script>
-const CSV_URL='https://docs.google.com/spreadsheets/d/e/2PACX-1vR7eZSddSZhr0reqtoZ9QjBvu49PprHC7MXq-JrMqT_VsSgd7FZvGOFf3qo02qA0ijlwC4F_KP1YjtV/pub?gid=783105383&single=true&output=csv',REFRESH=60000;
-const GEO={"w":750.0,"h":1098.7,"p":{"AMAZONAS":"M211.2 415.6L206.1 416.3L204.0 415.4L201.2 416.9L197.0 415.9L196.1 407.0L193.5 398.3L190.6 396.2L188.9 389.3L185.7 385.1L181.8 381.4L177.2 378.7L177.1 376.8L171.0 367.6L166.2 362.0L162.1 362.3L160.7 358.8L157.9 355.0L154.8 347.5L156.5 340.1L161.2 334.1L163.9 327.6L166.5 324.9L166.3 321.6L161.2 316.3L156.5 313.7L155.0 308.5L155.5 303.9L158.0 301.7L160.3 297.7L158.7 295.4L161.4 284.1L158.8 281.9L159.2 277.2L155.2 275.1L157.8 272.8L157.8 269.5L159.2 267.7L159.4 262.5L158.3 257.6L160.4 255.3L162.5 245.8L164.9 242.1L163.4 237.3L165.9 233.9L168.0 233.7L168.7 229.2L172.5 225.2L173.1 221.8L171.9 219.1L173.2 216.8L174.0 211.0L175.4 209.5L175.7 205.9L178.1 201.4L182.4 201.8L184.2 208.2L188.1 206.5L186.8 198.7L199.8 183.1L200.9 179.8L203.4 178.2L208.3 176.9L210.1 188.9L210.2 202.2L211.1 205.3L219.6 215.7L219.7 220.1L217.6 224.4L222.4 230.0L224.1 234.3L224.3 239.4L223.6 244.3L221.5 252.8L222.7 260.0L221.5 266.2L217.3 268.8L216.4 275.5L210.4 280.7L209.1 283.5L209.2 288.7L211.1 292.2L211.2 294.8L207.3 299.6L207.5 302.6L210.3 303.5L214.9 307.5L212.4 310.4L215.1 313.7L215.8 318.0L214.9 322.3L212.2 322.1L210.7 324.0L210.8 330.0L212.5 334.0L210.3 338.8L210.9 346.9L216.0 349.3L217.5 353.8L216.5 356.5L221.0 358.2L224.5 361.5L227.8 357.7L230.4 361.3L232.7 360.0L235.6 364.5L239.5 366.2L242.9 366.5L244.3 371.6L248.3 375.8L246.0 380.6L243.0 380.6L240.7 377.3L239.2 377.5L240.0 382.1L236.8 385.8L236.3 389.0L232.8 393.8L230.3 394.0L233.5 399.5L223.9 398.3L219.9 394.4L215.1 398.4L212.0 397.6L211.9 402.8L211.0 406.1L213.3 411.3L211.2 415.6Z","ANCASH":"M237.3 509.5L239.0 513.0L238.7 515.7L240.7 516.6L241.5 519.8L246.4 531.0L248.3 532.6L249.6 535.9L253.9 537.6L257.3 541.5L268.6 545.9L271.9 550.2L272.4 553.1L270.5 559.4L267.1 557.2L265.5 553.4L260.0 561.6L258.9 565.9L259.8 569.3L256.4 573.9L253.3 576.5L256.9 582.6L257.9 580.4L262.0 583.9L262.3 586.6L267.2 595.4L266.4 597.0L267.5 602.8L261.1 604.9L261.7 614.1L258.2 616.0L255.7 614.7L254.7 617.3L251.9 618.0L249.6 621.9L245.8 625.6L244.8 630.8L241.2 630.4L237.7 631.7L232.7 637.4L231.5 641.5L226.8 642.4L222.0 641.4L221.4 636.5L222.0 632.7L218.2 633.5L218.0 629.3L212.5 631.5L215.7 623.6L220.8 620.5L215.2 616.9L211.6 617.0L211.1 623.5L209.0 626.7L210.4 628.4L210.5 632.0L206.8 631.7L203.7 634.4L202.4 630.3L199.3 627.2L196.3 620.2L193.7 618.4L190.9 609.7L187.3 606.5L186.6 600.4L182.6 590.1L183.6 585.4L180.9 583.0L177.9 577.4L175.4 574.9L175.2 571.0L173.4 566.0L174.5 564.4L171.6 562.4L171.8 558.2L168.8 557.6L166.8 554.4L168.1 549.9L166.9 548.5L163.1 548.0L163.7 544.7L160.0 542.4L158.8 535.8L161.9 534.4L162.1 529.2L163.5 525.2L166.3 522.9L170.4 521.9L176.0 518.1L182.4 517.2L185.5 513.7L184.1 511.1L186.7 507.9L188.7 503.4L188.8 499.8L190.1 496.3L195.8 491.1L200.9 489.5L203.0 482.2L208.2 481.7L213.6 482.1L217.8 480.7L218.5 484.1L220.3 487.0L223.2 489.3L229.0 497.8L230.2 502.9L232.4 506.6L237.3 509.5Z","APURIMAC":"M524.1 877.4L517.9 878.9L513.9 877.7L509.1 878.2L505.3 876.7L503.0 879.8L501.9 883.3L500.8 880.3L495.5 878.6L492.3 875.9L486.5 879.1L483.8 878.1L481.6 880.0L477.7 880.2L476.3 881.6L472.1 879.9L469.7 880.6L468.9 883.6L464.1 888.2L459.4 884.2L459.0 878.9L462.6 876.7L461.3 872.5L462.6 871.5L461.2 867.2L459.2 865.2L462.5 853.8L456.7 843.0L456.2 839.3L454.0 833.5L452.6 832.7L451.5 828.5L448.6 823.5L453.2 821.8L448.8 817.0L446.0 816.1L444.6 808.2L442.7 801.5L445.0 795.9L444.1 794.8L445.7 789.7L448.1 787.9L449.9 793.8L454.8 795.7L459.0 798.2L464.4 803.6L469.0 804.4L472.3 803.8L479.0 806.3L480.3 802.8L486.7 804.6L491.9 803.3L494.5 801.1L499.1 801.1L499.6 802.6L505.1 803.3L507.9 806.7L513.1 808.5L514.3 810.2L518.7 810.8L527.1 814.0L528.2 817.3L534.3 820.0L538.3 820.0L544.0 824.7L547.4 832.1L548.7 833.5L549.0 838.4L548.0 842.3L548.7 845.4L546.4 848.1L547.2 849.8L540.9 856.5L537.8 858.6L537.2 861.9L533.2 864.1L530.8 863.8L528.7 866.6L526.7 866.4L522.2 870.8L524.7 874.0L524.1 877.4Z","AREQUIPA":"M370.1 924.3L371.5 923.8L374.2 917.5L376.4 915.6L378.0 910.0L382.1 906.8L385.4 906.1L388.5 903.6L391.1 905.8L397.8 906.6L401.0 906.1L406.9 908.2L410.1 908.6L410.7 912.8L409.4 916.2L415.3 919.2L414.2 921.1L415.9 926.4L422.2 927.2L424.7 923.4L428.1 921.2L431.4 925.0L428.6 933.2L429.6 935.5L436.9 927.1L441.5 923.3L441.1 919.0L441.9 917.3L445.0 917.1L447.9 920.8L452.3 923.9L454.3 922.7L459.8 922.2L466.6 919.1L469.6 921.6L475.4 921.2L476.0 915.4L478.3 914.8L482.5 916.1L485.9 911.1L486.3 908.9L490.0 905.7L492.6 901.5L493.6 895.0L491.0 891.7L492.7 886.6L496.2 883.6L501.9 883.3L503.0 879.8L505.3 876.7L509.1 878.2L513.9 877.7L517.9 878.9L524.1 877.4L523.2 880.4L524.1 884.2L528.0 887.3L533.3 887.7L537.1 885.9L543.4 884.3L544.4 887.5L549.2 890.2L550.0 886.4L549.5 879.3L552.7 875.7L555.5 878.8L554.5 881.4L556.5 885.1L558.5 885.1L560.8 891.0L564.0 891.4L567.0 894.1L565.8 898.3L563.7 901.7L571.7 903.2L573.5 906.0L576.4 905.2L577.4 901.4L580.9 902.5L582.4 901.2L581.2 896.3L585.7 897.6L589.1 902.4L592.5 904.9L595.8 902.3L598.9 902.0L602.7 904.9L600.5 907.4L601.7 910.1L599.2 912.4L601.4 915.0L602.2 919.5L600.9 923.2L606.9 924.6L608.9 922.0L611.5 925.0L610.3 927.0L610.7 931.5L616.0 936.3L617.1 940.4L615.0 944.8L620.5 953.1L621.8 956.4L622.3 960.9L619.7 961.1L618.6 963.4L619.8 972.2L613.7 976.2L612.0 976.3L612.7 982.4L614.0 985.3L611.6 987.4L606.6 985.2L602.9 986.2L596.7 985.7L596.7 990.7L594.7 994.6L594.1 1001.3L591.8 1002.8L589.3 1000.9L586.0 1002.1L584.9 1006.0L585.1 1009.6L588.4 1019.0L591.1 1019.0L593.3 1023.3L585.1 1032.8L582.1 1034.8L570.3 1030.4L563.1 1028.7L560.4 1027.2L556.6 1022.9L549.7 1018.7L547.5 1019.0L539.5 1011.8L535.0 1010.2L534.5 1007.3L530.7 1003.5L525.5 999.9L519.9 998.4L510.1 996.8L506.3 995.4L497.8 988.9L493.6 988.7L489.7 987.0L483.4 982.9L479.5 982.4L474.8 980.5L474.2 978.0L466.1 974.6L456.1 971.5L451.4 970.9L449.8 969.4L441.4 965.8L440.2 964.2L431.7 958.8L430.4 955.0L423.8 951.7L419.4 950.4L417.4 948.1L414.3 948.6L410.4 947.4L407.7 945.4L406.3 941.3L394.5 936.9L389.3 933.7L384.5 931.7L379.8 928.4L374.1 925.3L370.1 924.3ZM600.2 980.8L605.1 982.2L605.5 978.7L599.5 979.1L600.2 980.8Z","AYACUCHO":"M413.2 728.1L414.6 731.5L417.6 732.0L422.6 736.5L426.5 737.7L427.8 734.8L434.8 732.2L435.7 737.9L440.4 742.0L443.9 749.6L445.4 754.5L448.6 757.1L449.9 756.1L455.8 763.6L457.9 768.3L461.8 771.7L462.0 777.1L464.5 779.6L466.3 784.2L467.9 785.6L472.2 795.6L475.8 800.0L480.3 802.8L479.0 806.3L472.3 803.8L469.0 804.4L464.4 803.6L459.0 798.2L454.8 795.7L449.9 793.8L448.1 787.9L445.7 789.7L444.1 794.8L445.0 795.9L442.7 801.5L444.6 808.2L446.0 816.1L448.8 817.0L453.2 821.8L448.6 823.5L451.5 828.5L452.6 832.7L454.0 833.5L456.2 839.3L456.7 843.0L462.5 853.8L459.2 865.2L461.2 867.2L462.6 871.5L461.3 872.5L462.6 876.7L459.0 878.9L459.4 884.2L464.1 888.2L468.9 883.6L469.7 880.6L472.1 879.9L476.3 881.6L477.7 880.2L481.6 880.0L483.8 878.1L486.5 879.1L492.3 875.9L495.5 878.6L500.8 880.3L501.9 883.3L496.2 883.6L492.7 886.6L491.0 891.7L493.6 895.0L492.6 901.5L490.0 905.7L486.3 908.9L485.9 911.1L482.5 916.1L478.3 914.8L476.0 915.4L475.4 921.2L469.6 921.6L466.6 919.1L459.8 922.2L454.3 922.7L452.3 923.9L447.9 920.8L445.0 917.1L441.9 917.3L441.1 919.0L441.5 923.3L436.9 927.1L429.6 935.5L428.6 933.2L431.4 925.0L428.1 921.2L424.7 923.4L422.2 927.2L415.9 926.4L414.2 921.1L415.3 919.2L409.4 916.2L410.7 912.8L410.1 908.6L406.9 908.2L401.0 906.1L397.8 906.6L391.1 905.8L388.5 903.6L394.3 900.4L394.4 892.2L392.6 888.0L389.5 888.3L388.9 884.0L386.2 882.8L383.6 880.2L383.2 874.4L380.7 870.4L376.9 874.1L370.9 875.0L370.4 869.3L368.7 866.8L368.5 863.7L366.3 862.6L368.9 856.4L372.1 854.4L369.1 850.6L371.0 845.5L372.8 842.0L377.9 843.4L383.9 842.1L388.1 843.1L387.3 838.7L388.2 836.4L387.1 833.4L388.7 827.6L387.8 825.9L389.0 821.7L387.4 816.6L388.0 814.1L386.3 810.5L382.6 806.6L380.3 805.7L380.5 801.4L382.2 799.3L388.5 798.2L392.3 799.5L395.5 794.1L399.9 788.8L401.4 789.6L406.5 789.1L408.8 787.3L409.5 781.8L410.8 779.4L413.2 779.2L415.3 781.3L417.7 779.2L416.1 773.8L414.3 773.4L414.1 767.9L416.4 767.2L416.5 763.2L413.0 760.4L414.3 758.6L413.5 755.8L409.1 747.1L408.7 744.4L403.9 744.7L399.3 737.6L401.0 734.9L410.9 733.8L410.6 729.2L413.2 728.1ZM449.0 913.6L449.1 916.2L452.3 917.7L455.0 915.2L449.0 913.6Z","CAJAMARCA":"M118.7 419.2L120.2 417.7L119.4 411.8L122.2 409.2L130.6 404.3L129.4 399.8L125.1 399.4L124.2 398.0L120.2 398.2L116.1 390.7L113.9 390.1L112.2 386.5L112.7 384.8L110.9 381.5L112.8 376.3L116.8 375.9L118.7 373.5L122.8 371.3L121.6 366.5L124.5 361.0L122.1 357.8L113.0 355.9L118.0 351.3L114.7 345.1L114.1 342.7L115.5 334.1L114.2 329.9L121.7 328.8L120.2 325.2L118.4 316.6L116.5 315.0L117.1 311.6L115.4 309.1L120.4 304.3L123.3 297.8L125.3 295.6L133.4 295.9L137.1 298.5L139.3 291.5L144.0 291.2L144.2 286.2L142.9 285.1L144.7 280.5L147.3 277.0L149.5 275.9L155.2 275.1L159.2 277.2L158.8 281.9L161.4 284.1L158.7 295.4L160.3 297.7L158.0 301.7L155.5 303.9L155.0 308.5L156.5 313.7L161.2 316.3L166.3 321.6L166.5 324.9L163.9 327.6L161.2 334.1L156.5 340.1L154.8 347.5L157.9 355.0L160.7 358.8L162.1 362.3L166.2 362.0L171.0 367.6L177.1 376.8L177.2 378.7L181.8 381.4L185.7 385.1L188.9 389.3L190.6 396.2L193.5 398.3L196.1 407.0L197.0 415.9L203.0 427.7L204.0 431.0L206.9 436.3L208.0 441.2L210.4 442.8L212.3 445.7L206.2 448.5L204.6 452.8L197.0 458.4L192.1 459.5L190.1 456.9L183.7 463.2L180.8 462.9L179.0 459.5L177.4 459.7L174.3 455.5L175.8 452.1L175.6 447.7L172.4 446.8L167.9 451.0L160.0 450.6L158.5 449.4L159.7 444.4L157.7 442.5L152.0 441.8L147.1 443.9L144.5 446.7L143.9 449.9L141.1 453.6L140.1 457.2L138.2 457.3L135.3 453.7L133.9 446.0L128.7 444.1L126.6 441.4L122.6 440.6L120.4 438.5L117.2 437.9L121.0 434.2L122.0 429.2L119.7 426.5L118.7 419.2Z","CALLAO":"M245.1 707.4L248.7 706.9L250.8 711.8L249.2 715.1L251.2 719.9L249.5 722.5L247.2 721.7L248.3 716.3L246.8 710.1L245.1 707.4Z","CUSCO":"M524.1 877.4L524.7 874.0L522.2 870.8L526.7 866.4L528.7 866.6L530.8 863.8L533.2 864.1L537.2 861.9L537.8 858.6L540.9 856.5L547.2 849.8L546.4 848.1L548.7 845.4L548.0 842.3L549.0 838.4L548.7 833.5L547.4 832.1L544.0 824.7L538.3 820.0L534.3 820.0L528.2 817.3L527.1 814.0L518.7 810.8L514.3 810.2L513.1 808.5L507.9 806.7L505.1 803.3L499.6 802.6L499.1 801.1L494.5 801.1L491.9 803.3L486.7 804.6L480.3 802.8L475.8 800.0L472.2 795.6L467.9 785.6L466.3 784.2L464.5 779.6L462.0 777.1L461.8 771.7L457.9 768.3L455.8 763.6L449.9 756.1L448.6 757.1L445.4 754.5L443.9 749.6L440.4 742.0L435.7 737.9L434.8 732.2L438.2 731.2L442.9 732.0L445.4 730.9L449.2 733.7L450.9 733.8L455.1 740.4L457.9 740.3L458.8 734.3L465.0 730.9L466.4 727.3L471.4 725.8L468.7 721.6L469.3 718.9L466.9 717.1L466.7 714.3L463.8 710.4L458.7 707.9L458.8 701.7L456.8 697.3L459.7 693.2L466.2 689.6L464.4 686.0L468.0 680.7L473.2 676.4L477.6 676.4L480.8 675.1L484.7 675.3L491.3 673.5L493.4 669.6L494.7 673.5L496.4 674.6L495.7 677.5L498.9 679.2L505.0 680.7L508.3 678.5L510.2 680.6L515.9 683.4L520.3 683.8L523.6 680.9L529.6 677.6L533.8 676.1L537.9 678.4L537.3 680.8L534.7 683.7L533.3 693.4L526.6 700.2L530.1 704.8L528.9 707.3L532.4 709.0L531.4 711.2L532.0 715.8L535.2 716.3L536.7 718.1L536.1 720.9L541.7 721.3L546.4 722.8L546.8 726.2L545.8 732.0L550.0 733.6L553.6 736.9L553.4 741.6L548.4 744.1L547.8 748.4L550.1 749.2L553.1 752.5L554.6 757.0L553.3 758.7L559.0 761.5L563.2 762.4L567.0 765.5L570.1 762.0L575.7 759.7L578.5 760.2L584.5 767.2L586.6 771.3L590.2 770.7L593.4 774.1L597.1 776.0L600.9 776.7L601.2 783.3L604.0 791.7L608.8 793.8L612.7 787.8L615.8 784.3L620.5 781.7L625.5 784.2L631.3 783.0L635.6 783.9L637.8 786.9L642.9 787.3L647.4 789.2L645.5 793.2L647.1 796.5L646.7 800.0L644.2 801.3L643.6 804.6L638.8 809.2L638.3 812.2L633.9 814.2L631.7 817.0L628.0 817.4L626.9 822.0L629.0 825.9L627.7 827.4L624.9 826.5L621.2 829.2L621.1 834.0L619.4 839.3L623.3 842.0L622.5 845.1L619.1 847.8L617.1 851.4L618.3 853.9L616.3 857.3L613.4 859.4L612.0 862.1L613.4 864.4L611.4 868.0L611.1 872.0L604.5 877.7L608.0 882.9L610.4 882.1L612.6 883.5L611.6 887.4L612.1 894.4L610.9 896.0L612.6 908.2L613.4 910.6L612.1 912.6L614.0 915.1L610.5 918.3L608.9 922.0L606.9 924.6L600.9 923.2L602.2 919.5L601.4 915.0L599.2 912.4L601.7 910.1L600.5 907.4L602.7 904.9L598.9 902.0L595.8 902.3L592.5 904.9L589.1 902.4L585.7 897.6L581.2 896.3L582.4 901.2L580.9 902.5L577.4 901.4L576.4 905.2L573.5 906.0L571.7 903.2L563.7 901.7L565.8 898.3L567.0 894.1L564.0 891.4L560.8 891.0L558.5 885.1L556.5 885.1L554.5 881.4L555.5 878.8L552.7 875.7L549.5 879.3L550.0 886.4L549.2 890.2L544.4 887.5L543.4 884.3L537.1 885.9L533.3 887.7L528.0 887.3L524.1 884.2L523.2 880.4L524.1 877.4ZM596.7 866.7L601.1 869.1L601.9 867.7L596.5 864.0L596.7 866.7Z","HUANCAVELICA":"M371.0 845.5L368.0 839.7L364.7 842.0L359.2 840.3L360.7 838.0L354.8 838.6L348.8 832.5L342.2 831.1L341.1 828.1L343.4 826.8L342.4 824.6L343.9 819.5L345.8 816.7L344.1 814.7L346.2 809.2L346.9 803.6L344.7 799.6L342.6 802.0L339.9 801.8L333.7 804.1L332.3 802.7L326.8 801.8L327.7 798.2L332.7 795.0L332.7 788.9L333.4 786.5L331.9 784.3L333.4 782.2L337.3 781.1L338.1 775.6L336.8 772.7L338.2 769.7L343.1 767.0L344.4 764.3L340.4 760.6L341.8 758.6L340.2 756.2L342.6 755.0L345.4 756.6L349.8 755.4L353.0 750.1L358.0 745.8L361.7 745.5L361.7 741.4L366.2 738.2L370.2 731.8L371.6 727.9L370.1 721.3L371.7 718.4L378.6 719.1L384.1 721.9L389.4 720.2L391.2 721.2L394.7 717.4L396.7 716.8L406.7 719.7L408.8 723.3L412.8 726.5L413.2 728.1L410.6 729.2L410.9 733.8L401.0 734.9L399.3 737.6L403.9 744.7L408.7 744.4L409.1 747.1L413.5 755.8L414.3 758.6L413.0 760.4L416.5 763.2L416.4 767.2L414.1 767.9L414.3 773.4L416.1 773.8L417.7 779.2L415.3 781.3L413.2 779.2L410.8 779.4L409.5 781.8L408.8 787.3L406.5 789.1L401.4 789.6L399.9 788.8L395.5 794.1L392.3 799.5L388.5 798.2L382.2 799.3L380.5 801.4L380.3 805.7L382.6 806.6L386.3 810.5L388.0 814.1L387.4 816.6L389.0 821.7L387.8 825.9L388.7 827.6L387.1 833.4L388.2 836.4L387.3 838.7L388.1 843.1L383.9 842.1L377.9 843.4L372.8 842.0L371.0 845.5Z","HUANUCO":"M237.3 509.5L240.5 505.7L244.0 506.8L248.2 504.1L250.9 506.7L250.7 508.7L253.2 510.9L261.1 511.9L265.2 510.5L266.1 508.7L274.0 509.6L278.4 508.4L283.2 508.3L287.7 511.9L289.0 507.0L290.6 504.3L295.6 503.5L296.1 509.1L298.8 512.3L299.5 517.0L301.7 525.5L305.5 523.1L308.4 517.1L307.6 505.7L310.1 497.9L316.2 497.0L318.5 501.7L317.4 504.8L317.3 513.2L316.5 515.8L318.5 520.7L319.9 524.5L320.2 530.4L322.7 535.9L322.6 539.0L326.8 545.0L327.5 549.0L331.2 554.0L334.8 561.5L341.2 561.7L345.2 560.3L347.7 555.5L355.0 555.5L357.7 556.3L359.0 553.9L362.1 551.5L362.0 547.2L360.4 544.1L363.8 542.5L365.5 540.0L366.0 536.0L368.9 533.0L371.8 531.9L375.7 534.8L378.4 533.5L378.0 529.2L383.3 523.1L383.6 517.4L386.5 515.6L397.1 510.6L401.3 512.8L402.6 522.6L402.2 524.3L397.6 526.9L395.5 532.8L395.1 540.6L393.5 543.3L395.7 544.8L395.8 547.3L398.8 555.9L393.8 561.4L393.6 563.4L390.6 565.9L389.2 569.2L390.2 572.0L385.9 578.9L386.1 581.5L383.4 582.6L380.5 581.9L377.8 583.3L374.5 588.0L370.9 586.9L368.1 588.5L365.0 588.1L360.2 584.8L356.5 584.7L358.2 588.7L357.4 589.9L352.6 589.9L351.1 592.5L346.3 596.1L342.0 596.7L339.5 594.8L338.5 599.1L334.5 600.5L332.9 605.7L332.8 610.1L328.0 612.8L324.8 613.2L323.8 615.8L319.8 619.0L319.7 622.1L316.7 626.4L311.9 625.6L310.6 623.7L307.6 623.5L302.1 620.2L299.3 619.9L297.0 622.0L295.4 614.9L287.3 617.9L286.2 620.4L277.0 622.6L274.1 624.2L272.4 626.8L269.7 625.6L267.5 621.3L264.6 620.3L261.7 614.1L261.1 604.9L267.5 602.8L266.4 597.0L267.2 595.4L262.3 586.6L262.0 583.9L257.9 580.4L256.9 582.6L253.3 576.5L256.4 573.9L259.8 569.3L258.9 565.9L260.0 561.6L265.5 553.4L267.1 557.2L270.5 559.4L272.4 553.1L271.9 550.2L268.6 545.9L257.3 541.5L253.9 537.6L249.6 535.9L248.3 532.6L246.4 531.0L241.5 519.8L240.7 516.6L238.7 515.7L239.0 513.0L237.3 509.5Z","ICA":"M388.5 903.6L385.4 906.1L382.1 906.8L378.0 910.0L376.4 915.6L374.2 917.5L371.5 923.8L370.1 924.3L369.6 923.1L363.5 919.7L364.5 916.1L360.8 914.3L361.7 911.6L358.2 907.8L352.7 906.1L348.3 897.7L344.9 895.7L344.7 892.8L340.5 889.8L334.2 886.8L328.1 882.6L323.8 880.7L320.2 877.2L319.3 871.8L316.8 869.2L316.9 865.9L313.0 863.1L311.4 860.9L307.5 858.9L308.8 855.2L306.8 851.3L301.7 846.6L298.1 847.4L299.5 838.6L298.6 832.8L295.8 833.2L291.8 832.2L293.3 826.2L297.8 825.3L297.5 827.9L299.9 829.6L303.6 816.1L304.2 811.6L304.0 803.1L300.8 797.1L303.0 796.0L306.1 789.3L314.6 782.8L319.0 777.2L327.0 781.3L329.4 778.8L331.5 780.0L334.8 779.0L338.1 775.6L337.3 781.1L333.4 782.2L331.9 784.3L333.4 786.5L332.7 788.9L332.7 795.0L327.7 798.2L326.8 801.8L332.3 802.7L333.7 804.1L339.9 801.8L342.6 802.0L344.7 799.6L346.9 803.6L346.2 809.2L344.1 814.7L345.8 816.7L343.9 819.5L342.4 824.6L343.4 826.8L341.1 828.1L342.2 831.1L348.8 832.5L354.8 838.6L360.7 838.0L359.2 840.3L364.7 842.0L368.0 839.7L371.0 845.5L369.1 850.6L372.1 854.4L368.9 856.4L366.3 862.6L368.5 863.7L368.7 866.8L370.4 869.3L370.9 875.0L376.9 874.1L380.7 870.4L383.2 874.4L383.6 880.2L386.2 882.8L388.9 884.0L389.5 888.3L392.6 888.0L394.4 892.2L394.3 900.4L388.5 903.6Z","JUNIN":"M399.7 652.4L403.6 654.7L404.1 657.4L407.3 658.0L411.5 661.1L418.5 658.8L421.7 658.9L428.2 656.9L433.3 657.3L434.9 661.9L434.9 664.9L441.9 666.4L441.6 659.9L442.3 655.0L444.1 652.9L444.7 645.7L448.0 641.8L451.6 644.1L456.7 648.5L459.7 649.3L459.0 655.2L460.7 660.5L464.3 661.6L466.2 671.2L465.6 675.8L464.2 676.8L468.0 680.7L464.4 686.0L466.2 689.6L459.7 693.2L456.8 697.3L458.8 701.7L458.7 707.9L463.8 710.4L466.7 714.3L466.9 717.1L469.3 718.9L468.7 721.6L471.4 725.8L466.4 727.3L465.0 730.9L458.8 734.3L457.9 740.3L455.1 740.4L450.9 733.8L449.2 733.7L445.4 730.9L442.9 732.0L438.2 731.2L434.8 732.2L427.8 734.8L426.5 737.7L422.6 736.5L417.6 732.0L414.6 731.5L413.2 728.1L412.8 726.5L408.8 723.3L406.7 719.7L396.7 716.8L394.7 717.4L391.2 721.2L389.4 720.2L384.1 721.9L378.6 719.1L371.7 718.4L370.1 721.3L371.6 727.9L370.2 731.8L366.2 738.2L361.7 741.4L361.7 745.5L358.0 745.8L353.0 750.1L349.8 755.4L345.4 756.6L342.6 755.0L340.2 756.2L340.6 751.5L342.7 748.7L341.5 745.1L341.1 737.9L335.2 729.3L336.7 724.5L333.4 720.2L329.2 721.3L325.7 718.6L319.7 716.7L314.5 716.7L312.2 714.6L312.3 711.2L307.2 704.5L303.3 701.4L303.2 697.3L304.2 693.3L302.1 691.4L298.3 693.2L293.3 688.0L292.8 684.3L289.8 678.4L287.0 675.3L286.2 669.0L284.6 664.6L286.2 663.1L291.8 662.2L296.5 663.2L297.1 665.6L299.7 666.7L301.0 661.4L298.8 653.1L299.9 653.0L300.6 653.7L301.3 655.2L304.9 660.3L308.5 664.3L313.5 662.9L314.6 660.4L311.1 656.2L308.0 655.4L309.9 652.1L312.7 650.5L315.7 646.9L319.9 650.7L323.7 649.8L324.9 650.9L328.0 647.2L331.1 646.2L333.4 647.7L339.6 646.3L340.5 642.5L345.5 643.1L347.3 644.8L346.0 648.7L346.9 651.8L350.4 649.1L355.7 649.5L359.0 647.2L360.0 643.7L363.2 640.6L367.4 641.5L370.1 637.6L373.5 638.3L375.7 642.5L377.1 641.7L380.8 643.8L384.5 644.5L386.8 647.6L388.7 647.2L391.8 649.2L395.2 649.7L397.3 652.0L399.7 652.4Z","LA LIBERTAD":"M158.8 535.8L158.4 532.5L151.9 524.1L153.3 520.4L152.9 515.7L150.9 511.8L141.6 503.9L143.9 500.4L140.3 495.3L138.6 490.4L130.9 483.5L130.7 482.0L119.6 473.2L115.5 468.2L114.5 465.0L110.2 460.4L112.0 459.3L111.2 456.5L105.8 449.0L102.9 442.5L104.1 441.1L101.7 433.7L96.9 428.3L108.4 416.0L110.8 414.5L114.1 415.1L118.7 419.2L119.7 426.5L122.0 429.2L121.0 434.2L117.2 437.9L120.4 438.5L122.6 440.6L126.6 441.4L128.7 444.1L133.9 446.0L135.3 453.7L138.2 457.3L140.1 457.2L141.1 453.6L143.9 449.9L144.5 446.7L147.1 443.9L152.0 441.8L157.7 442.5L159.7 444.4L158.5 449.4L160.0 450.6L167.9 451.0L172.4 446.8L175.6 447.7L175.8 452.1L174.3 455.5L177.4 459.7L179.0 459.5L180.8 462.9L183.7 463.2L190.1 456.9L192.1 459.5L197.0 458.4L204.6 452.8L206.2 448.5L212.3 445.7L210.4 442.8L208.0 441.2L206.9 436.3L204.0 431.0L203.0 427.7L197.0 415.9L201.2 416.9L204.0 415.4L206.1 416.3L211.2 415.6L213.9 424.2L218.0 426.6L220.3 430.8L217.9 432.1L218.9 436.9L218.5 439.1L220.0 443.8L224.9 448.0L224.4 452.6L227.5 459.7L224.9 463.1L227.7 465.9L229.9 466.5L232.1 471.8L233.8 472.2L232.0 477.2L233.3 481.0L238.8 481.3L242.0 478.5L247.2 479.6L249.1 479.2L255.0 480.8L256.9 484.4L261.6 487.9L260.5 490.8L262.0 494.7L261.2 497.2L257.5 501.4L251.1 502.1L248.2 504.1L244.0 506.8L240.5 505.7L237.3 509.5L232.4 506.6L230.2 502.9L229.0 497.8L223.2 489.3L220.3 487.0L218.5 484.1L217.8 480.7L213.6 482.1L208.2 481.7L203.0 482.2L200.9 489.5L195.8 491.1L190.1 496.3L188.8 499.8L188.7 503.4L186.7 507.9L184.1 511.1L185.5 513.7L182.4 517.2L176.0 518.1L170.4 521.9L166.3 522.9L163.5 525.2L162.1 529.2L161.9 534.4L158.8 535.8Z","LAMBAYEQUE":"M41.5 380.0L56.3 358.1L59.2 354.5L66.8 351.3L70.8 351.0L78.9 342.8L80.4 332.6L81.8 328.6L84.3 327.2L87.2 329.6L86.6 331.5L88.5 336.4L91.2 336.5L95.3 342.0L94.1 347.9L97.4 348.5L100.4 347.4L100.7 350.9L102.2 354.1L108.2 352.6L113.0 355.9L122.1 357.8L124.5 361.0L121.6 366.5L122.8 371.3L118.7 373.5L116.8 375.9L112.8 376.3L110.9 381.5L112.7 384.8L112.2 386.5L113.9 390.1L116.1 390.7L120.2 398.2L124.2 398.0L125.1 399.4L129.4 399.8L130.6 404.3L122.2 409.2L119.4 411.8L120.2 417.7L118.7 419.2L114.1 415.1L110.8 414.5L108.4 416.0L96.9 428.3L97.3 425.2L94.0 421.1L82.6 410.1L82.2 407.3L79.4 402.5L74.2 398.2L68.1 394.0L61.5 390.3L41.5 380.0Z","LIMA":"M261.7 614.1L264.6 620.3L267.5 621.3L269.7 625.6L272.4 626.8L273.8 633.3L276.5 636.5L276.3 639.0L277.8 644.8L280.9 649.7L281.9 655.7L281.0 658.3L283.9 659.8L286.2 663.1L284.6 664.6L286.2 669.0L287.0 675.3L289.8 678.4L292.8 684.3L293.3 688.0L298.3 693.2L302.1 691.4L304.2 693.3L303.2 697.3L303.3 701.4L307.2 704.5L312.3 711.2L312.2 714.6L314.5 716.7L319.7 716.7L325.7 718.6L329.2 721.3L333.4 720.2L336.7 724.5L335.2 729.3L341.1 737.9L341.5 745.1L342.7 748.7L340.6 751.5L340.2 756.2L341.8 758.6L340.4 760.6L344.4 764.3L343.1 767.0L338.2 769.7L336.8 772.7L338.1 775.6L334.8 779.0L331.5 780.0L329.4 778.8L327.0 781.3L319.0 777.2L314.6 782.8L306.1 789.3L303.0 796.0L300.8 797.1L289.6 783.1L286.3 779.6L284.9 774.8L285.4 773.2L283.9 768.1L277.7 762.3L275.5 755.4L271.1 750.0L268.0 748.2L269.4 744.0L269.3 741.3L265.8 736.7L259.9 732.7L253.9 729.9L254.3 725.7L249.5 722.5L251.2 719.9L249.2 715.1L250.8 711.8L248.7 706.9L245.1 707.4L246.2 702.0L243.3 696.0L239.6 692.9L238.1 688.4L234.1 684.8L226.6 680.3L218.1 676.0L218.2 670.6L221.1 668.6L218.6 661.0L217.0 658.4L217.2 654.5L211.7 646.7L212.1 645.4L208.2 639.7L203.7 634.4L206.8 631.7L210.5 632.0L210.4 628.4L209.0 626.7L211.1 623.5L211.6 617.0L215.2 616.9L220.8 620.5L215.7 623.6L212.5 631.5L218.0 629.3L218.2 633.5L222.0 632.7L221.4 636.5L222.0 641.4L226.8 642.4L231.5 641.5L232.7 637.4L237.7 631.7L241.2 630.4L244.8 630.8L245.8 625.6L249.6 621.9L251.9 618.0L254.7 617.3L255.7 614.7L258.2 616.0L261.7 614.1Z","LORETO":"M434.7 449.7L431.7 446.8L431.3 444.6L425.5 441.5L423.0 439.2L418.3 438.3L414.9 438.8L406.3 435.6L404.0 433.6L402.0 435.3L399.4 442.3L397.2 443.8L395.6 447.7L395.6 451.4L399.9 457.8L399.1 459.6L400.6 462.6L403.1 464.3L399.9 466.6L396.5 474.1L390.6 476.5L388.0 479.8L380.6 482.6L375.5 475.8L372.5 474.7L366.0 476.4L363.6 478.7L361.8 485.3L360.0 487.0L357.4 485.2L352.2 486.0L349.0 487.7L346.6 492.8L344.7 495.0L344.7 498.6L348.7 501.3L348.4 503.9L342.1 505.7L339.0 502.4L336.1 502.3L332.6 504.0L332.1 506.9L328.4 507.3L328.3 510.5L325.2 516.8L321.7 517.4L318.5 520.7L316.5 515.8L317.3 513.2L317.4 504.8L318.5 501.7L316.2 497.0L319.2 496.4L320.4 492.9L318.8 488.9L318.3 483.6L320.2 482.0L324.5 481.3L325.4 476.1L323.6 473.0L317.3 475.3L312.7 465.2L309.3 461.0L309.9 451.3L305.5 447.3L302.6 442.0L303.7 437.7L302.7 436.3L305.4 433.7L306.8 429.9L311.8 427.4L314.7 422.4L314.7 417.5L312.3 414.3L314.7 411.3L312.3 406.3L317.5 405.0L324.5 405.5L329.0 408.9L333.2 409.8L334.9 407.3L337.0 408.3L344.2 404.8L344.8 403.7L344.9 396.1L344.3 387.2L341.9 378.5L345.5 373.7L345.6 369.9L343.4 367.6L342.9 363.4L340.7 357.9L338.2 359.1L337.3 362.6L334.2 363.4L332.2 366.0L326.3 363.7L325.1 366.0L319.4 365.9L317.3 363.4L313.4 363.7L307.8 368.3L302.1 367.6L299.1 363.9L296.5 362.8L293.2 356.1L290.9 354.7L282.8 359.0L277.4 357.8L271.1 357.9L271.1 354.9L266.9 349.4L265.9 342.4L262.7 342.6L258.4 340.0L256.4 337.7L253.7 338.2L242.4 333.4L236.1 333.9L234.2 331.9L231.9 333.0L228.8 332.7L225.5 325.7L223.1 323.2L221.7 325.4L216.5 322.3L214.9 322.3L215.8 318.0L215.1 313.7L212.4 310.4L214.9 307.5L210.3 303.5L207.5 302.6L207.3 299.6L211.2 294.8L211.1 292.2L209.2 288.7L209.1 283.5L210.4 280.7L216.4 275.5L217.3 268.8L221.5 266.2L222.7 260.0L221.5 252.8L223.6 244.3L224.3 239.4L224.1 234.3L222.4 230.0L217.6 224.4L219.7 220.1L219.6 215.7L211.1 205.3L210.2 202.2L210.1 188.9L208.3 176.9L246.8 163.8L277.9 153.1L312.6 125.4L340.1 90.5L342.6 86.7L350.6 57.7L351.6 53.5L355.4 56.2L361.7 55.9L361.4 49.6L358.4 41.8L360.5 36.5L361.0 30.8L358.0 27.6L356.0 27.3L351.5 23.7L347.1 16.8L345.9 11.9L343.1 8.5L338.3 9.2L338.4 4.5L341.1 5.6L344.6 4.8L350.5 7.9L356.4 7.0L359.1 5.4L363.6 0.0L369.9 2.7L373.5 6.4L376.1 6.9L378.5 10.8L383.5 11.7L385.5 9.2L388.5 11.2L390.4 15.3L390.4 18.0L394.1 20.1L399.6 21.4L402.3 25.6L408.7 28.0L412.0 34.3L411.6 36.9L417.8 48.5L417.2 51.7L417.8 56.6L420.4 58.1L423.7 58.1L428.1 60.6L430.9 60.4L432.8 62.9L436.7 65.6L438.8 64.9L442.1 71.6L452.5 72.0L456.1 73.4L456.6 76.6L461.4 83.8L461.5 85.6L464.5 89.0L463.2 94.8L461.1 99.0L463.2 101.6L465.7 101.9L467.6 105.1L470.1 104.2L474.7 104.7L480.8 103.5L483.8 109.1L486.2 110.1L485.8 118.6L487.2 120.2L485.0 128.7L482.8 131.2L485.8 134.8L488.8 136.6L488.9 139.0L495.0 138.3L495.4 141.2L499.4 143.7L501.6 143.8L506.5 140.9L511.1 142.1L516.8 139.7L521.3 143.2L524.4 143.0L529.6 145.0L530.2 147.1L534.8 145.8L536.7 143.6L539.8 144.4L543.3 142.6L549.1 137.8L551.4 139.8L554.3 139.1L556.4 136.2L558.8 136.4L561.9 129.1L563.9 129.9L567.4 126.2L569.3 131.3L571.9 129.8L575.4 131.6L583.8 133.9L589.2 141.0L592.4 140.1L593.3 138.3L597.5 137.9L600.1 140.5L603.3 134.8L608.0 133.9L611.2 130.2L615.4 132.9L618.3 130.9L620.9 135.1L624.3 135.3L625.9 137.4L631.0 138.9L633.3 141.5L632.6 145.6L634.9 146.7L642.3 145.0L644.5 149.0L649.2 147.0L650.6 152.4L654.2 150.5L656.8 152.2L657.4 156.3L664.3 157.1L666.5 158.7L666.8 163.2L662.1 171.1L640.6 205.5L628.3 225.1L633.7 228.1L636.4 227.5L641.0 230.2L649.9 225.7L654.0 227.9L655.8 231.1L658.6 232.3L660.0 235.9L664.1 241.1L666.8 242.9L668.3 245.7L673.0 250.1L673.3 254.4L671.9 257.7L669.3 258.9L666.2 257.0L665.7 254.8L661.0 254.3L661.3 256.8L659.7 259.0L655.8 254.8L653.9 251.4L653.0 247.2L644.8 245.6L642.8 248.2L639.2 245.8L637.3 247.9L633.9 249.3L632.2 245.3L629.3 248.9L626.2 247.4L622.0 249.5L621.3 252.6L619.2 253.1L618.5 257.0L614.2 260.2L606.8 261.3L604.9 260.3L600.2 261.6L598.6 260.3L595.7 263.4L591.0 264.0L588.2 263.2L586.4 265.6L582.8 263.8L579.5 265.4L577.5 268.2L574.7 269.4L572.8 267.8L569.4 268.3L567.4 266.6L560.0 269.3L556.8 271.4L553.1 275.3L549.8 275.9L545.9 280.1L541.0 282.3L536.1 285.5L532.7 285.8L529.6 287.8L527.5 291.7L521.2 293.7L516.2 297.6L516.1 299.4L513.3 301.5L508.9 301.0L507.0 303.3L499.5 307.6L500.9 311.8L500.7 315.1L499.0 317.2L497.3 322.2L495.3 325.5L495.8 330.5L494.4 334.5L495.3 337.1L489.4 345.5L483.8 349.8L481.9 354.7L481.8 357.9L479.7 359.0L478.0 365.7L483.6 377.3L486.2 384.5L484.0 388.5L481.0 391.8L473.3 393.6L469.6 396.2L462.0 398.2L459.6 401.0L457.1 401.6L450.8 408.1L447.8 414.1L447.7 421.4L445.6 424.5L450.4 431.3L451.7 435.6L450.1 438.2L444.4 438.0L441.8 441.0L438.2 439.4L437.2 441.3L438.9 446.2L437.0 449.7L434.7 449.7Z","MADRE DE DIOS":"M647.4 789.2L642.9 787.3L637.8 786.9L635.6 783.9L631.3 783.0L625.5 784.2L620.5 781.7L615.8 784.3L612.7 787.8L608.8 793.8L604.0 791.7L601.2 783.3L600.9 776.7L597.1 776.0L593.4 774.1L590.2 770.7L586.6 771.3L584.5 767.2L578.5 760.2L575.7 759.7L570.1 762.0L567.0 765.5L563.2 762.4L559.0 761.5L553.3 758.7L554.6 757.0L553.1 752.5L550.1 749.2L547.8 748.4L548.4 744.1L553.4 741.6L553.6 736.9L550.0 733.6L545.8 732.0L546.8 726.2L546.4 722.8L541.7 721.3L536.1 720.9L536.7 718.1L535.2 716.3L532.0 715.8L531.4 711.2L532.4 709.0L528.9 707.3L530.1 704.8L526.6 700.2L533.3 693.4L534.7 683.7L537.3 680.8L537.9 678.4L540.3 673.4L540.2 670.0L544.8 664.1L541.1 661.6L541.2 658.3L544.3 657.1L548.9 658.3L551.1 657.1L561.7 657.7L568.6 657.5L579.7 654.8L590.0 654.8L595.0 648.5L596.0 644.8L598.1 643.4L597.6 639.0L599.6 632.5L603.6 627.9L609.7 626.4L613.1 620.6L613.2 618.1L615.7 617.3L618.3 614.7L622.0 613.1L628.6 607.2L628.5 605.8L631.9 602.5L630.5 599.8L630.9 596.0L634.0 592.7L634.1 627.7L634.0 657.7L639.1 653.7L643.4 657.4L645.3 660.0L652.2 661.9L655.9 660.6L658.6 660.9L662.0 659.5L664.8 657.1L668.7 656.3L673.1 653.4L676.3 652.9L682.9 653.5L685.8 655.6L692.0 655.1L694.2 654.2L696.2 655.7L716.0 687.7L723.4 698.6L731.4 712.7L750.0 747.6L747.8 752.7L745.4 754.3L746.2 757.4L744.8 761.2L739.3 766.5L739.3 769.2L737.1 770.8L737.1 777.9L711.2 789.4L691.2 798.2L671.9 792.4L668.4 791.1L646.5 784.5L647.4 789.2Z","MOQUEGUA":"M602.9 1067.0L599.0 1063.8L589.2 1058.6L591.0 1055.9L590.0 1053.0L589.1 1046.2L587.8 1041.0L582.1 1034.8L585.1 1032.8L593.3 1023.3L591.1 1019.0L588.4 1019.0L585.1 1009.6L584.9 1006.0L586.0 1002.1L589.3 1000.9L591.8 1002.8L594.1 1001.3L594.7 994.6L596.7 990.7L596.7 985.7L602.9 986.2L606.6 985.2L611.6 987.4L614.0 985.3L612.7 982.4L612.0 976.3L613.7 976.2L619.8 972.2L618.6 963.4L619.7 961.1L622.3 960.9L621.8 956.4L624.9 958.7L628.6 959.6L632.3 957.1L637.2 957.0L639.2 959.3L646.1 962.3L646.6 966.6L649.1 970.2L650.3 977.1L647.8 980.8L650.6 982.4L652.5 986.4L656.8 988.0L660.0 991.3L660.4 994.3L665.2 997.0L667.6 995.4L670.3 997.1L670.6 1001.5L667.4 1003.5L665.0 1006.4L664.8 1011.1L661.7 1014.0L655.7 1014.8L655.0 1011.8L658.2 1006.2L652.2 1004.1L644.2 1008.2L642.9 1014.4L643.8 1022.6L641.3 1023.2L639.1 1027.8L634.3 1030.6L629.9 1031.2L628.0 1034.1L625.8 1040.5L626.8 1041.8L618.3 1051.0L616.4 1058.9L611.6 1058.4L605.1 1063.0L602.9 1067.0Z","PASCO":"M298.8 653.1L301.0 661.4L299.7 666.7L297.1 665.6L296.5 663.2L291.8 662.2L286.2 663.1L283.9 659.8L281.0 658.3L281.9 655.7L280.9 649.7L277.8 644.8L276.3 639.0L276.5 636.5L273.8 633.3L272.4 626.8L274.1 624.2L277.0 622.6L286.2 620.4L287.3 617.9L295.4 614.9L297.0 622.0L299.3 619.9L302.1 620.2L307.6 623.5L310.6 623.7L311.9 625.6L316.7 626.4L319.7 622.1L319.8 619.0L323.8 615.8L324.8 613.2L328.0 612.8L332.8 610.1L332.9 605.7L334.5 600.5L338.5 599.1L339.5 594.8L342.0 596.7L346.3 596.1L351.1 592.5L352.6 589.9L357.4 589.9L358.2 588.7L356.5 584.7L360.2 584.8L365.0 588.1L368.1 588.5L370.9 586.9L374.5 588.0L377.8 583.3L380.5 581.9L383.4 582.6L386.1 581.5L385.9 578.9L390.2 572.0L389.2 569.2L390.6 565.9L393.6 563.4L399.1 567.4L399.6 571.9L404.3 573.3L404.9 579.8L407.2 584.5L407.0 589.9L409.1 591.8L408.6 597.1L409.9 601.9L411.9 604.5L414.3 604.3L415.7 607.5L419.9 608.8L420.4 614.4L417.3 620.1L418.6 624.8L420.7 624.8L422.9 627.9L425.8 634.0L423.9 636.0L420.1 635.8L417.0 638.2L414.9 641.3L411.5 643.2L410.8 646.4L405.0 647.9L403.5 650.5L399.7 652.4L397.3 652.0L395.2 649.7L391.8 649.2L388.7 647.2L386.8 647.6L384.5 644.5L380.8 643.8L377.1 641.7L375.7 642.5L373.5 638.3L370.1 637.6L367.4 641.5L363.2 640.6L360.0 643.7L359.0 647.2L355.7 649.5L350.4 649.1L346.9 651.8L346.0 648.7L347.3 644.8L345.5 643.1L340.5 642.5L339.6 646.3L333.4 647.7L331.1 646.2L328.0 647.2L324.9 650.9L323.7 649.8L319.9 650.7L315.7 646.9L312.7 650.5L309.9 652.1L308.0 655.4L304.0 655.3L302.9 652.8L302.1 652.6L300.6 653.2L300.0 652.9L298.8 653.1Z","PIURA":"M125.3 295.6L123.3 297.8L120.4 304.3L115.4 309.1L117.1 311.6L116.5 315.0L118.4 316.6L120.2 325.2L121.7 328.8L114.2 329.9L115.5 334.1L114.1 342.7L114.7 345.1L118.0 351.3L113.0 355.9L108.2 352.6L102.2 354.1L100.7 350.9L100.4 347.4L97.4 348.5L94.1 347.9L95.3 342.0L91.2 336.5L88.5 336.4L86.6 331.5L87.2 329.6L84.3 327.2L81.8 328.6L80.4 332.6L78.9 342.8L70.8 351.0L66.8 351.3L59.2 354.5L56.3 358.1L41.5 380.0L31.4 375.0L24.6 369.1L14.0 362.6L10.6 356.6L10.6 351.0L13.6 348.0L15.4 344.8L18.1 347.5L22.8 348.4L25.8 346.3L27.6 342.7L28.1 335.8L25.5 328.4L21.9 323.1L16.3 317.5L13.0 316.6L11.2 313.5L7.9 310.4L11.5 301.9L14.1 302.6L15.9 300.0L14.3 295.7L9.0 289.0L0.0 278.6L1.1 277.4L2.7 269.2L1.4 266.7L3.6 263.7L4.7 259.0L4.0 256.3L5.4 252.7L9.4 250.3L13.5 245.4L17.0 242.9L21.1 245.3L22.1 248.1L26.4 249.3L31.1 248.2L37.2 249.0L41.7 251.6L45.4 248.2L47.6 244.1L49.8 242.7L52.0 245.2L52.9 249.4L56.6 249.5L59.1 251.1L56.9 254.6L53.3 257.9L51.7 260.8L52.6 265.1L55.5 266.9L61.4 263.8L67.1 258.5L68.0 255.9L72.4 255.1L79.1 260.5L83.3 260.8L86.2 262.5L88.1 265.7L90.8 267.3L95.8 266.0L99.0 263.7L100.6 264.0L104.4 268.5L108.3 269.0L109.4 272.1L108.9 275.2L114.5 287.6L118.8 290.9L122.2 295.8L125.3 295.6Z","PUNO":"M734.4 981.9L734.4 971.7L740.5 976.9L740.5 978.6L734.4 981.9ZM691.6 1034.9L688.5 1034.2L686.2 1035.4L682.9 1031.9L679.2 1032.3L668.0 1025.4L667.6 1021.1L664.5 1018.0L661.7 1014.0L664.8 1011.1L665.0 1006.4L667.4 1003.5L670.6 1001.5L670.3 997.1L667.6 995.4L665.2 997.0L660.4 994.3L660.0 991.3L656.8 988.0L652.5 986.4L650.6 982.4L647.8 980.8L650.3 977.1L649.1 970.2L646.6 966.6L646.1 962.3L639.2 959.3L637.2 957.0L632.3 957.1L628.6 959.6L624.9 958.7L621.8 956.4L620.5 953.1L615.0 944.8L617.1 940.4L616.0 936.3L610.7 931.5L610.3 927.0L611.5 925.0L608.9 922.0L610.5 918.3L614.0 915.1L612.1 912.6L613.4 910.6L612.6 908.2L610.9 896.0L612.1 894.4L611.6 887.4L612.6 883.5L610.4 882.1L608.0 882.9L604.5 877.7L611.1 872.0L611.4 868.0L613.4 864.4L612.0 862.1L613.4 859.4L616.3 857.3L618.3 853.9L617.1 851.4L619.1 847.8L622.5 845.1L623.3 842.0L619.4 839.3L621.1 834.0L621.2 829.2L624.9 826.5L627.7 827.4L629.0 825.9L626.9 822.0L628.0 817.4L631.7 817.0L633.9 814.2L638.3 812.2L638.8 809.2L643.6 804.6L644.2 801.3L646.7 800.0L647.1 796.5L645.5 793.2L647.4 789.2L646.5 784.5L668.4 791.1L671.9 792.4L691.2 798.2L711.2 789.4L737.1 777.9L738.2 781.3L737.0 784.6L738.7 792.4L734.4 806.9L730.0 816.7L725.9 817.1L725.6 819.0L730.9 823.2L730.7 824.7L734.4 826.5L732.4 830.4L730.6 831.3L730.8 836.4L733.2 839.2L735.7 840.2L738.1 847.4L739.7 850.8L731.8 850.9L728.6 856.6L730.4 860.2L727.7 863.2L724.6 864.8L721.2 868.5L720.7 872.5L716.5 872.6L716.0 877.1L714.3 878.7L716.2 882.1L711.7 883.6L708.6 885.8L709.2 890.6L708.1 894.6L711.8 900.7L712.7 903.4L715.6 904.9L721.8 911.7L716.8 916.7L714.8 919.9L714.5 925.8L712.4 923.9L709.9 930.0L703.8 926.6L701.3 923.3L695.9 919.0L694.2 919.8L691.6 916.9L691.4 914.7L688.2 911.7L686.4 912.0L683.8 916.2L681.2 914.9L676.6 915.4L676.1 919.0L673.7 921.5L675.0 925.0L678.6 931.1L683.9 937.2L685.1 941.4L682.6 941.2L679.5 938.8L679.5 936.1L676.7 933.3L672.5 939.7L669.3 939.1L668.3 941.1L668.9 944.9L672.5 948.7L677.3 951.1L680.9 944.8L684.1 947.6L684.0 951.4L687.3 952.7L689.8 955.1L696.2 955.3L702.8 957.3L704.5 960.5L699.7 966.7L700.3 970.2L704.3 968.4L708.4 972.7L715.3 973.9L720.9 972.9L726.3 969.5L730.9 973.1L726.5 974.6L728.2 977.6L728.2 981.9L724.6 985.4L724.5 987.5L727.4 991.3L727.7 994.0L729.8 997.1L726.9 999.0L719.5 1001.3L716.6 1007.9L711.5 1012.6L709.2 1016.9L706.2 1019.1L707.4 1022.1L703.0 1023.5L699.3 1026.5L696.6 1027.2L691.6 1034.9ZM677.0 910.1L674.4 906.9L672.9 908.0L669.2 906.9L667.7 904.3L663.5 907.8L666.8 909.3L673.2 910.9L677.0 910.1Z","SAN MARTIN":"M316.2 497.0L310.1 497.9L307.6 505.7L308.4 517.1L305.5 523.1L301.7 525.5L299.5 517.0L298.8 512.3L296.1 509.1L295.6 503.5L290.6 504.3L289.0 507.0L287.7 511.9L283.2 508.3L278.4 508.4L274.0 509.6L266.1 508.7L265.2 510.5L261.1 511.9L253.2 510.9L250.7 508.7L250.9 506.7L248.2 504.1L251.1 502.1L257.5 501.4L261.2 497.2L262.0 494.7L260.5 490.8L261.6 487.9L256.9 484.4L255.0 480.8L249.1 479.2L247.2 479.6L242.0 478.5L238.8 481.3L233.3 481.0L232.0 477.2L233.8 472.2L232.1 471.8L229.9 466.5L227.7 465.9L224.9 463.1L227.5 459.7L224.4 452.6L224.9 448.0L220.0 443.8L218.5 439.1L218.9 436.9L217.9 432.1L220.3 430.8L218.0 426.6L213.9 424.2L211.2 415.6L213.3 411.3L211.0 406.1L211.9 402.8L212.0 397.6L215.1 398.4L219.9 394.4L223.9 398.3L233.5 399.5L230.3 394.0L232.8 393.8L236.3 389.0L236.8 385.8L240.0 382.1L239.2 377.5L240.7 377.3L243.0 380.6L246.0 380.6L248.3 375.8L244.3 371.6L242.9 366.5L239.5 366.2L235.6 364.5L232.7 360.0L230.4 361.3L227.8 357.7L224.5 361.5L221.0 358.2L216.5 356.5L217.5 353.8L216.0 349.3L210.9 346.9L210.3 338.8L212.5 334.0L210.8 330.0L210.7 324.0L212.2 322.1L214.9 322.3L216.5 322.3L221.7 325.4L223.1 323.2L225.5 325.7L228.8 332.7L231.9 333.0L234.2 331.9L236.1 333.9L242.4 333.4L253.7 338.2L256.4 337.7L258.4 340.0L262.7 342.6L265.9 342.4L266.9 349.4L271.1 354.9L271.1 357.9L277.4 357.8L282.8 359.0L290.9 354.7L293.2 356.1L296.5 362.8L299.1 363.9L302.1 367.6L307.8 368.3L313.4 363.7L317.3 363.4L319.4 365.9L325.1 366.0L326.3 363.7L332.2 366.0L334.2 363.4L337.3 362.6L338.2 359.1L340.7 357.9L342.9 363.4L343.4 367.6L345.6 369.9L345.5 373.7L341.9 378.5L344.3 387.2L344.9 396.1L344.8 403.7L344.2 404.8L337.0 408.3L334.9 407.3L333.2 409.8L329.0 408.9L324.5 405.5L317.5 405.0L312.3 406.3L314.7 411.3L312.3 414.3L314.7 417.5L314.7 422.4L311.8 427.4L306.8 429.9L305.4 433.7L302.7 436.3L303.7 437.7L302.6 442.0L305.5 447.3L309.9 451.3L309.3 461.0L312.7 465.2L317.3 475.3L323.6 473.0L325.4 476.1L324.5 481.3L320.2 482.0L318.3 483.6L318.8 488.9L320.4 492.9L319.2 496.4L316.2 497.0Z","TACNA":"M691.6 1034.9L695.5 1035.2L701.9 1040.1L701.8 1047.9L690.2 1057.3L682.4 1056.5L680.9 1058.9L682.2 1063.4L682.5 1069.4L685.3 1074.3L685.1 1076.8L681.4 1084.6L679.0 1087.6L672.7 1093.5L667.4 1093.8L661.5 1096.8L653.4 1096.2L648.1 1098.7L641.9 1094.1L630.2 1087.4L622.2 1080.1L618.3 1078.6L617.4 1075.5L610.5 1070.3L605.5 1069.7L602.9 1067.0L605.1 1063.0L611.6 1058.4L616.4 1058.9L618.3 1051.0L626.8 1041.8L625.8 1040.5L628.0 1034.1L629.9 1031.2L634.3 1030.6L639.1 1027.8L641.3 1023.2L643.8 1022.6L642.9 1014.4L644.2 1008.2L652.2 1004.1L658.2 1006.2L655.0 1011.8L655.7 1014.8L661.7 1014.0L664.5 1018.0L667.6 1021.1L668.0 1025.4L679.2 1032.3L682.9 1031.9L686.2 1035.4L688.5 1034.2L691.6 1034.9Z","TUMBES":"M49.8 242.7L47.6 244.1L45.4 248.2L41.7 251.6L37.2 249.0L31.1 248.2L26.4 249.3L22.1 248.1L21.1 245.3L17.0 242.9L20.2 236.8L22.0 235.1L29.3 230.2L31.6 223.3L34.0 220.8L44.1 215.9L46.4 213.1L48.7 208.2L52.9 207.1L56.1 207.3L61.3 202.2L65.5 204.3L64.4 206.4L66.4 209.8L67.4 213.6L67.9 222.0L69.1 225.8L69.2 229.9L70.3 232.5L64.4 235.1L61.0 238.7L57.1 236.7L53.1 237.1L49.8 242.7Z","UCAYALI":"M634.0 592.7L630.9 596.0L630.5 599.8L631.9 602.5L628.5 605.8L628.6 607.2L622.0 613.1L618.3 614.7L615.7 617.3L613.2 618.1L613.1 620.6L609.7 626.4L603.6 627.9L599.6 632.5L597.6 639.0L598.1 643.4L596.0 644.8L595.0 648.5L590.0 654.8L579.7 654.8L568.6 657.5L561.7 657.7L551.1 657.1L548.9 658.3L544.3 657.1L541.2 658.3L541.1 661.6L544.8 664.1L540.2 670.0L540.3 673.4L537.9 678.4L533.8 676.1L529.6 677.6L523.6 680.9L520.3 683.8L515.9 683.4L510.2 680.6L508.3 678.5L505.0 680.7L498.9 679.2L495.7 677.5L496.4 674.6L494.7 673.5L493.4 669.6L491.3 673.5L484.7 675.3L480.8 675.1L477.6 676.4L473.2 676.4L468.0 680.7L464.2 676.8L465.6 675.8L466.2 671.2L464.3 661.6L460.7 660.5L459.0 655.2L459.7 649.3L456.7 648.5L451.6 644.1L448.0 641.8L444.7 645.7L444.1 652.9L442.3 655.0L441.6 659.9L441.9 666.4L434.9 664.9L434.9 661.9L433.3 657.3L428.2 656.9L421.7 658.9L418.5 658.8L411.5 661.1L407.3 658.0L404.1 657.4L403.6 654.7L399.7 652.4L403.5 650.5L405.0 647.9L410.8 646.4L411.5 643.2L414.9 641.3L417.0 638.2L420.1 635.8L423.9 636.0L425.8 634.0L422.9 627.9L420.7 624.8L418.6 624.8L417.3 620.1L420.4 614.4L419.9 608.8L415.7 607.5L414.3 604.3L411.9 604.5L409.9 601.9L408.6 597.1L409.1 591.8L407.0 589.9L407.2 584.5L404.9 579.8L404.3 573.3L399.6 571.9L399.1 567.4L393.6 563.4L393.8 561.4L398.8 555.9L395.8 547.3L395.7 544.8L393.5 543.3L395.1 540.6L395.5 532.8L397.6 526.9L402.2 524.3L402.6 522.6L401.3 512.8L397.1 510.6L386.5 515.6L383.6 517.4L383.3 523.1L378.0 529.2L378.4 533.5L375.7 534.8L371.8 531.9L368.9 533.0L366.0 536.0L365.5 540.0L363.8 542.5L360.4 544.1L362.0 547.2L362.1 551.5L359.0 553.9L357.7 556.3L355.0 555.5L347.7 555.5L345.2 560.3L341.2 561.7L334.8 561.5L331.2 554.0L327.5 549.0L326.8 545.0L322.6 539.0L322.7 535.9L320.2 530.4L319.9 524.5L318.5 520.7L321.7 517.4L325.2 516.8L328.3 510.5L328.4 507.3L332.1 506.9L332.6 504.0L336.1 502.3L339.0 502.4L342.1 505.7L348.4 503.9L348.7 501.3L344.7 498.6L344.7 495.0L346.6 492.8L349.0 487.7L352.2 486.0L357.4 485.2L360.0 487.0L361.8 485.3L363.6 478.7L366.0 476.4L372.5 474.7L375.5 475.8L380.6 482.6L388.0 479.8L390.6 476.5L396.5 474.1L399.9 466.6L403.1 464.3L400.6 462.6L399.1 459.6L399.9 457.8L395.6 451.4L395.6 447.7L397.2 443.8L399.4 442.3L402.0 435.3L404.0 433.6L406.3 435.6L414.9 438.8L418.3 438.3L423.0 439.2L425.5 441.5L431.3 444.6L431.7 446.8L434.7 449.7L440.2 453.9L439.6 456.0L443.3 457.9L445.3 460.5L450.6 462.3L452.8 465.7L452.7 469.2L447.4 472.3L451.0 475.4L453.2 478.4L454.9 478.1L458.2 485.3L457.6 487.6L459.5 492.4L461.7 494.1L460.7 498.5L470.8 506.0L473.2 506.2L472.5 513.8L473.9 514.3L478.0 519.1L482.9 519.6L486.1 524.8L486.2 526.8L490.6 532.7L492.8 532.7L495.9 539.4L496.4 543.3L495.0 546.3L489.0 551.3L483.6 559.1L481.7 559.5L481.0 562.4L509.6 562.4L520.6 566.6L527.9 566.3L535.4 570.2L534.9 573.9L537.5 577.1L536.7 580.4L539.3 584.4L543.1 585.5L542.4 587.5L543.1 592.0L541.7 593.5L541.3 597.7L567.6 597.7L589.0 597.7L590.9 595.7L593.6 597.2L599.8 594.1L601.9 590.0L608.2 586.6L611.3 586.8L612.7 583.3L615.7 582.2L619.0 577.6L623.1 576.2L626.0 571.8L631.4 568.5L637.1 563.5L640.0 567.3L638.4 569.8L635.3 570.6L635.0 574.1L637.7 577.9L639.1 581.2L638.6 583.6L634.1 586.0L634.0 592.7Z"},"lm":[254.3,720.7]};
-const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const nm=h=>String(h||'').trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Z0-9]+/g,'_').replace(/^_|_$/g,'');
-const TO=['Positiva','Neutra','Negativa','Sin tono'],BG={Positiva:'#86efac',Neutra:'#fde047',Negativa:'#fc8181','Sin tono':'#cbd5e1'},CL={Positiva:'p',Neutra:'n',Negativa:'x','Sin tono':'s'};
-const PAL=['#C8102E','#1f2937','#f59e0b','#0ea5e9','#10b981','#8b5cf6','#ec4899','#64748b','#84cc16','#f97316'];
-const FD=[['t','Tono'],['tipo','Tipo de medio'],['medio','Medio'],['tier','Tier'],['eje','Eje de gestión'],['amb','Ámbito'],['ori','Origen'],['eti','Etiqueta'],['por','Revisado por']];
-let ROWS=[],CUR=[],ALLF=[],CH={},LIM=100,tab='tabla',BASE='val',RAW='',SEL=null,LOADING=false;
-const NS='http://www.w3.org/2000/svg',hh=d=>String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
-const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-function pd(v){let m=String(v).match(/(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2}))?/);if(m)return new Date(+m[1],m[2]-1,+m[3],+(m[4]||0),+(m[5]||0));m=String(v).match(/(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ ,]+(\d{1,2}):(\d{2}))?/);if(m)return new Date(+m[3],m[2]-1,+m[1],+(m[4]||0),+(m[5]||0));return null}
-function parseCSV(t){const R=[];let r=[],f='',q=false;for(let i=0;i<t.length;i++){const c=t[i];if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=c}else if(c==='"')q=true;else if(c===','){r.push(f);f=''}else if(c==='\n'||c==='\r'){if(c==='\r'&&t[i+1]==='\n')i++;r.push(f);f='';if(r.length>1||r[0]!=='')R.push(r);r=[]}else f+=c}if(f!==''||r.length){r.push(f);R.push(r)}return R}
-const tn=v=>{v=String(v||'').toLowerCase();return v.startsWith('pos')?'Positiva':v.startsWith('neu')?'Neutra':v.startsWith('neg')?'Negativa':'Sin tono'};
-function toRows(R){if(!R.length)return[];const h=R[0].map(nm),ix=k=>h.indexOf(k);if(ix('TITULAR')<0||ix('FECHA')<0)throw new Error('La hoja publicada no trae las columnas esperadas (TITULAR, FECHA). Revisa que el enlace sea el de la pestaña «Menciones».');
-return R.slice(1).map(r=>{const g=k=>{const i=ix(k);return i<0?'':String(r[i]??'').trim()},d=pd(g('FECHA'));return{id:g('ID'),d,ts:d?d.getTime():0,day:d?ymd(d):'',hm:d?d.getHours():0,tipo:g('TIPO'),medio:g('MEDIO'),prog:g('PROGRAMA'),tier:g('TIER')||'Sin tier',tit:g('TITULAR'),res:g('RESUMEN'),url:g('URL'),cost:+g('COSTO')||0,aud:+g('AUDIENCIA')||0,sec:g('SECCION'),t:tn(g('TONO')),ip:tn(g('TONO_IP')),amb:g('AMBITO'),ori:g('ORIGEN'),eje:g('EJE'),eti:g('ETIQUETA'),est:g('ESTADO')||'Pendiente',por:g('REVISADO_POR'),del:g('ELIMINADA')}}).filter(r=>r.tit&&!r.del)}
-const val=(r,k)=>r[k]||'(Sin dato)';
-async function load(manual){if(LOADING)return;LOADING=true;$('#rf').textContent='↻ …';
-try{const res=await fetch(CSV_URL+(CSV_URL.includes('?')?'&':'?')+'_='+Date.now(),{cache:'no-store'});if(!res.ok)throw new Error('Google respondió '+res.status);const txt=await res.text();if(/<html/i.test(txt.slice(0,300)))throw new Error('La hoja no está publicada como CSV');
-$('#er').style.display='none';if(txt===RAW&&!manual){stamp();return}RAW=txt;ROWS=toRows(parseCSV(txt));buildFilters();run();stamp()}
-catch(e){const m=/fetch|network|load failed/i.test(e.message)?'No se pudo conectar con Google Sheets (internet, bloqueador o la hoja no está publicada).':e.message;const b=$('#er');b.style.display='block';b.innerHTML='<b>No se pudieron cargar los datos:</b> '+esc(m)+' '+(ROWS.length?'Se muestran los últimos datos cargados.':'')+' Se reintenta solo cada minuto.'}
-finally{LOADING=false;$('#rf').textContent='↻ Actualizar'}}
-function stamp(){$('#dc').textContent='Actualizado '+new Date().toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'})+' · '+ROWS.length+' menciones en la base'}
-const chk=k=>$$('#f_'+k+' input:checked').map(i=>i.value);
-function cnt(d){const n=d.querySelectorAll('input:checked').length;d.querySelector('summary').textContent=d.dataset.l+(n?' ('+n+')':'')}
-function buildFilters(){const box=$('#fl');if(!box.children.length)box.innerHTML=FD.map(([k,l])=>`<details class="ms" id="f_${k}" data-l="${l}"></details>`).join('');
-FD.forEach(([k,l])=>{const d=$('#f_'+k),old=new Set(chk(k));let o=[...new Set(ROWS.map(r=>val(r,k)))];o=k==='t'?TO.filter(t=>o.includes(t)):o.sort((a,b)=>a.localeCompare(b,'es'));d.innerHTML='<summary></summary><div class="op">'+o.map(x=>`<label><input type="checkbox" value="${esc(x)}"${old.has(x)?' checked':''}> ${esc(x)}</label>`).join('')+'</div>';cnt(d)})}
-function filt(skipBasis){const q=$('#q').value.toLowerCase(),d0=$('#d0').value,d1=$('#d1').value,S=Object.fromEntries(FD.map(([k])=>[k,chk(k)]));
-return ROWS.filter(r=>(skipBasis||BASE==='all'||r.est==='Validada')&&(!q||(r.tit+' '+r.res+' '+r.prog).toLowerCase().includes(q))&&(!d0||r.day>=d0)&&(!d1||r.day<=d1)&&FD.every(([k])=>!S[k].length||S[k].includes(val(r,k)))).sort((a,b)=>b.ts-a.ts)}
-function run(){ALLF=filt(true);CUR=filt(false);LIM=100;const k=t=>CUR.filter(r=>r.t===t).length;$('#n-t').textContent=CUR.length;$('#n-p').textContent=k('Positiva');$('#n-n').textContent=k('Neutra');$('#n-x').textContent=k('Negativa');
-const nv=ALLF.filter(r=>r.est==='Validada').length;$('#nt').textContent=BASE==='val'?`Mostrando ${CUR.length} menciones validadas de ${ALLF.length} (${ALLF.length-nv} por validar)`:`Mostrando todas las menciones: ${ALLF.length} (${nv} validadas, ${ALLF.length-nv} por validar)`;render()}
-function render(){({tabla:rTabla,gen:rGen,sem:rSem,mapa:rMapa})[tab]()}
-const tag=(l,v)=>v?`<div class="tg"><b>${l}:</b> ${esc(v)}</div>`:'';
-const safeU=u=>/^https?:\/\//i.test(u)?u:'';
-const rowH=r=>`<tr style="background:${BG[r.t]}"><td><b>${r.day}</b><div class="sm">${r.d?hh(r.d):''}</div></td><td><div class="tt">${esc(r.tit)}</div><div class="mt">${esc(r.medio)} (${esc(r.tipo)})${r.sec?' · '+esc(r.sec):''}</div></td><td><span class="bd ${CL[r.t]}">${r.t}</span>${tag('Eje',r.eje)}${tag('Ámbito',r.amb)}${tag('Origen',r.ori)}${tag('Etiqueta',r.eti)}<div class="sm">${r.est==='Validada'?'✓ Validada'+(r.por?' · '+esc(r.por):''):'Pendiente'}</div></td><td class="rs">${esc(r.res)}</td><td style="text-align:center">${safeU(r.url)?`<a class="bl" href="${esc(r.url)}" target="_blank" rel="noopener">Abrir ↗</a>`:'—'}</td></tr>`;
-function rTabla(){$('#tb').innerHTML=CUR.slice(0,LIM).map(rowH).join('')||'<tr><td colspan="5" style="text-align:center;padding:40px;color:#6b5d61;font-weight:700">'+(ROWS.length?'No hay menciones con estos filtros'+(BASE==='val'?' (solo se cuentan las validadas; prueba «Todas»).':'.'):'Sin datos todavía.')+'</td></tr>';$('#mas').style.display=CUR.length>LIM?'inline-block':'none'}
-function mk(id,type,data,opt){if(!window.Chart)return;CH[id]&&CH[id].destroy();CH[id]=new Chart($(id),{type,data,options:Object.assign({responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:11}}}}},opt||{})})}
-function cnts(rows,fn){const m={};rows.forEach(r=>{const k=fn(r);(m[k]=m[k]||{Positiva:0,Neutra:0,Negativa:0,'Sin tono':0,n:0})[r.t]++;m[k].n++});return m}
-function stk(id,rows,fn,o={}){const m=cnts(rows,fn);let ks=Object.keys(m);if(o.key)ks.sort();else{ks.sort((a,b)=>m[b].n-m[a].n);if(o.top)ks=ks.slice(0,o.top)}const ts=TO.filter(t=>ks.some(k=>m[k][t])),h=!!o.h,ax={stacked:true,beginAtZero:true,ticks:{precision:0}};mk(id,'bar',{labels:ks,datasets:ts.map(t=>({label:t,data:ks.map(k=>m[k][t]),backgroundColor:BG[t],borderColor:'#0002',borderWidth:1}))},{indexAxis:h?'y':'x',scales:{x:h?ax:{stacked:true},y:h?{stacked:true}:ax}})}
-function dn(id,labels,data,colors){mk(id,'doughnut',{labels,datasets:[{data,backgroundColor:colors||PAL,borderColor:'#fff'}]})}
-function time(id){const days=new Set(CUR.map(r=>r.day)).size;stk(id,CUR,r=>days<=1?String(r.hm).padStart(2,'0')+':00':r.day,{key:true})}
-const aho=()=>'US$ '+CUR.filter(r=>r.t==='Positiva').reduce((s,r)=>s+r.cost,0).toLocaleString('es-PE',{maximumFractionDigits:0});
-function rGen(){Chart.defaults&&(Chart.defaults.color=getComputedStyle(document.documentElement).getPropertyValue('--mu').trim());
-$('#a-tot').textContent=aho();const nv=ALLF.filter(r=>r.est==='Validada').length,p=ALLF.length?Math.round(100*nv/ALLF.length):0;$('#a-av').textContent=p+'%';$('#a-avs').textContent=nv+' de '+ALLF.length+' validadas';
-dn('#g-pv',['Validadas','Pendientes'],[nv,ALLF.length-nv],['#15803d','#f59e0b']);
-const pu={};ALLF.filter(r=>r.est==='Validada').forEach(r=>{const u=r.por||'(Sin nombre)';pu[u]=(pu[u]||0)+1});const pl=Object.entries(pu).sort((a,b)=>b[1]-a[1]);
-mk('#g-av','bar',{labels:pl.map(x=>x[0]),datasets:[{label:'Validadas',data:pl.map(x=>x[1]),backgroundColor:'#C8102E'}]},{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{precision:0}}}});
-time('#g-time');const tm=cnts(CUR,r=>val(r,'tipo')),tk=Object.keys(tm).sort((a,b)=>tm[b].n-tm[a].n);dn('#g-tipo',tk,tk.map(k=>tm[k].n));
-stk('#g-eje',CUR,r=>val(r,'eje'),{h:true,top:12});stk('#g-eti',CUR,r=>val(r,'eti'),{h:true,top:12});stk('#g-ori',CUR,r=>val(r,'ori'),{h:true,top:12});stk('#g-amb',CUR,r=>val(r,'amb'),{h:true,top:10});stk('#g-medio',CUR,r=>val(r,'medio'),{h:true,top:10});stk('#g-tier',CUR,r=>r.tier,{key:true})}
-function rSem(){Chart.defaults&&(Chart.defaults.color=getComputedStyle(document.documentElement).getPropertyValue('--mu').trim());$('#s-aho').textContent=aho();time('#s-time');
-dn('#s-pie',TO,TO.map(t=>CUR.filter(r=>r.t===t).length),TO.map(t=>BG[t]));
-const ng={};CUR.filter(r=>r.t==='Negativa').forEach(r=>ng[r.medio]=(ng[r.medio]||0)+1);const top=Object.entries(ng).sort((a,b)=>b[1]-a[1]).slice(0,8);
-mk('#s-neg','bar',{labels:top.map(x=>x[0]),datasets:[{label:'Negativas',data:top.map(x=>x[1]),backgroundColor:'#fc8181'}]},{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{precision:0}}}});
-stk('#s-tipo',CUR,r=>val(r,'tipo'),{h:true});stk('#s-eje',CUR,r=>val(r,'eje'),{h:true,top:10})}
-/* ===== MAPA ===== */
-const REGS=Object.keys(GEO.p);
-function regKey(a){const u=nm(a).replace(/_/g,' ');if(!u||u==='SIN DATO')return'SIN';if(u==='LIMA METROPOLITANA'||u==='CALLAO')return'LMC';if(u==='LIMA PROVINCIAS')return'LIMA';if(u.startsWith('NACIONAL'))return'NACIONAL';if(u==='EXTRANJERO')return'EXTRANJERO';return GEO.p[u]?u:'SIN'}
-const cap=s=>s.toLowerCase().replace(/(^|\s)\S/g,c=>c.toUpperCase());
-const ACC={ANCASH:'Áncash',APURIMAC:'Apurímac',HUANUCO:'Huánuco',JUNIN:'Junín','SAN MARTIN':'San Martín'};
-const rt=k=>({LMC:'Lima Metropolitana y Callao',LIMA:'Lima Provincias',NACIONAL:'Nacional / sin ámbito territorial',EXTRANJERO:'Extranjero',SIN:'Sin dato de ámbito'})[k]||ACC[k]||cap(k);
-const heat=(c,mx)=>c?`rgba(200,16,46,${(.18+.82*c/mx).toFixed(2)})`:'var(--soft2)';
-let VB=[0,0,GEO.w,GEO.h],ZA=0,MN={};
-function setVB(a){VB=a;$('#map').setAttribute('viewBox',a.map(v=>+v.toFixed(1)).join(' '))}
-function zoom(){const key=SEL&&REGS.includes(SEL)||SEL==='LMC'?SEL:'';$('#mz').classList.toggle('on',!!key);let T=[0,0,GEO.w,GEO.h];
-if(key){const el=$('#map [data-r="'+key+'"]');try{const b=el.getBBox(),ra=GEO.h/GEO.w,W=Math.min(GEO.w,Math.max(b.width*1.8,b.height*1.8/ra,key==='LMC'?150:120)),H=W*ra,cx=b.x+b.width/2,cy=b.y+b.height/2;T=[Math.min(Math.max(cx-W/2,0),GEO.w-W),Math.min(Math.max(cy-H/2,0),GEO.h-H),W,H]}catch(e){}}
-const F0=VB.slice(),t0=performance.now(),id=++ZA,st=t=>{if(id!==ZA)return;const k=Math.min(1,(t-t0)/400),e=1-Math.pow(1-k,3);setVB(F0.map((v,i)=>v+(T[i]-v)*e));if(k<1)requestAnimationFrame(st)};requestAnimationFrame(st)}
-function rMapa(){const n={};CUR.forEach(r=>{const k=regKey(r.amb);n[k]=(n[k]||0)+1});MN=n;const mx=Math.max(1,...REGS.map(k=>n[k==='CALLAO'?'LMC':k]||0),n.LMC||0);
-const dk=k=>k==='CALLAO'?'LMC':k;
-$('#map').innerHTML=REGS.map(k=>`<path d="${GEO.p[k]}" data-r="${dk(k)}" class="${SEL===dk(k)?'sel':''}" style="fill:${heat(n[dk(k)],mx)}"><title>${rt(dk(k))}: ${n[dk(k)]||0}</title></path>`).join('')+`<circle data-r="LMC" class="${SEL==='LMC'?'sel':''}" cx="${GEO.lm[0]}" cy="${GEO.lm[1]}" r="15" style="fill:${heat(n.LMC,mx)};stroke:#fff;stroke-width:1.5;cursor:pointer"><title>${rt('LMC')}: ${n.LMC||0}</title></circle>`;
-const svg=$('#map');$$('#map path').forEach(p=>{const c=n[p.dataset.r];if(!c||p.dataset.r==='LMC')return;try{const b=p.getBBox(),t=document.createElementNS(NS,'text');t.setAttribute('x',b.x+b.width/2);t.setAttribute('y',b.y+b.height/2+4);t.setAttribute('text-anchor','middle');t.textContent=c;svg.appendChild(t)}catch(e){}});
-if(n.LMC){const t=document.createElementNS(NS,'text');t.setAttribute('x',GEO.lm[0]-20);t.setAttribute('y',GEO.lm[1]+4);t.setAttribute('text-anchor','end');t.textContent='Lima Met. y Callao '+n.LMC;svg.appendChild(t)}
-$('#lg1').textContent=mx+' menciones';
-$('#chips').innerHTML=[['NACIONAL','Nacional / sin ámbito'],['EXTRANJERO','Extranjero'],['SIN','Sin dato']].map(([k,l])=>`<button class="chip${SEL===k?' on':''}" data-s="${k}">${l} <b>${n[k]||0}</b></button>`).join('');panel();zoom()}
-function panel(){const p=$('#panel');if(!SEL){const rk=Object.entries(MN).filter(([k])=>k!=='SIN'||MN.SIN).sort((a,b)=>b[1]-a[1]);p.innerHTML='<h3 style="margin:0 0 4px">Menciones por ámbito</h3><div class="mu" style="margin-bottom:8px">Haz clic en una región del mapa o en la lista para ver sus menciones.</div>'+(rk.map(([k,c])=>`<div class="ri" data-s="${k}"><span>${esc(rt(k))}</span><b>${c}</b></div>`).join('')||'<div class="mu">Sin menciones con estos filtros.</div>');return}
-const rows=CUR.filter(r=>regKey(r.amb)===SEL),c=t=>rows.filter(r=>r.t===t).length,N=rows.length||1;
-const ej={};rows.forEach(r=>{const k=val(r,'eje');ej[k]=(ej[k]||0)+1});const te=Object.entries(ej).sort((a,b)=>b[1]-a[1]).slice(0,5);
-p.innerHTML=`<h3 style="margin:0">${esc(rt(SEL))}</h3><div style="font-size:30px;font-weight:800;color:var(--red)">${rows.length} <span style="font-size:13px" class="mu">menciones</span></div><div class="tb">${TO.map(t=>`<span style="width:${100*c(t)/N}%;background:${BG[t]}"></span>`).join('')}</div><div class="mu">🟢 ${c('Positiva')} · 🟡 ${c('Neutra')} · 🔴 ${c('Negativa')}${c('Sin tono')?' · ⚪ '+c('Sin tono'):''}</div>${te.length?'<div style="margin-top:8px"><b>Ejes principales:</b> '+te.map(x=>esc(x[0])+' ('+x[1]+')').join(' · ')+'</div>':''}<div style="max-height:420px;overflow:auto;margin-top:8px">${rows.slice(0,60).map(r=>`<div class="mi"><b>${esc(r.tit)}</b><span class="mu">${r.day} · ${esc(r.medio)}</span> <span class="bd ${CL[r.t]}">${r.t}</span>${safeU(r.url)?` <a href="${esc(r.url)}" target="_blank" rel="noopener" style="color:var(--red);font-weight:700">Abrir ↗</a>`:''}</div>`).join('')||'<div class="mu">Sin menciones.</div>'}${rows.length>60?'<div class="mu" style="padding:8px">Se muestran 60 de '+rows.length+'. Usa la pestaña Tabla para ver todas.</div>':''}</div>`}
-function pick(k){SEL=SEL===k?null:k;rMapa()}
-$('#map').addEventListener('click',e=>{const el=e.target.closest('[data-r]');if(el)pick(el.dataset.r)});
-$('#chips').addEventListener('click',e=>{const b=e.target.closest('[data-s]');if(b)pick(b.dataset.s)});
-$('#panel').addEventListener('click',e=>{const b=e.target.closest('.ri');if(b)pick(b.dataset.s)});
-$('#mz').onclick=()=>{SEL=null;rMapa()};
-/* ===== eventos ===== */
-$$('.tab').forEach(b=>b.onclick=()=>{tab=b.dataset.t;$$('.tab').forEach(x=>x.classList.toggle('on',x===b));$$('.view').forEach(v=>v.classList.toggle('on',v.id==='v-'+tab));render()});
-$('.ct').addEventListener('change',e=>{if(e.target.type==='checkbox')cnt(e.target.closest('details'));if(e.target.type==='checkbox'||e.target.type==='date')run()});
-$('#q').addEventListener('input',run);
-$('#bs').addEventListener('click',e=>{const b=e.target.closest('[data-b]');if(!b)return;BASE=b.dataset.b;$$('#bs button').forEach(x=>x.classList.toggle('on',x===b));run()});
-document.addEventListener('click',e=>$$('.ms[open]').forEach(d=>{if(!d.contains(e.target))d.open=false}));
-$('#rst').onclick=()=>{$$('.ct input').forEach(e=>{if(e.type==='checkbox')e.checked=false;else e.value=''});$$('.ct details').forEach(cnt);run()};
-$('#ult').onclick=()=>{const t=ROWS.filter(r=>r.day).map(r=>r.day).sort().pop();if(t){$('#d0').value=t;$('#d1').value=t;run()}};
-$('#mas').onclick=()=>{LIM+=100;rTabla()};$('#rf').onclick=()=>load(true);
-addEventListener('beforeprint',()=>{if(tab==='tabla'){LIM=1e9;rTabla()}});addEventListener('afterprint',()=>{if(tab==='tabla'){LIM=100;rTabla()}});
-$('#xl').onclick=()=>{const w=XLSX.utils.book_new();XLSX.utils.book_append_sheet(w,XLSX.utils.json_to_sheet(CUR.map(r=>({FECHA:r.d?r.day+' '+hh(r.d):'',TIPO:r.tipo,MEDIO:r.medio,PROGRAMA:r.prog,TIER:r.tier,TITULAR:r.tit,RESUMEN:r.res,TONO:r.t,'TONO ORIGINAL IP':r.ip,'ÁMBITO':r.amb,ORIGEN:r.ori,EJE:r.eje,ETIQUETA:r.eti,ESTADO:r.est,'REVISADO POR':r.por,'COSTO US$':r.cost,AUDIENCIA:r.aud,URL:r.url}))),'Monitoreo');XLSX.writeFile(w,'Monitoreo_Presidencia.xlsx')};
-$('#wa').onclick=async()=>{const D=CUR,c=t=>D.filter(r=>r.t===t).length,n=D.length||1,p=x=>Math.round(100*x/n),ds=[...new Set(D.map(r=>r.day))].sort(),ng=D.filter(r=>r.t==='Negativa').slice(0,5).map(r=>'• '+r.medio+': '+r.tit).join('\n');
-const tx=`🚦 *SEMÁFORO DE MEDIOS – PRESIDENCIA*\n📅 ${ds.length>1?ds[0]+' al '+ds[ds.length-1]:ds[0]||''}\n📰 ${D.length} menciones${BASE==='val'?' validadas':''}\n🟢 Positivas: ${c('Positiva')} (${p(c('Positiva'))}%)\n🟡 Neutras: ${c('Neutra')} (${p(c('Neutra'))}%)\n🔴 Negativas: ${c('Negativa')} (${p(c('Negativa'))}%)`+(ng?`\n\n*Principales negativas:*\n${ng}`:'');try{await navigator.clipboard.writeText(tx);alert('Resumen copiado')}catch(e){prompt('Copia el resumen:',tx)}};
-const TH=$('#th');function setTh(t){document.documentElement.dataset.theme=t;TH.textContent=t==='dark'?'☀️ Claro':'🌙 Oscuro';try{localStorage.setItem('th',t)}catch(e){}if(ROWS.length)render()}
-let t0='light';try{t0=localStorage.getItem('th')||'light'}catch(e){}TH.onclick=()=>setTh(document.documentElement.dataset.theme==='dark'?'light':'dark');setTh(t0);
-load();setInterval(load,REFRESH);
+const CSV_URL='https://docs.google.com/spreadsheets/d/e/2PACX-1vR7eZSddSZhr0reqtoZ9QjBvu49PprHC7MXq-JrMqT_VsSgd7FZvGOFf3qo02qA0ijlwC4F_KP1YjtV/pub?gid=783105383&single=true&output=csv';
+const GEO={"vb":[-3,-4,386,560],"p":{"AMAZONAS":"M108 209L101 209L99 200L97 196L91 191L85 182L83 182L80 175L80 171L85 164L85 162L80 158L80 155L82 150L83 143L82 142L82 140L80 139L82 135L81 130L85 122L84 120L88 114L88 111L91 102L93 102L94 105L96 104L96 101L103 91L106 90L107 102L112 109L111 113L114 116L114 121L113 134L111 136L110 139L107 143L108 149L106 152L110 155L108 156L110 160L110 162L108 163L108 175L110 176L111 179L115 182L116 180L118 182L119 181L120 183L124 184L126 189L125 191L122 190L122 192L120 196L117 198L119 201L114 200L112 198L110 200L108 200L109 207L108 209Z","ANCASH":"M121 256L127 269L137 274L138 276L138 281L135 278L132 282L132 286L129 289L131 292L131 291L133 293L136 303L133 304L133 308L128 310L125 317L121 317L118 322L113 322L113 318L111 318L111 316L109 317L110 313L113 311L110 310L108 310L107 315L108 317L104 318L99 310L96 304L94 294L90 289L89 283L86 278L86 276L84 275L84 273L82 272L82 269L83 268L85 263L93 260L95 258L94 257L97 249L103 246L104 242L111 242L119 254L121 256Z","APURIMAC":"M265 440L255 440L253 443L249 439L241 442L237 441L235 445L232 443L232 441L234 440L232 434L234 428L227 413L229 412L225 409L224 402L226 395L227 398L235 403L242 404L243 403L246 403L252 402L275 413L277 418L276 426L271 432L264 437L265 440Z","AREQUIPA":"M187 463L191 456L197 453L207 455L207 459L210 461L210 464L214 465L216 462L218 464L217 469L223 463L223 460L229 463L236 461L240 462L240 459L244 459L249 452L249 444L253 443L255 440L265 440L265 443L266 445L274 443L277 446L277 441L279 439L283 447L286 448L284 452L291 454L291 452L294 452L293 449L299 454L302 452L304 454L302 457L304 461L303 463L306 463L307 462L308 464L308 467L311 469L310 474L314 482L312 483L312 487L309 489L310 494L308 495L301 494L300 502L296 502L295 506L297 511L299 513L294 519L283 515L270 506L265 501L256 499L251 496L240 491L240 490L228 487L218 481L218 479L211 475L208 475L206 472L187 463Z","AYACUCHO":"M209 365L210 367L216 370L220 367L225 378L227 379L233 387L233 390L239 399L243 403L242 404L235 403L227 398L226 395L225 399L224 402L225 409L229 412L227 413L234 428L232 434L234 440L232 441L232 443L235 445L237 441L241 442L249 439L253 443L249 444L249 452L244 459L240 459L240 462L236 461L229 463L223 460L223 463L217 469L218 464L216 462L214 465L210 464L210 461L207 459L207 455L197 453L200 451L199 445L197 445L197 443L194 441L193 436L188 439L186 432L188 428L187 426L189 422L196 423L196 408L193 404L193 402L197 400L199 401L202 396L207 395L208 391L210 392L211 391L210 388L211 383L209 381L207 373L204 373L202 370L203 369L208 368L208 366L209 365Z","CAJAMARCA":"M62 211L62 207L68 203L67 201L62 200L58 192L59 189L64 187L63 184L64 182L63 180L59 179L61 177L59 172L59 166L63 166L60 156L65 149L71 150L72 147L74 147L74 144L76 140L80 139L82 140L82 142L83 143L82 150L80 155L80 158L85 162L85 164L83 168L80 175L81 179L97 196L99 200L101 209L108 224L101 230L98 231L97 230L94 233L89 229L90 225L88 225L86 227L82 226L82 223L78 222L74 225L71 230L69 224L61 220L63 216L62 211Z","CUSCO":"M265 440L264 437L271 432L276 426L277 418L275 413L252 402L246 403L240 401L233 390L233 387L227 379L225 378L220 367L225 367L231 371L232 368L238 364L236 358L232 355L231 350L236 346L235 344L239 339L248 338L249 336L250 340L255 342L257 340L260 343L263 343L269 339L271 340L269 348L266 351L268 354L267 355L269 356L269 359L271 360L271 362L276 363L275 367L279 370L279 372L277 373L276 375L279 377L279 380L286 384L288 382L292 381L296 387L298 387L303 390L305 397L307 398L313 392L315 393L318 393L326 396L326 401L322 407L317 410L316 415L313 416L312 421L314 422L314 424L309 432L308 437L305 440L307 443L309 443L308 449L310 459L306 463L303 463L304 461L302 457L304 454L302 452L299 454L293 449L294 452L291 452L289 454L288 453L284 452L286 448L283 447L279 439L277 441L277 446L274 443L266 445L265 443L265 440Z","HUANCAVELICA":"M188 424L186 421L185 422L182 421L183 420L180 420L177 417L173 417L176 403L175 401L169 403L166 402L169 399L168 393L171 392L171 386L175 383L173 381L172 379L177 379L181 374L183 374L183 372L188 367L188 360L198 362L201 360L206 361L209 364L208 368L203 369L202 370L204 373L207 373L209 381L211 383L210 388L211 391L210 392L208 391L207 395L202 396L199 401L197 400L193 402L193 404L196 408L196 423L189 422L188 424Z","HUANUCO":"M121 256L123 254L124 255L126 253L129 257L144 255L146 257L148 253L150 253L153 264L157 260L156 254L157 250L160 250L162 252L161 259L164 271L170 282L173 282L176 279L181 279L183 277L183 273L185 271L185 269L188 267L190 269L192 268L194 260L201 256L203 258L204 262L201 265L199 273L202 279L198 284L197 287L195 292L191 293L190 295L185 295L181 294L181 296L179 296L176 299L172 299L172 301L170 301L169 306L165 308L161 314L153 311L151 312L150 309L139 315L133 308L133 304L136 303L136 299L133 293L131 291L131 292L129 289L132 286L132 282L135 278L138 281L138 276L137 274L127 269L121 256Z","ICA":"M197 453L191 456L187 463L184 461L183 457L179 454L175 448L162 440L161 434L156 431L156 427L153 424L151 425L152 418L148 417L149 414L151 414L152 416L154 409L154 403L153 400L162 390L166 392L168 391L171 389L171 392L168 393L169 399L166 402L169 403L175 401L176 403L173 417L177 417L180 420L183 420L182 421L185 422L186 421L188 424L187 426L188 428L186 432L188 439L193 436L194 441L200 447L200 451L197 453Z","JUNIN":"M202 327L208 332L219 330L220 334L223 334L224 329L226 322L232 326L232 329L233 331L235 332L236 337L235 340L236 342L235 344L236 346L231 350L232 355L236 358L238 364L236 365L232 368L231 371L230 371L228 368L225 367L220 367L216 370L214 369L210 367L206 361L201 360L198 362L194 362L188 360L188 367L183 372L183 374L181 374L177 379L174 379L172 379L174 376L173 370L170 366L171 363L169 361L167 362L158 358L158 357L154 352L154 348L152 348L149 345L145 333L148 332L152 334L152 328L157 333L159 333L160 331L156 329L160 325L165 327L166 325L172 324L173 322L175 323L176 327L180 326L184 321L186 322L187 320L190 322L202 327Z","LA LIBERTAD":"M82 269L78 263L79 259L73 253L74 251L72 246L62 238L57 231L58 229L54 222L53 218L51 215L56 209L59 209L62 211L63 216L61 220L69 224L71 230L76 223L81 222L82 226L86 227L88 225L90 225L89 229L94 233L97 230L98 231L101 230L108 224L104 217L101 209L108 209L109 213L112 217L111 217L112 221L115 225L116 231L115 233L119 237L119 242L122 242L123 240L130 242L133 245L133 250L131 252L128 252L124 255L123 254L121 256L119 254L111 242L104 242L103 246L97 249L94 257L95 258L93 260L85 263L83 268L82 269Z","LAMBAYEQUE":"M23 191L32 178L38 177L42 173L43 165L44 165L46 169L50 172L49 175L52 175L53 178L56 177L64 182L63 184L64 187L59 189L58 192L59 196L62 200L67 201L68 203L62 207L62 211L58 208L51 215L51 214L44 206L42 202L23 191Z","LORETO":"M220 226L214 221L210 221L204 218L200 225L204 233L201 238L193 242L190 239L185 239L182 245L181 244L177 245L175 249L177 253L169 253L168 255L167 255L165 260L162 261L161 259L162 252L160 250L163 248L161 243L165 242L165 239L164 238L161 239L157 232L157 227L154 222L154 219L160 212L158 204L165 204L169 206L175 203L173 190L175 186L173 180L168 184L159 183L156 185L153 185L148 179L144 181L138 180L135 172L124 168L117 168L114 163L113 164L110 162L110 158L108 156L110 155L106 152L108 149L107 143L110 139L111 136L113 134L114 121L114 116L111 113L112 109L107 102L106 90L141 78L159 64L172 46L178 28L183 29L182 22L183 17L178 13L174 5L172 6L172 3L181 5L184 1L192 7L194 7L195 6L198 10L207 15L208 20L211 25L211 29L222 34L224 37L231 38L235 46L233 51L234 52L236 54L243 53L246 56L246 61L244 67L247 71L250 70L250 72L253 73L261 71L268 75L272 73L277 70L280 71L286 64L287 67L288 66L294 68L297 72L301 70L303 71L304 69L308 66L310 68L312 67L313 69L318 71L319 74L324 74L325 76L327 75L328 77L330 76L331 79L336 81L336 83L317 114L323 116L328 114L330 115L339 126L339 128L337 131L335 129L333 128L332 131L329 125L325 124L324 125L322 124L320 126L319 124L317 126L314 126L310 131L302 131L296 134L294 133L290 136L286 134L283 136L275 141L267 145L259 152L257 152L252 155L253 159L250 164L250 170L244 176L241 184L246 193L243 197L233 200L228 205L225 213L228 219L223 222L222 221L222 224L220 226Z","MADRE DE DIOS":"M326 396L320 393L313 392L307 398L305 397L303 390L298 387L296 387L292 381L288 382L286 384L279 380L279 377L276 375L277 373L279 372L279 370L275 367L276 363L271 362L271 360L269 359L269 356L267 355L268 354L266 351L269 348L270 343L275 333L273 332L273 330L283 330L298 329L302 323L302 317L307 314L309 310L317 305L319 302L318 299L320 298L320 330L322 328L325 331L329 332L341 328L351 329L364 350L378 375L375 378L375 382L371 387L371 390L348 400L326 393L326 396Z","MOQUEGUA":"M304 535L297 530L298 529L296 522L294 519L299 513L297 511L295 506L296 502L300 502L301 494L308 495L310 494L309 489L312 487L312 483L314 482L313 479L317 481L319 480L322 481L326 482L328 490L326 492L333 498L338 500L338 502L333 508L330 509L332 504L329 503L325 505L324 512L322 515L318 517L316 522L312 527L311 531L308 530L304 535Z","PASCO":"M152 328L152 334L151 333L145 333L143 330L143 326L139 315L139 313L150 309L151 312L153 311L161 314L165 308L169 306L170 301L172 301L172 299L176 299L179 296L181 296L181 294L185 295L190 295L191 293L195 292L198 284L199 283L202 285L202 287L205 288L206 293L207 302L212 306L212 314L215 318L211 320L208 324L201 327L187 320L186 322L184 321L180 326L176 327L176 324L173 322L172 324L166 325L165 327L160 325L156 329L152 328Z","PIURA":"M65 149L60 156L63 166L59 166L59 172L61 177L59 179L56 177L53 178L52 175L49 175L50 172L46 169L44 165L43 165L42 173L38 177L32 178L23 191L9 182L7 179L7 177L10 174L14 175L15 174L16 169L13 163L6 156L8 152L10 151L9 149L2 140L5 128L11 123L13 125L23 127L27 122L29 126L32 127L28 132L30 135L36 129L38 129L48 135L53 133L56 136L59 145L63 149L65 149Z","PUNO":"M370 492L370 487L373 490L370 492ZM348 519L346 519L337 514L333 508L338 502L338 500L333 498L326 492L328 490L326 482L321 480L315 481L310 474L311 469L308 467L308 464L307 462L310 459L308 449L309 443L307 443L305 440L308 437L309 432L314 424L314 422L312 421L313 416L316 415L317 410L322 407L326 401L326 393L348 400L371 390L372 397L368 409L365 411L368 413L370 414L368 417L368 419L371 421L373 427L369 427L367 429L368 431L363 435L363 437L361 437L360 440L361 442L357 444L357 448L359 453L364 457L360 461L360 464L359 463L358 466L346 457L345 459L341 459L339 462L345 472L342 471L341 468L339 471L337 472L337 474L341 477L343 474L345 477L348 479L354 480L355 481L353 484L353 486L355 485L357 488L360 488L366 486L368 488L366 488L367 492L365 494L368 500L362 502L356 511L356 512L351 515L348 519Z","SAN MARTIN":"M160 250L157 250L156 254L157 260L153 264L150 253L148 253L146 257L144 255L135 255L133 257L128 256L126 253L131 252L133 250L133 245L130 242L127 241L119 242L119 237L115 233L116 231L115 225L112 221L111 217L112 217L109 213L108 209L109 207L108 200L110 200L112 198L114 200L119 201L117 198L120 196L122 192L122 190L125 191L126 189L124 184L120 183L119 181L118 182L116 180L115 182L111 179L110 176L108 175L107 171L109 168L108 163L111 162L113 164L114 163L117 168L124 168L135 172L138 180L144 181L148 179L153 185L156 185L161 183L162 184L165 184L165 183L168 184L173 180L175 186L173 190L175 203L169 206L165 204L158 204L160 212L154 219L154 222L157 227L157 232L161 239L164 238L165 239L165 242L161 243L163 248L160 250Z","TACNA":"M348 519L354 521L354 525L348 530L344 529L345 540L339 548L327 551L312 540L308 536L305 536L304 535L305 533L308 530L311 531L312 527L316 522L318 517L322 515L324 512L325 505L329 503L332 504L330 509L333 508L337 514L346 519L348 519Z","TUMBES":"M27 122L23 127L13 125L11 123L12 120L17 116L18 113L24 109L27 105L30 105L33 102L35 103L37 117L33 121L29 120L27 122Z","UCAYALI":"M320 298L318 299L319 302L317 305L309 310L307 314L302 317L302 323L298 329L273 330L273 332L275 333L271 340L269 339L263 343L257 340L255 342L250 340L249 336L248 338L239 339L236 342L235 340L236 337L235 332L233 331L232 329L232 326L226 322L224 329L223 334L220 334L219 330L208 332L202 327L208 324L212 319L215 318L211 311L212 306L207 302L205 288L202 287L202 285L199 283L202 279L199 273L201 265L203 263L203 258L201 256L194 260L192 268L190 269L188 267L185 269L185 271L183 273L183 277L182 278L181 279L176 279L173 282L170 282L164 271L162 261L165 260L167 255L168 255L169 253L177 253L175 249L177 245L181 244L182 245L185 239L190 239L193 242L201 238L204 233L200 225L204 218L210 221L214 221L218 223L222 229L229 234L229 236L226 237L230 240L233 248L233 250L239 254L239 258L241 261L244 261L250 271L250 274L243 282L257 282L270 286L271 291L274 294L273 300L299 300L303 296L308 295L321 283L323 285L320 288L322 292L320 294L320 298Z","LIMA PROVINCIAS":"M104 318L108 317L108 310L112 310L113 311L110 313L109 317L111 316L111 318L113 318L113 322L116 322L119 321L121 317L125 317L130 309L133 308L139 315L143 325L143 330L145 333L146 339L149 345L151 348L154 348L154 352L160 360L169 361L171 364L170 366L173 370L174 376L173 381L174 384L171 386L171 389L170 391L166 392L161 390L153 400L145 391L144 385L137 376L138 372L140 371L142 367L139 363L141 359L138 356L133 359L132 356L136 353L131 352L129 347L125 350L119 343L111 339L111 336L113 335L111 328L104 318Z","LIMA METROPOLITANA Y CALLAO":"M125 355L125 352L125 350L127 350L129 347L130 348L129 350L131 351L131 352L132 353L133 352L136 353L135 354L133 354L132 356L133 357L133 359L137 358L138 356L141 359L139 361L140 362L139 363L142 367L140 371L138 372L138 374L137 376L136 375L137 372L135 370L129 366L129 364L127 362L128 361L127 359L128 357L127 355L125 355ZM125 355L127 355L128 357L127 362L126 362L126 359L125 355Z"}},REG=Object.keys(GEO.p),T={Positiva:'#10b981',Neutra:'#f59e0b',Negativa:'#ef4444'},RED='#C8102E',DK='#8f0b21';
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const norm=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().trim();
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const money=(n,d=0)=>'US$ '+(+n||0).toLocaleString('es-PE',{maximumFractionDigits:d});
+const MN=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const AC={'LIMA METROPOLITANA Y CALLAO':'Lima Metropolitana y Callao','LIMA PROVINCIAS':'Lima Provincias',NACIONAL:'Nacional / sin ámbito específico',EXTRANJERO:'Extranjero',ANCASH:'Áncash',APURIMAC:'Apurímac',HUANUCO:'Huánuco',JUNIN:'Junín','SAN MARTIN':'San Martín'};
+const tit=r=>AC[r]||r.toLowerCase().replace(/(^|\s)\S/g,c=>c.toUpperCase()).replace(' De ',' de ');
+const num=v=>{let s=String(v||'').replace(/[^\d.,-]/g,'');if(!s)return 0;const c=s.lastIndexOf(','),d=s.lastIndexOf('.');s=c>d?s.replace(/\./g,'').replace(',','.'):s.replace(/,/g,'');const n=parseFloat(s);return isNaN(n)?0:n};
+const pdt=v=>{let m=String(v||'').match(/(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{1,2}):(\d{2}))?/);if(m)return new Date(+m[1],m[2]-1,+m[3],+(m[4]||0),+(m[5]||0));m=String(v||'').match(/(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ ,]+(\d{1,2}):(\d{2}))?/);if(m)return new Date(+m[3],m[2]-1,+m[1],+(m[4]||0),+(m[5]||0));return null};
+const p2=n=>String(n).padStart(2,'0'),dmy=d=>p2(d.getDate())+'/'+p2(d.getMonth()+1)+'/'+d.getFullYear(),hmm=d=>p2(d.getHours())+':'+p2(d.getMinutes());
+const tone=v=>{v=String(v||'').toLowerCase();return v.includes('pos')?'Positiva':v.includes('neg')?'Negativa':'Neutra'};
+const ymd=t=>{const d=new Date(t);return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate())};
+const inp=s=>{const[y,m,d]=s.split('-');return new Date(+y,m-1,+d).getTime()};
+function regs(t){const p=norm(t);if(!p)return[];if(p.startsWith('NACIONAL')||p.includes('SIN AMBITO'))return['NACIONAL'];if(p.includes('EXTRANJERO'))return['EXTRANJERO'];if(p==='LIMA METROPOLITANA'||p==='CALLAO'||p==='LIMA'||p.includes('LIMA METROPOLITANA'))return['LIMA METROPOLITANA Y CALLAO'];if(p.startsWith('LIMA PROV'))return['LIMA PROVINCIAS'];const q=p.replace('CUZCO','CUSCO'),r=REG.find(x=>q===x);return r?[r]:[]}
+const HOY=new Date(),HT=new Date(HOY.getFullYear(),HOY.getMonth(),HOY.getDate()).getTime(),AT=HT-864e5;
+const BG={Positiva:'#86efac',Neutra:'#fde047',Negativa:'#fc8181'},BD={Positiva:'#4ade80',Neutra:'#facc15',Negativa:'#f87171'};
+let ALL=[],CUR=[],mode='hoy',tab='tabla',sel=null,first=true,acortarLinkApiKey='',LIM=200,RAW='';
+async function init(manual){try{const r=await fetch(CSV_URL+'&t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('Google respondió '+r.status);const txt=await r.text();if(/<html/i.test(txt.slice(0,300)))throw new Error('La hoja no está publicada como CSV');
+if(txt===RAW&&!manual){return}RAW=txt;let rows=[];Papa.parse(txt,{header:true,skipEmptyLines:'greedy',transformHeader:h=>!h||!h.trim()?'VACIO':h.trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,''),complete:x=>rows=x.data});load(rows);$('#warn').style.display='none'}
+catch(e){const m=/fetch|network|load failed/i.test(e.message)?'No se pudo conectar con Google Sheets (internet, bloqueador, o la hoja no está publicada).':e.message;if(ALL.length){const w=$('#warn');w.style.display='block';w.textContent='⚠ No se pudo actualizar ('+m+'). Se muestran los últimos datos cargados; se reintenta solo.'}else{$('#tbody').innerHTML=`<tr><td colspan="5" class="err">Error: ${esc(m)}</td></tr>`;$('#dc').textContent='Sin conexión'}}}
+function load(rows){const h=Object.keys(rows[0]||{}),f=k=>h.find(x=>x===k)||'';if(!f('TITULAR')||!f('FECHA'))throw new Error('La hoja publicada no trae las columnas TITULAR y FECHA. Revisa que el enlace sea el de la pestaña «Menciones».');
+const c={id:f('ID'),fe:f('FECHA'),me:f('MEDIO'),ti:f('TIPO'),pr:f('PROGRAMA'),tr:f('TIER'),tt:f('TITULAR'),re:f('RESUMEN'),li:f('URL'),va:f('COSTO'),au:f('AUDIENCIA'),to:f('TONO'),am:f('AMBITO'),or:f('ORIGEN'),ej:f('EJE'),es:f('ESTADO'),po:f('REVISADO_POR'),el:f('ELIMINADA'),et:f('ETIQUETA'),se:f('SECCION')};
+ALL=rows.map(r=>{const g=k=>c[k]&&r[c[k]]!=null?String(r[c[k]]).trim():'',d=pdt(g('fe'));return{id:g('id'),tm:d?d.getTime():0,ts:d?new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime():0,hora:d?d.getHours()*60+d.getMinutes():-1,fecha:d?dmy(d):g('fe'),hr:d?hmm(d):'',medio:g('me'),tipo:g('ti'),prog:g('pr'),tier:g('tr')||'Sin tier',tit:g('tt'),res:g('re'),val:num(g('va')),aud:num(g('au')),link:g('li'),etq:g('et'),tono:g('to'),t:tone(g('to')),sinT:!/pos|neu|neg/i.test(g('to')),eje:g('ej'),ori:g('or'),amb:g('am'),regs:regs(g('am')),est:g('es')||'Pendiente',por:g('po'),del:g('el'),sec:g('se')}}).filter(r=>r.tit&&!r.del);
+ALL.sort((a,b)=>b.tm-a.tm);
+const u=fn=>[...new Set(ALL.map(fn).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es')),o=a=>a.map(x=>[x,x]);
+fill('#f-tono',o(['Positiva','Neutra','Negativa']),'Todos');fill('#f-tipo',o(u(r=>r.tipo)),'Todos');fill('#f-eje',o(u(r=>r.eje)),'Todos');fill('#f-ori',o(u(r=>r.ori)),'Todos');fill('#f-med',o(u(r=>r.medio)),'Todos');fill('#f-tier',o(u(r=>r.tier)),'Todos');fill('#f-por',o(u(r=>r.por)),'Todos');
+fill('#f-reg',[...REG.map(r=>[r,tit(r)]),['NACIONAL','Nacional / sin ámbito específico'],['EXTRANJERO','Extranjero']],'Todas');
+const ms=[...new Set(ALL.filter(r=>r.ts).map(r=>ymd(r.ts).slice(0,7)))].sort().reverse();
+fill('#mes',[...ms.map(m=>[m,MN[+m.slice(5)-1]+' '+m.slice(0,4)]),['all','Todo el período']],null);
+if(first){first=false;$('#fd').value=ymd(HT);const cm=ymd(HT).slice(0,7);$('#mes').value=ms.includes(cm)?cm:(ms[0]||'all')}
+runT();draw()}
+function fill(id,a,l){const s=$(id),v=s.value;s.innerHTML=(l?'<option value="">'+l+'</option>':'')+a.map(x=>'<option value="'+esc(x[0])+'">'+esc(x[1])+'</option>').join('');if([...s.options].some(o=>o.value===v))s.value=v}
+const EST=r=>{const v=$('#f-est').value;return v==='todas'||(v==='pend'?r.est!=='Validada':r.est==='Validada')};
+function setEst(v){$('#f-est').value=v;$('#est2').value=v;runT();if(tab!=='tabla')draw()}
+$('#est2').onchange=e=>setEst(e.target.value);
+function mode_(m){mode=m;$('#rb').classList.toggle('on',m==='rango');if(m==='hoy')$('#fd').value=ymd(HT);if(m!=='specific'&&m!=='hoy')$('#fd').value='';runT()}
+function resetT(){['q','fh','rd','rh'].forEach(i=>$('#'+i).value='');['f-etq','f-tono','f-tipo','f-eje','f-reg','f-ori','f-med','f-tier','f-por'].forEach(i=>$('#'+i).value='');$('#f-est').value='val';$('#est2').value='val';mode_('hoy')}
+function per(r){const v=i=>$(i).value;const t=r.ts;if(!t)return true;
+if(mode==='hoy')return t===HT;if(mode==='ayer')return t===AT||t===HT;if(mode==='specific'&&v('#fd'))return t===inp(v('#fd'));
+if(mode==='rango'){if(!v('#rd')||!v('#rh'))return false;let a=inp(v('#rd')),b=inp(v('#rh'));if(a>b)[a,b]=[b,a];return t>=a&&t<=b}
+if(mode==='month'){const d=new Date(t);return d.getFullYear()===HOY.getFullYear()&&d.getMonth()===HOY.getMonth()}return true}
+function runT(keep){if(!keep)LIM=200;const v=i=>$(i).value,hm=v('#fh')?(v('#fh').split(':')[0]*60+ +v('#fh').split(':')[1]):-1;
+const P=ALL.filter(per),D=P.filter(EST);
+fill('#f-etq',[...new Set(D.map(r=>r.etq).filter(Boolean))].sort().map(x=>[x,x]),'Todas');
+const q=v('#q').toLowerCase();
+CUR=D.filter(r=>(!q||(r.tit+' '+r.res).toLowerCase().includes(q))&&(!v('#f-tono')||r.t===v('#f-tono'))&&(!v('#f-tipo')||r.tipo===v('#f-tipo'))&&(!v('#f-eje')||r.eje===v('#f-eje'))&&(!v('#f-etq')||r.etq===v('#f-etq'))&&(!v('#f-reg')||r.regs.includes(v('#f-reg')))&&(!v('#f-ori')||r.ori===v('#f-ori'))&&(!v('#f-med')||r.medio===v('#f-med'))&&(!v('#f-tier')||r.tier===v('#f-tier'))&&(!v('#f-por')||r.por===v('#f-por'))&&(hm<0||r.hora<0||r.hora>=hm));
+statusT(P);setHdr();const k=x=>CUR.filter(r=>r.t===x).length;$('#n-t').textContent=CUR.length;$('#n-p').textContent=k('Positiva');$('#n-n').textContent=k('Neutra');$('#n-x').textContent=k('Negativa');
+const tg=(l,x)=>x?`<b>${l}:</b> ${esc(x)}`:'',safe=u=>/^https?:\/\//i.test(u||'')?u:'';
+$('#tbody').innerHTML=CUR.slice(0,LIM).map((r,ix)=>{const c=r.t==='Positiva'?['p','#86efac']:r.t==='Negativa'?['x','#fc8181']:['n','#fde047'],tags=[tg('Eje',r.eje),tg('Ámbito',r.amb),tg('Origen',r.ori),tg('Etiqueta',r.etq)].filter(Boolean).join(' · ');
+return`<tr style="background:${c[1]}"><td><div style="font-weight:700">${esc(r.fecha)}</div>${r.hr?`<div style="font-size:10px;color:#0009;font-weight:600;margin-top:4px">Hora: ${esc(r.hr)}</div>`:''}${r.est==='Validada'?`<div class="vd">✓ Validada${r.por?' · '+esc(r.por):''}</div>`:'<div class="vd" style="color:#92400e">Pendiente de validar</div>'}</td><td><div style="font-weight:800;margin-bottom:5px">${esc(r.tit)}</div><div style="font-size:10px;color:#555;font-weight:800;text-transform:uppercase">${esc(r.medio)} (${esc(r.tipo)})</div>${tags?`<div class="tg">${tags}</div>`:''}</td><td><span class="bd ${c[0]}">${esc(r.tono||'Neutro')}</span></td><td style="font-weight:600">${esc(r.res)}</td><td style="text-align:center">${safe(r.link)?`<button class="bl" onclick="openV('t',${ix})">▶ Ver aquí</button><a class="ext" href="${esc(safe(r.link))}" target="_blank" rel="noopener">Abrir nota<span class="ar"> ↗</span></a>`:'<span class="mu">Sin enlace</span>'}</td></tr>`}).join('')||`<tr><td colspan="5" style="text-align:center;padding:50px;color:#6b5d61">${ALL.length?'No hay noticias para mostrar con estos filtros.'+($('#f-est').value==='val'?'<br>Por ahora solo se cuentan las <b>validadas</b>.':'')+'<br><br><button class="ba g" onclick="setEst(\'todas\')">Contar todas</button> <button class="ba g" onclick="mode_(\'month\')">Ver este mes</button>':'Aún no hay registros en la base.'}</td></tr>`;
+$('#mas').style.display=CUR.length>LIM?'inline-block':'none'}
+function statusT(P){const nv=P.filter(r=>r.est==='Validada').length,m={hoy:'Mostrando: Hoy',ayer:'Mostrando: Ayer y Hoy',specific:'Mostrando fecha seleccionada',rango:($('#rd').value&&$('#rh').value)?'Mostrando rango: '+$('#rd').value+' a '+$('#rh').value:'Elige fecha Desde y Hasta',month:'Mostrando: este mes'};let t=m[mode]||'';if($('#fh').value)t+=' (desde las '+$('#fh').value+')';
+t+=' · '+nv+' validadas de '+P.length+' menciones del período ('+(P.length-nv)+' por validar)';const st=CUR.filter(r=>r.sinT).length;if(st)t+=' · '+st+' sin tono (cuentan como neutras)';$('#stt').textContent=t}
+function setHdr(){let t;if(tab==='tabla'){t=({hoy:'Hoy',ayer:'Ayer + hoy',specific:'Fecha seleccionada',rango:'Rango personalizado',month:'Este mes'})[mode]+' · '+CUR.length+' notas'}else{const m=$('#mes').value;t=(!m||m==='all')?'Todo el período':MN[+m.slice(5)-1]+' '+m.slice(0,4);t=t[0].toUpperCase()+t.slice(1)+' · '+MD().length+' notas'}$('#dc').textContent=t}
+function excel(){const csv='﻿'+Papa.unparse(CUR.map(r=>({FECHA:r.fecha,HORA:r.hr,MEDIO:r.medio,'TIPO DE MEDIO':r.tipo,TIER:r.tier,TITULAR:r.tit,RESUMEN:r.res,'CRITERIO DE IMAGEN':r.t,'COSTO US$':r.val,AUDIENCIA:r.aud,'EJE DE GESTIÓN':r.eje,'ÁMBITO GEOGRÁFICO':r.amb,'ORIGEN DE POSICIONAMIENTO':r.ori,'ETIQUETA':r.etq,ESTADO:r.est,'REVISADO POR':r.por,LINK:r.link})));const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='Monitoreo_Presidencia.csv';a.click()}
+function pdf(){window.print()}
+/* RESUMEN WHATSAPP + ACORTADOR (del modelo) */
+    function getEmojiTono(tono) {
+        const t = (tono || '').toLowerCase();
+        if (t.includes('pos')) return '🟢';
+        if (t.includes('neg')) return '🔴';
+        return '🟡';
+    }
+
+    // Abrevia el tipo de medio: Televisión -> tv, Radio -> radio, Web/Digital -> web, etc.
+    function getTipoAbreviado(tipo) {
+        const t = (tipo || '').toLowerCase();
+        if (t.includes('tv') || t.includes('televis')) return 'tv';
+        if (t.includes('radio')) return 'radio';
+        if (t.includes('web') || t.includes('digital') || t.includes('online') || t.includes('portal')) return 'web';
+        if (t.includes('diario') || t.includes('prensa') || t.includes('impres')) return 'diario';
+        return t;
+    }
+
+    // Cache simple para no acortar el mismo link dos veces en la misma sesión
+    const cacheLinksCortos = {};
+
+    // Respaldo final: pasa por un proxy CORS público para evitar el bloqueo
+    // del navegador cuando el servicio de acortado no envía las cabeceras CORS necesarias.
+    async function acortarViaProxy(url) {
+        try {
+            const destino = `https://is.gd/create.php?format=simple&url=${encodeURIComponent(url)}`;
+            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(destino)}`;
+            const resp = await fetch(proxyUrl);
+            if (resp.ok) {
+                const corto = (await resp.text()).trim();
+                if (corto.startsWith('http') && !corto.toLowerCase().includes('error')) {
+                    return corto;
+                }
+            }
+        } catch (e) { console.warn('Acortador (proxy is.gd) falló:', e); }
+        return null;
+    }
+
+    async function acortarLink(url) {
+        if (!url || !url.includes('http')) return url || 'Sin enlace';
+        if (cacheLinksCortos[url]) return cacheLinksCortos[url];
+
+        // Opción 1: acortar.link (tu propio acortador), si configuraste la API Key
+        if (acortarLinkApiKey) {
+            try {
+                const resp = await fetch(`https://acortar.link/api/v2/action/shorten?url=${encodeURIComponent(url)}&api_key=${encodeURIComponent(acortarLinkApiKey)}&is_secret=false`);
+                if (resp.ok) {
+                    const data = await resp.json();
+                    const corto = data && (data.short_url || data.url || data.result);
+                    if (corto && typeof corto === 'string' && corto.startsWith('http')) {
+                        cacheLinksCortos[url] = corto;
+                        return corto;
+                    }
+                }
+            } catch (e) { console.warn('Acortador acortar.link falló:', e); }
+        }
+
+        // Opción 2: TinyURL — funciona en la mayoría de redes/navegadores.
+        // Nota: la primera vez que alguien abre un link nuevo creado por API,
+        // TinyURL puede mostrar una página de aviso de un segundo antes de redirigir.
+        try {
+            const resp = await fetch('https://tinyurl.com/api-create.php?url=' + encodeURIComponent(url));
+            if (resp.ok) {
+                const corto = (await resp.text()).trim();
+                if (corto.startsWith('http')) {
+                    cacheLinksCortos[url] = corto;
+                    return corto;
+                }
+            }
+        } catch (e) { console.warn('Acortador TinyURL falló:', e); }
+
+        // Opción 3: spoo.me — gratuito, sin registro, redirige directo (sin página de aviso)
+        try {
+            const resp = await fetch('https://spoo.me/api/v1/shorten', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ long_url: url })
+            });
+            if (resp.ok) {
+                const data = await resp.json();
+                if (data && data.short_url) {
+                    cacheLinksCortos[url] = data.short_url;
+                    return data.short_url;
+                }
+            }
+        } catch (e) { console.warn('Acortador spoo.me falló:', e); }
+
+        // Opción 4: cleanuri — redirige directo, sin página intermedia de aviso
+        try {
+            const resp = await fetch('https://cleanuri.com/api/v1/shorten', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'url=' + encodeURIComponent(url)
+            });
+            if (resp.ok) {
+                const data = await resp.json();
+                if (data && data.result_url) {
+                    cacheLinksCortos[url] = data.result_url;
+                    return data.result_url;
+                }
+            }
+        } catch (e) { console.warn('Acortador cleanuri falló:', e); }
+
+        // Opción 5 (respaldo): is.gd — también redirige directo, sin interstitial
+        try {
+            const resp2 = await fetch('https://is.gd/create.php?format=simple&url=' + encodeURIComponent(url));
+            if (resp2.ok) {
+                const corto2 = (await resp2.text()).trim();
+                if (corto2.startsWith('http') && !corto2.toLowerCase().includes('error')) {
+                    cacheLinksCortos[url] = corto2;
+                    return corto2;
+                }
+            }
+        } catch (e) { console.warn('Acortador is.gd falló:', e); }
+
+        // Nota: NO se usa TinyURL porque sus links generados por API muestran
+        // una página de aviso antes de redirigir.
+
+        // Último intento: si todo lo anterior falló por bloqueo de CORS del navegador,
+        // se prueba pasando por un proxy público que sí entrega las cabeceras CORS.
+        const viaProxy = await acortarViaProxy(url);
+        if (viaProxy) {
+            cacheLinksCortos[url] = viaProxy;
+            return viaProxy;
+        }
+
+        // Si absolutamente nada funcionó, se conserva el link original.
+        return url;
+    }
+
+    async function generarResumenWhatsApp() {
+        if (CUR.length === 0) {
+            alert("No hay noticias con los filtros actuales para armar el resumen.");
+            return;
+        }
+
+        const btn = document.getElementById('btn-whatsapp-resumen');
+        const textoOriginalBtn = btn ? btn.innerHTML : '';
+        if (btn) { btn.innerHTML = '⏳ Acortando enlaces...'; btn.disabled = true; }
+
+        // Agrupar las noticias por etiqueta
+        const grupos = {};
+        CUR.forEach(row => {
+            const clave = row.etq && row.etq.trim() !== '' ? row.etq.trim() : 'SIN ETIQUETA';
+            if (!grupos[clave]) grupos[clave] = [];
+            grupos[clave].push(row);
+        });
+
+        // Acortar todos los links únicos en paralelo
+        const linksUnicos = [...new Set(CUR.map(r => r.link).filter(l => l && l.includes('http')))];
+        await Promise.all(linksUnicos.map(url => acortarLink(url)));
+
+        // Verificar cuántos links realmente se lograron acortar (para avisar si ninguno funcionó)
+        const linksAcortados = linksUnicos.filter(url => cacheLinksCortos[url] && cacheLinksCortos[url] !== url);
+        const huboFalloTotal = linksUnicos.length > 0 && linksAcortados.length === 0;
+
+        // Armar el texto, bloque por etiqueta: primero el resumen y la difusión, luego las noticias
+        const bloques = Object.keys(grupos).sort().map(etiqueta => {
+            const notasGrupo = grupos[etiqueta];
+
+            const lineas = notasGrupo.map(row => {
+                const emoji = getEmojiTono(row.tono);
+                const medio = (row.medio || 'MEDIO').toUpperCase();
+                const tipo = getTipoAbreviado(row.tipo);
+                const linkFinal = row.link && row.link.includes('http')
+                    ? (cacheLinksCortos[row.link] || row.link)
+                    : 'Sin enlace';
+                return `${emoji} ${medio} (${tipo}): ${linkFinal}`;
+            });
+
+            // Conteo de tono para este grupo
+            let gPos = 0, gNeu = 0, gNeg = 0;
+            notasGrupo.forEach(row => {
+                const t = (row.tono || '').toLowerCase();
+                if (t.includes('pos')) gPos++;
+                else if (t.includes('neg')) gNeg++;
+                else gNeu++;
+            });
+
+            // Conteo de difusión por tipo de canal para este grupo
+            let gTv = 0, gWeb = 0, gRadio = 0, gDiario = 0, gOtro = 0;
+            notasGrupo.forEach(row => {
+                const tipo = getTipoAbreviado(row.tipo);
+                if (tipo === 'tv') gTv++;
+                else if (tipo === 'web') gWeb++;
+                else if (tipo === 'radio') gRadio++;
+                else if (tipo === 'diario') gDiario++;
+                else gOtro++;
+            });
+
+            let difusionLine = `TV: ${gTv} |Web: ${gWeb} |Radio: ${gRadio} |Diario: ${gDiario}`;
+            if (gOtro > 0) difusionLine += ` |Otros: ${gOtro}`;
+
+            const encabezado = `*${etiqueta}*\n\n📊 *RESUMEN*: ${notasGrupo.length} notas \n🟢 ${gPos} positivas \n🟡 ${gNeu} neutras \n🔴 ${gNeg} negativas\n${difusionLine}`;
+
+            return `${encabezado}\n\n${lineas.join('\n')}`;
+        });
+
+        // Conteo automático general por tono, calculado sobre todos los datos filtrados
+        let pos = 0, neu = 0, neg = 0;
+        CUR.forEach(row => {
+            const t = (row.tono || '').toLowerCase();
+            if (t.includes('pos')) pos++;
+            else if (t.includes('neg')) neg++;
+            else neu++;
+        });
+        const total = CUR.length;
+
+        // Conteo general de difusión por canal
+        let totTv = 0, totWeb = 0, totRadio = 0, totDiario = 0, totOtro = 0;
+        CUR.forEach(row => {
+            const tipo = getTipoAbreviado(row.tipo);
+            if (tipo === 'tv') totTv++;
+            else if (tipo === 'web') totWeb++;
+            else if (tipo === 'radio') totRadio++;
+            else if (tipo === 'diario') totDiario++;
+            else totOtro++;
+        });
+        let difusionTotalLine = `TV: ${totTv} |Web: ${totWeb} |Radio: ${totRadio} |Diario: ${totDiario}`;
+        if (totOtro > 0) difusionTotalLine += ` |Otros: ${totOtro}`;
+
+        // El resumen general solo se agrega si hay más de una etiqueta en el grupo
+        let textoCompleto;
+        if (Object.keys(grupos).length > 1) {
+            const resumenFinal = `📊 *RESUMEN GENERAL*: ${total} notas \n🟢 ${pos} positivas \n🟡 ${neu} neutras \n🔴 ${neg} negativas\n${difusionTotalLine}`;
+            textoCompleto = resumenFinal + '\n\n' + bloques.join('\n\n');
+        } else {
+            textoCompleto = bloques.join('\n\n');
+        }
+
+        // Mostrar la vista previa en pantalla, justo debajo de las tarjetas de resumen
+        const previewBox = document.getElementById('resumen-preview');
+        const previewText = document.getElementById('resumen-preview-text');
+        if (previewBox && previewText) {
+            previewText.textContent = textoCompleto;
+            previewBox.style.display = 'block';
+            previewBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        copiarAlPortapapeles(textoCompleto);
+
+        if (btn) {
+            btn.innerHTML = '✅ Copiado';
+            btn.disabled = false;
+            setTimeout(() => { btn.innerHTML = textoOriginalBtn; }, 1800);
+        }
+
+        if (huboFalloTotal) {
+            alert('⚠️ El resumen se copió, pero no se pudieron acortar los links automáticamente (posible bloqueo de tu red/navegador a los servicios de acortado). Se usaron los links originales.');
+        }
+    }
+
+    function copiarAlPortapapeles(texto) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(texto).catch(() => copiarFallback(texto));
+        } else {
+            copiarFallback(texto);
+        }
+    }
+
+    function copiarFallback(texto) {
+        const textarea = document.createElement('textarea');
+        textarea.value = texto;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        try {
+            document.execCommand('copy');
+        } catch (err) {
+            alert("No se pudo copiar automáticamente. Copia el texto manualmente:\n\n" + texto);
+        }
+        document.body.removeChild(textarea);
+    }
+
+
+/* VISOR INTEGRADO */
+let PL=[],VW={l:[],i:0};
+const furl=v=>{const m=String(v||'').match(/https?:\/\/[^\s,;]+/i);return m?m[0]:''};
+const host=u=>{try{return new URL(u).hostname.replace(/^www\./,'')}catch(e){return u}};
+function embed(u){let x,m;try{x=new URL(u)}catch(e){return null}const h=x.hostname.replace(/^(www\.|m\.|mobile\.)/,''),p=x.pathname;
+if(/\.(mp4|webm|ogv|mov)$/i.test(p))return{t:'video',src:u};if(/\.(mp3|wav|m4a|ogg|aac)$/i.test(p))return{t:'audio',src:u};
+if(h==='youtube.com'||h==='youtube-nocookie.com'){const id=x.searchParams.get('v')||((m=p.match(/^\/(?:shorts|live|embed)\/([\w-]{6,})/))&&m[1]);if(id)return{t:'f',src:'https://www.youtube.com/embed/'+id,r:p.startsWith('/shorts')?'v':'w'}}
+if(h==='youtu.be'&&p.length>1)return{t:'f',src:'https://www.youtube.com/embed/'+p.slice(1),r:'w'};
+if(h==='vimeo.com'&&(m=p.match(/\/(\d+)/)))return{t:'f',src:'https://player.vimeo.com/video/'+m[1],r:'w'};
+if(h==='tiktok.com'&&(m=p.match(/\/video\/(\d+)/)))return{t:'f',src:'https://www.tiktok.com/embed/v2/'+m[1],r:'v'};
+if(h==='instagram.com'&&(m=p.match(/^\/(?:[\w.]+\/)?(p|reel|tv)\/([\w-]+)/)))return{t:'f',src:'https://www.instagram.com/'+m[1]+'/'+m[2]+'/embed',r:'v'};
+if(h==='facebook.com'||h==='fb.watch'){const v=h==='fb.watch'||/\/(videos?|reel|watch)/.test(p)||x.searchParams.get('v');return{t:'f',src:'https://www.facebook.com/plugins/'+(v?'video':'post')+'.php?show_text=true&width=560&href='+encodeURIComponent(u),r:v?'w':'v'}}
+if((h==='twitter.com'||h==='x.com')&&(m=p.match(/status\/(\d+)/)))return{t:'f',src:'https://platform.twitter.com/embed/Tweet.html?id='+m[1],r:'v'};
+if(h==='open.spotify.com'&&(m=p.match(/^\/(?:intl-\w+\/)?(episode|track|show|playlist|album)\/(\w+)/)))return{t:'f',src:'https://open.spotify.com/embed/'+m[1]+'/'+m[2],r:'a'};
+if(h==='soundcloud.com')return{t:'f',src:'https://w.soundcloud.com/player/?auto_play=false&url='+encodeURIComponent(u),r:'a'};return null}
+function openV(src,i){VW={l:src==='t'?CUR:PL,i};showV();$('#vw').classList.add('on');document.body.style.overflow='hidden'}
+function closeV(){$('#vw').classList.remove('on');$('#vc').innerHTML='';document.body.style.overflow=''}
+function stepV(d){const n=VW.l.length;VW.i=(VW.i+d+n)%n;showV()}
+function showV(){const r=VW.l[VW.i];if(!r)return;const u=furl(r.link),e=u&&embed(u);$('#vt').textContent=r.tit;
+$('#vme').innerHTML=esc(r.medio)+' · '+esc(r.tipo)+' · '+esc(r.fecha)+' · <span style="color:'+T[r.t]+'">'+r.t+'</span>';
+$('#vi').textContent=(VW.i+1)+' / '+VW.l.length;const o=$('#vo');o.style.display=u?'':'none';if(u)o.href=u;let h='';
+if(!u)h='<div class="vg">Esta nota no tiene enlace registrado.</div>';
+else if(e&&e.t==='video')h=`<video controls preload="metadata" src="${esc(e.src)}" class="vr-w"></video>`;
+else if(e&&e.t==='audio')h=`<audio controls preload="metadata" src="${esc(e.src)}"></audio>`;
+else if(e)h=`<iframe class="vr-${e.r}" src="${esc(e.src)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen; clipboard-write" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+else h='<div class="vg2" id="vg2"></div>';
+if(r.res)h+='<div class="vs">'+esc(r.res)+'</div>';$('#vc').innerHTML=h;if(u&&!e)loadGen(u)}
+
+$('#vx').onclick=closeV;$('#vp').onclick=()=>stepV(-1);$('#vn').onclick=()=>stepV(1);$('#vw').onclick=e=>{if(e.target.id==='vw')closeV()};
+addEventListener('keydown',e=>{if(!$('#vw').classList.contains('on'))return;if(e.key==='Escape')closeV();if(e.key==='ArrowLeft')stepV(-1);if(e.key==='ArrowRight')stepV(1)});
+/* VISTA WEB INTEGRADA (diarios y webs) */
+function loadGen(u){const b=$('#vg2');if(!b)return;b.innerHTML='<iframe src="'+esc(u)+'" style="height:62vh" referrerpolicy="no-referrer"></iframe><div class="mu" style="font-size:11px;margin-top:6px">Si el recuadro sale vacío o con error, ese sitio bloquea la vista integrada: usa «Abrir en nueva pestaña».</div>'}
+/* ZOOM DEL MAPA */
+let zk='',VB=GEO.vb.slice(),za=0;
+function setVB(a){VB=a;const m=$('#map');m.setAttribute('viewBox',a.join(' '));m.style.setProperty('--k',a[2]/GEO.vb[2])}
+function zoomSync(){const key=REG.includes(sel)?sel:'';$('#mz').classList.toggle('on',!!key);if(key===zk)return;zk=key;let Tg=GEO.vb.slice();
+if(key){const p=$('#map path[data-r="'+key+'"]');if(p){const b=p.getBBox(),ra=GEO.vb[3]/GEO.vb[2],W=Math.min(GEO.vb[2],Math.max(b.width*1.7,b.height*1.7/ra,80)),H=W*ra,cx=b.x+b.width/2,cy=b.y+b.height/2;Tg=[Math.min(Math.max(cx-W/2,GEO.vb[0]),GEO.vb[0]+GEO.vb[2]-W),Math.min(Math.max(cy-H/2,GEO.vb[1]),GEO.vb[1]+GEO.vb[3]-H),W,H]}}
+const F0=VB.slice(),t0=performance.now(),id=++za,st=t=>{if(id!==za)return;const k=Math.min(1,(t-t0)/450),e=1-Math.pow(1-k,3);setVB(F0.map((v,i)=>v+(Tg[i]-v)*e));if(k<1)requestAnimationFrame(st)};requestAnimationFrame(st)}
+
+/* NAVEGACIÓN + DASHBOARDS */
+$$('.tab').forEach(b=>b.onclick=()=>{tab=b.dataset.t;$$('.tab').forEach(x=>x.classList.toggle('on',x===b));$$('.view').forEach(v=>v.classList.toggle('on',v.id==='v-'+tab));$('#mbar').classList.toggle('on',tab!=='tabla');draw()});
+$('#mes').onchange=()=>draw();
+const MD=(o,ne)=>{const m=o||$('#mes').value;return ALL.filter(r=>(ne||EST(r))&&(!m||m==='all'||(r.ts&&ymd(r.ts).slice(0,7)===m)))};
+const CH={},O={responsive:true,maintainAspectRatio:false};Chart.register(ChartDataLabels);Chart.defaults.set('plugins.datalabels',{display:false});Chart.defaults.font.family='Inter,system-ui,sans-serif';
+function mk(id,cfg){CH[id]&&CH[id].destroy();CH[id]=new Chart($('#'+id),cfg)}
+const grp=(a,fn,n=10,w)=>{const m={};a.forEach(r=>{const k=fn(r);if(k)m[k]=(m[k]||0)+(w?w(r):1)});return Object.entries(m).sort((x,y)=>y[1]-x[1]).slice(0,n)};
+const DL=o=>({display:true,clip:false,color:'#222',anchor:'end',align:'end',font:{weight:'700',size:11},...o});
+const FIT=()=>innerWidth>=1000,fitH=(id,h)=>{$('#'+id).parentNode.style.height=(FIT()&&document.body.classList.contains('fit'))?'':h+'px'},wrap=(t,n=26)=>{const o=[];let l='';String(t).split(' ').forEach(x=>{if((l+' '+x).trim().length>n&&l){o.push(l);l=x}else l=(l+' '+x).trim()});o.push(l);return o};
+function bars(id,e,col=RED,fmt=v=>v,pad=64){fitH(id,Math.max(200,e.length*34+50));mk(id,{type:'bar',data:{labels:e.map(x=>wrap(x[0],FIT()?36:26)),datasets:[{data:e.map(x=>x[1]),backgroundColor:col,borderRadius:5}]},options:{...O,indexAxis:'y',layout:{padding:{right:pad,top:6,bottom:4}},plugins:{legend:{display:false},datalabels:DL({formatter:fmt})},scales:{x:{display:false,beginAtZero:true,grace:'18%'},y:{grid:{display:false},ticks:{autoSkip:false,font:{size:FIT()?10:11}}}}}})}
+function pie(id,l,d,col){l=l.map((x,i)=>/\(\d+\)$/.test(x)?x:x+' ('+d[i]+')');mk(id,{type:'doughnut',data:{labels:l,datasets:[{data:d,backgroundColor:col,borderWidth:2}]},options:{...O,layout:{padding:8},cutout:'55%',plugins:{legend:{position:'bottom'},datalabels:DL({color:'#fff',anchor:'center',align:'center',formatter:(v,c)=>{const s=c.dataset.data.reduce((a,b)=>a+b,0);return v&&s?Math.round(v/s*100)+'%':''}})}}})}
+function stack(id,labels,get,hz){if(hz)fitH(id,Math.max(220,labels.length*40+80));mk(id,{type:'bar',data:{labels:labels.map(l=>wrap(l)),datasets:Object.keys(T).map(k=>({label:k,data:labels.map(l=>get(l,k)),backgroundColor:T[k]}))},options:{...O,indexAxis:hz?'y':'x',plugins:{legend:{position:'bottom'},datalabels:DL({color:'#fff',anchor:'center',align:'center',display:c=>c.dataset.data[c.dataIndex]>0})},layout:{padding:{top:8,right:12}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,ticks:{precision:0,autoSkip:false}}}}})}
+const days=A=>[...new Set(A.filter(r=>r.ts).map(r=>r.ts))].sort((a,b)=>a-b);const dl=t=>{const d=new Date(t);return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')};
+
+function note(id,A,fn){const h=$('#'+id).closest('.cc').querySelector('h3');if(!h.dataset.b)h.dataset.b=h.textContent;const n=A.filter(fn).length;h.textContent=h.dataset.b+(n<A.length?' · '+n+' de '+A.length+' clasificadas':'')}
+function draw(){document.body.classList.toggle('fit',['general','semaforo','ahorro'].includes(tab));setHdr();if(!ALL.length&&tab!=='tabla')return;const A=MD();
+if(tab==='general'){$('#g-tot').textContent=A.length;const m=$('#mes').value;let tr='--';if(m&&m!=='all'){let y=+m.slice(0,4),mo=+m.slice(5)-1;const p=mo?y+'-'+p2(mo):(y-1)+'-12',n=MD(p).length;tr=n?((A.length-n)/n*100>=0?'▲ ':'▼ ')+Math.abs(Math.round((A.length-n)/n*100))+'% vs mes anterior':'Sin mes anterior'}$('#g-tr').textContent=tr;
+const d=days(A);mk('c-time',{type:'line',data:{labels:d.map(dl),datasets:[{data:d.map(t=>A.filter(r=>r.ts===t).length),borderColor:RED,backgroundColor:'#C8102E22',fill:true,tension:.3,pointRadius:4}]},options:{...O,layout:{padding:{top:30,right:16}},plugins:{legend:{display:false},datalabels:DL({align:'top',anchor:'end'})},scales:{y:{beginAtZero:true,grace:'18%',ticks:{precision:0}}}}});
+const tp=grp(A,r=>r.tipo);pie('c-tipo',tp.map(x=>x[0]),tp.map(x=>x[1]),['#C8102E','#8f0b21','#e4606f','#4b5563','#9ca3af','#f59e0b','#fca5a5']);
+bars('c-etq',grp(A,r=>r.etq),'#8b5cf6');note('c-etq',A,r=>r.etq);bars('c-eje',grp(A,r=>r.eje),DK);note('c-eje',A,r=>r.eje);bars('c-ori',grp(A,r=>r.ori),'#e4606f');note('c-ori',A,r=>r.ori)}
+if(tab==='semaforo'){const d=days(A);mk('s-time',{type:'line',data:{labels:d.map(dl),datasets:Object.keys(T).map(k=>({label:k,data:d.map(t=>A.filter(r=>r.ts===t&&r.t===k).length),borderColor:T[k],backgroundColor:T[k],tension:.4,borderWidth:3,pointRadius:3}))},options:{...O,layout:{padding:{top:18,right:14}},plugins:{legend:{position:'bottom'},datalabels:DL({align:'top',anchor:'end',color:c=>T[c.dataset.label],display:c=>c.dataset.data[c.dataIndex]>0})},scales:{y:{beginAtZero:true,grace:'15%',ticks:{precision:0}}}}});const c=Object.keys(T).map(k=>A.filter(r=>r.t===k).length);pie('s-pie',Object.keys(T),c,Object.values(T));
+bars('s-neg',grp(A.filter(r=>r.t==='Negativa'),r=>r.medio,5),T.Negativa);
+const sk=(fn)=>grp(A,fn,8).map(x=>x[0]);const q=sk(r=>r.eje);stack('s-eje',q,(l,k)=>A.filter(r=>r.eje===l&&r.t===k).length,1);note('s-eje',A,r=>r.eje);const tp=sk(r=>r.tipo);stack('s-tipo',tp,(l,k)=>A.filter(r=>r.tipo===l&&r.t===k).length,1)}
+if(tab==='ahorro'){const P=A.filter(r=>r.t==='Positiva'&&r.val>0);$('#a-tot').textContent=money(P.reduce((s,r)=>s+r.val,0),0);bars('a-tipo',grp(P,r=>r.tipo||'Otros',10,r=>r.val),RED,v=>money(v),110);bars('a-eje',grp(P,r=>r.eje||'Sin eje asignado',10,r=>r.val),DK,v=>money(v),110)}
+if(tab==='mapa'){map(A);panel(A);zoomSync()}
+if(tab==='analisis'){const AV=MD(null,true),V=AV.filter(r=>r.est==='Validada'),pe=AV.length-V.length;$('#v-tot').textContent=(AV.length?Math.round(100*V.length/AV.length):0)+'%';$('#v-sub').textContent=V.length+' de '+AV.length+' validadas';
+pie('v-pv',['Validadas','Pendientes'],[V.length,pe],['#15803d','#f59e0b']);bars('v-por',grp(V,r=>r.por||'(Sin nombre)',10),'#1f2937');
+const sx=(id,fn,n,hz)=>{const ls=grp(A,fn,n).map(x=>x[0]);stack(id,ls,(l,k)=>A.filter(r=>fn(r)===l&&r.t===k).length,hz)};
+sx('x-etq',r=>r.etq,8,1);note('x-etq',A,r=>r.etq);sx('x-ori',r=>r.ori,8,1);note('x-ori',A,r=>r.ori);
+bars('x-amb',grp(A,r=>r.amb||'(Sin dato)',10));bars('x-med',grp(A,r=>r.medio,10),DK);
+const ti=grp(A,r=>r.tier,8).map(x=>x[0]).sort();stack('x-tier',ti,(l,k)=>A.filter(r=>r.tier===l&&r.t===k).length,0);
+const hs=[...Array(24).keys()],hc=hs.map(h=>A.filter(r=>r.hora>=0&&Math.floor(r.hora/60)===h).length);mk('x-hora',{type:'bar',data:{labels:hs.map(h=>p2(h)+'h'),datasets:[{data:hc,backgroundColor:RED,borderRadius:4}]},options:{...O,layout:{padding:{top:20}},plugins:{legend:{display:false},datalabels:DL({display:c=>c.dataset.data[c.dataIndex]>0})},scales:{y:{beginAtZero:true,grace:'15%',ticks:{precision:0}},x:{grid:{display:false}}}}});
+const P=A.filter(r=>r.t==='Positiva'&&r.val>0);bars('x-aet',grp(P,r=>r.etq,10,r=>r.val),'#8b5cf6',v=>money(v),110);bars('x-amed',grp(P,r=>r.medio,10,r=>r.val),RED,v=>money(v),110)}}
+/* MAPA */
+const heat=(c,mx)=>{if(!c)return'#e3e0e1';const t=mx>1?Math.sqrt((c-1)/(mx-1)):1,a=[253,205,212],b=[120,6,24];return'rgb('+a.map((v,i)=>Math.round(v+(b[i]-v)*t)).join(',')+')'};
+function map(A){const n={},e={NACIONAL:0,EXTRANJERO:0,SIN:0};REG.forEach(r=>n[r]=0);A.forEach(r=>{if(!r.regs.length)e.SIN++;r.regs.forEach(x=>x in n?n[x]++:e[x]++)});const mx=Math.max(1,...Object.values(n));
+$('#map').innerHTML=REG.map(r=>`<path class="rg${sel===r?' on':''}" data-r="${r}" d="${GEO.p[r]}" style="fill:${heat(n[r],mx)}"><title>${tit(r)}: ${n[r]}</title></path>`).join('');
+$$('#map path').forEach(p=>{const c=n[p.dataset.r];if(!c)return;const b=p.getBBox(),t=document.createElementNS('http://www.w3.org/2000/svg','text');const sm=p.dataset.r==='LIMA METROPOLITANA Y CALLAO';t.setAttribute('x',sm?b.x-5:b.x+b.width/2);t.setAttribute('y',b.y+b.height/2+4);if(sm){t.setAttribute('class','lo');t.dataset.r=p.dataset.r}t.textContent=sm?'Lima Met. y Callao '+c:c;$('#map').appendChild(t)});
+$('#lg1').textContent=mx+' menciones';$('#chips').innerHTML=[['NACIONAL','Nacional / sin ámbito'],['EXTRANJERO','Extranjero'],['SIN','Sin dato']].map(([k,l])=>`<button class="chip${sel===k?' on':''}" data-s="${k}">${l} <b>${e[k]}</b></button>`).join('')}
+function panel(A){const el=$('#panel');if(!sel){el.innerHTML='<p class="mu">Toca una región del mapa para ver las menciones vinculadas a la Presidencia: conteo, criterio de imagen, ejes y el detalle de cada nota.</p>';return}
+const L=A.filter(r=>sel==='SIN'?!r.regs.length:r.regs.includes(sel)),t={Positiva:0,Neutra:0,Negativa:0};let v=0;L.forEach(r=>{t[r.t]++;v+=r.val});
+PL=L;el.innerHTML=`<div class="ph"><h2>${sel==='SIN'?'Sin ámbito indicado':tit(sel)}</h2><div>${sel!=='SIN'?'<button class="ba" id="bf">Ver en tabla</button> ':''}<button class="ba g" id="bx">Quitar</button></div></div>
+<div class="st"><div><b>${L.length}</b><span>Menciones</span></div><div class="p"><b>${t.Positiva}</b><span>Positivas</span></div><div class="n"><b>${t.Neutra}</b><span>Neutras</span></div><div class="x"><b>${t.Negativa}</b><span>Negativas</span></div></div>
+<div class="tb">${Object.keys(T).map(k=>`<i style="flex:${t[k]};background:${T[k]}"></i>`).join('')}</div>
+<h4 class="mu" style="margin:12px 0 4px">EJES DE GESTIÓN</h4>${grp(L,r=>r.eje,5).map(([k,c])=>`<div class="br"><span>${esc(k)}</span><div><i style="width:${c/L.length*100}%"></i></div><b>${c}</b></div>`).join('')||'<span class="mu">–</span>'}
+<div class="ls">${L.slice(0,60).map((r,i)=>`<div class="it" style="background:${BG[r.t]};border-color:${BD[r.t]}"><b><a href="#" onclick="openV('p',${i});return false">${esc(r.tit)} ▶</a></b><small>${esc(r.medio)} · ${esc(r.tipo)} · ${esc(r.fecha)}${r.eje?' · '+esc(r.eje):''}</small>${r.res?`<p>${esc(r.res)}</p>`:''}</div>`).join('')||'<p class="mu">Sin menciones en este período.</p>'}</div>`;
+$('#bx').onclick=()=>{sel=null;draw()};if($('#bf'))$('#bf').onclick=()=>{$('#f-reg').value=sel;mode_('month');$('.tab[data-t=tabla]').click()}}
+$('#map').onclick=e=>{const p=e.target.closest('[data-r]');if(p){sel=p.dataset.r;draw()}};
+$('#chips').onclick=e=>{const c=e.target.closest('.chip');if(c){sel=c.dataset.s;draw()}};
+
+const T0=document.title;addEventListener('beforeprint',()=>{document.title='Monitoreo_Presidencia_'+ymd(Date.now())});addEventListener('afterprint',()=>{document.title=T0});
+let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(draw,200)});
+
+init();setInterval(init,12e4);
+
 </script></body></html>
