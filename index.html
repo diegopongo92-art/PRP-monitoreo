@@ -56,7 +56,7 @@ td{padding:14px;border-bottom:1px solid var(--bd);font-size:13px;line-height:1.5
 .kb{background:linear-gradient(135deg,var(--red),var(--dk));color:#fff;border-radius:14px;padding:22px;position:relative;overflow:hidden}
 .kb h4{margin:0;font-size:12px;opacity:.9;text-transform:uppercase;letter-spacing:.5px}.kb h2{margin:8px 0;font-size:44px;font-weight:800}
 .kb small{background:#fff3;border-radius:20px;padding:4px 10px;font-weight:700}
-.mp{display:grid;grid-template-columns:minmax(300px,440px) 1fr;gap:14px}
+.mp{display:grid;grid-template-columns:minmax(300px,clamp(440px,32vw,640px)) 1fr;gap:14px}
 .pn{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:14px}
 #map{width:100%;max-height:72vh;display:block}
 .rg{stroke:#8d8186;stroke-width:calc(var(--k,1)*.8px);stroke-linejoin:round;cursor:pointer;transition:fill .15s}.rg:hover{stroke:#111;stroke-width:calc(var(--k,1)*2px)}.rg.on{stroke:#111;stroke-width:calc(var(--k,1)*3px)}.lg{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;color:var(--mu);margin-top:10px}.lg i{flex:1;height:10px;border-radius:6px;background:linear-gradient(90deg,#fdcdd4,#C8102E,#780618)}
@@ -132,6 +132,28 @@ td:nth-child(2){width:100%!important;order:3}td:nth-child(4){width:100%!importan
 .msp{display:none;position:absolute;z-index:60;left:0;top:calc(100% + 4px);min-width:260px;max-width:92vw;background:#fff;border:1px solid var(--bd);border-radius:10px;box-shadow:0 10px 30px #0003;padding:8px}.ms.open .msp{display:block}
 .msp input[type=search]{margin-bottom:6px}.msl{max-height:260px;overflow-y:auto}.msl label{display:flex;gap:8px;align-items:center;padding:7px 6px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;margin:0;text-transform:none;letter-spacing:0;color:var(--tx)}.msl label:hover{background:#f6f2f3}.msl input{width:auto;padding:0;margin:0}
 .msf{display:flex;gap:6px;margin-top:6px}.msf button{flex:1;padding:8px;border-radius:8px;border:1px solid var(--bd);background:#fff;font-weight:700;cursor:pointer;font-size:12px}.msf button.p{background:var(--red);color:#fff;border-color:var(--red)}
+
+/* === rediseño de ancho completo === */
+.main{max-width:none!important;padding:0 clamp(12px,2.2vw,44px)!important;margin:16px 0!important}
+body.fit .main{max-width:none!important}
+.gr{gap:clamp(12px,1.2vw,22px)}.cc{padding:16px 18px}.cc h3{margin:0 0 10px}
+.cv{height:clamp(300px,36vh,430px)}
+.kp{grid-column:span 12;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:clamp(10px,1vw,18px)}
+.kt{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:14px 16px 14px 20px;position:relative;overflow:hidden;box-shadow:0 2px 10px #0001}
+.kt::before{content:'';position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--c,var(--red))}
+.kt small{display:block;font-size:10.5px;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:.04em}
+.kt b{display:block;font-size:clamp(24px,2.2vw,36px);font-weight:900;margin:3px 0 1px;line-height:1.1;color:var(--tx)}
+.kt span{font-size:11.5px;color:var(--mu);font-weight:600}
+.kt.main1{background:linear-gradient(135deg,var(--red),var(--dk));border-color:transparent}.kt.main1::before{display:none}.kt.main1 small,.kt.main1 span{color:#ffe3e7}.kt.main1 b{color:#fff}
+.hmw{overflow-x:auto}.hmg{display:grid;grid-template-columns:34px repeat(24,minmax(22px,1fr));gap:3px;min-width:640px;font-size:10px;font-weight:700;color:var(--mu)}
+.hmg i{display:block;height:clamp(24px,4.6vh,46px);border-radius:4px;font-style:normal}.hmg em{font-style:normal;text-align:center;align-self:center}
+.stl{display:grid;gap:8px}@media(max-width:700px){.stl{max-height:420px;overflow:auto}.hmg{min-width:560px}}
+@media(max-width:768px){.mx{display:table!important;min-width:640px;width:auto}.mx tbody{display:table-row-group}.mx tr{display:table-row!important;margin:0;padding:0;border:0;box-shadow:none;gap:0}.mx th,.mx td{display:table-cell!important;width:auto!important;order:0!important;padding:8px 4px}.mx td:first-child{text-align:left;font-weight:700;font-size:11px;position:sticky;left:0;background:var(--cd,#fff)}}
+.sti{border:1px solid var(--bd);border-radius:10px;padding:9px 11px;font-size:12.5px;font-weight:700;line-height:1.3}.sti small{display:block;color:var(--mu);font-weight:600;margin-top:3px}
+.sti .tb{margin-top:6px}
+.mxw{overflow-x:auto}.mx{border-collapse:separate;border-spacing:3px;font-size:12px;width:100%}.mx th{font-size:10.5px;color:var(--mu);font-weight:800;text-align:center;padding:4px;vertical-align:bottom;min-width:84px}.mx th:first-child{text-align:left;min-width:170px}.mx td{text-align:center;font-weight:800;padding:9px 4px;border-radius:6px;min-width:60px}.mx td:first-child{text-align:left;background:none!important;font-size:12px}
+@media(max-width:999px){.kp{grid-template-columns:repeat(2,1fr)}.cv{height:300px}}
+@media print{.kt{box-shadow:none}.main{padding:0!important}}
 </style></head><body>
 <header><div class="hl"><div class="logo"><img src="presidencia.png" alt="Logo Presidencia" onerror="this.style.display='none'"></div><div><h1>Dashboard de Medios</h1><div class="sb">PRESIDENCIA DE LA REPÚBLICA DEL PERÚ</div></div></div><div style="display:flex;align-items:center"><div id="dc">Conectando…</div><button id="rf" onclick="init(true)">↻</button></div></header>
 <nav><button class="tab on" data-t="tabla">Tabla</button><button class="tab" data-t="general">General</button><button class="tab" data-t="semaforo">Semáforo</button><button class="tab" data-t="ahorro">Ahorro</button><button class="tab" data-t="mapa">Mapa</button><button class="tab" data-t="analisis">Análisis</button></nav>
@@ -164,12 +186,17 @@ td:nth-child(2){width:100%!important;order:3}td:nth-child(4){width:100%!importan
 </section>
 
 <section class="view" id="v-general"><div class="gr">
-<div class="cc c3"><div class="kb"><h4>Total menciones</h4><h2 id="g-tot">0</h2><small id="g-tr">--</small></div></div>
-<div class="cc c6"><h3>Menciones en el tiempo</h3><div class="cv"><canvas id="c-time"></canvas></div></div>
-<div class="cc c3"><h3>Tipo de medio (%)</h3><div class="cv"><canvas id="c-tipo"></canvas></div></div>
+<div class="kp" id="kp"></div>
+<div class="cc c8"><h3>Menciones por día y criterio de imagen</h3><div class="cv"><canvas id="c-time"></canvas></div></div>
+<div class="cc c4"><h3>Tipo de medio (%)</h3><div class="cv"><canvas id="c-tipo"></canvas></div></div>
 <div class="cc c4"><h3>Temas (etiquetas)</h3><div class="cv"><canvas id="c-etq"></canvas></div></div>
 <div class="cc c4"><h3>Eje de gestión</h3><div class="cv"><canvas id="c-eje"></canvas></div></div>
 <div class="cc c4"><h3>Origen de posicionamiento</h3><div class="cv"><canvas id="c-ori"></canvas></div></div>
+<div class="cc c4"><h3>Medios con más menciones</h3><div class="cv"><canvas id="g-med"></canvas></div></div>
+<div class="cc c4"><h3>Ámbito geográfico (top 10)</h3><div class="cv"><canvas id="g-amb"></canvas></div></div>
+<div class="cc c4"><h3>Menciones por tier</h3><div class="cv"><canvas id="g-tier"></canvas></div></div>
+<div class="cc c8"><h3>Cuándo se habla: día de la semana y hora</h3><div id="hm"></div></div>
+<div class="cc c4"><h3>Noticias con más cobertura</h3><div id="stories" class="stl"></div></div>
 </div></section>
 
 <section class="view" id="v-semaforo"><div class="gr">
@@ -197,6 +224,12 @@ td:nth-child(2){width:100%!important;order:3}td:nth-child(4){width:100%!importan
 <div class="cc c6"><h3>Menciones por hora del día</h3><div class="cv"><canvas id="x-hora"></canvas></div></div>
 <div class="cc c6"><h3>Ahorro por tema (etiqueta)</h3><div class="cv"><canvas id="x-aet"></canvas></div></div>
 <div class="cc c6"><h3>Ahorro por medio (top 10)</h3><div class="cv"><canvas id="x-amed"></canvas></div></div>
+<div class="cc c6"><h3>Índice neto de imagen por medio (top 10 por volumen)</h3><div class="cv"><canvas id="x-nmed"></canvas></div></div>
+<div class="cc c6"><h3>Índice neto de imagen por eje de gestión</h3><div class="cv"><canvas id="x-neje"></canvas></div></div>
+<div class="cc c12"><h3>Evolución diaria de los temas principales</h3><div class="cv"><canvas id="x-tev"></canvas></div></div>
+<div class="cc c6"><h3>Menciones por día según tipo de medio</h3><div class="cv"><canvas id="x-tdia"></canvas></div></div>
+<div class="cc c6"><h3>Audiencia potencial por tipo de medio</h3><div class="cv"><canvas id="x-aud"></canvas></div></div>
+<div class="cc c12"><h3>Quién dice qué: eje de gestión × origen de posicionamiento</h3><div id="x-mx" class="mxw"></div></div>
 </div></section>
 </div>
 <div class="vw" id="vw"><div class="vb"><div class="vh"><div><div class="vt" id="vt"></div><div class="vme" id="vme"></div></div><button class="vx" id="vx" aria-label="Cerrar">✕</button></div><div class="vc" id="vc"></div><div class="vf"><button class="ba g" id="vp">← Anterior</button><span id="vi" class="mu" style="font-weight:700"></span><button class="ba g" id="vn">Siguiente →</button><a class="bl" id="vo" target="_blank" rel="noopener" style="text-decoration:none">Abrir en nueva pestaña ↗</a></div></div></div>
@@ -611,10 +644,18 @@ const days=A=>[...new Set(A.filter(r=>r.ts).map(r=>r.ts))].sort((a,b)=>a-b);cons
 
 function note(id,A,fn){const h=$('#'+id).closest('.cc').querySelector('h3');if(!h.dataset.b)h.dataset.b=h.textContent;const n=A.filter(fn).length;h.textContent=h.dataset.b+(n<A.length?' · '+n+' de '+A.length+' clasificadas':'')}
 function draw(){document.body.classList.remove('fit');setHdr();if(!ALL.length&&tab!=='tabla')return;const A=MD();
-if(tab==='general'){$('#g-tot').textContent=A.length;const m=$('#mes').value;let tr='--';if(m&&m!=='all'){let y=+m.slice(0,4),mo=+m.slice(5)-1;const p=mo?y+'-'+p2(mo):(y-1)+'-12',n=MD(p).length;tr=n?((A.length-n)/n*100>=0?'▲ ':'▼ ')+Math.abs(Math.round((A.length-n)/n*100))+'% vs mes anterior':'Sin mes anterior'}$('#g-tr').textContent=tr;
-const d=days(A);mk('c-time',{type:'line',data:{labels:d.map(dl),datasets:[{data:d.map(t=>A.filter(r=>r.ts===t).length),borderColor:RED,backgroundColor:'#C8102E22',fill:true,tension:.3,pointRadius:4}]},options:{...O,layout:{padding:{top:30,right:16}},plugins:{legend:{display:false},datalabels:DL({align:'top',anchor:'end'})},scales:{y:{beginAtZero:true,grace:'18%',ticks:{precision:0}}}}});
+if(tab==='general'){const m=$('#mes').value;let tr='Sin mes anterior';if(m&&m!=='all'){let y=+m.slice(0,4),mo=+m.slice(5)-1;const p=mo?y+'-'+p2(mo):(y-1)+'-12',n=MD(p).length;if(n)tr=((A.length-n)/n*100>=0?'▲ ':'▼ ')+Math.abs(Math.round((A.length-n)/n*100))+'% vs mes anterior'}
+const d=days(A),cnt=k=>A.filter(r=>r.t===k).length,P=cnt('Positiva'),N=cnt('Neutra'),X=cnt('Negativa'),tot=A.length||1,net=Math.round((P-X)/tot*100),ah=A.filter(r=>r.t==='Positiva').reduce((s,r)=>s+r.val,0);
+const pd=d.map(t=>[t,A.filter(r=>r.ts===t).length]).sort((a,b)=>b[1]-a[1])[0],hh=[...Array(24).keys()].map(h=>[h,A.filter(r=>r.hora>=0&&Math.floor(r.hora/60)===h).length]).sort((a,b)=>b[1]-a[1])[0];
+const md2=new Set(A.map(r=>r.medio).filter(Boolean)),top5=grp(A,r=>r.medio,5).reduce((s,x)=>s+x[1],0);
+const pc=v=>Math.round(v/tot*100)+'%';
+const kt=(l,v,sub,c,cl)=>`<div class="kt ${cl||''}" style="--c:${c||RED}"><small>${l}</small><b>${v}</b><span>${sub||'&nbsp;'}</span></div>`;
+$('#kp').innerHTML=kt('Total de menciones',A.length.toLocaleString('es-PE'),tr,RED,'main1')+kt('Índice neto de imagen',(net>0?'+':'')+net+' pts',net>=0?'Más positivas que negativas':'Más negativas que positivas',net>=0?T.Positiva:T.Negativa)+kt('Positivas',P.toLocaleString('es-PE'),pc(P)+' del total',T.Positiva)+kt('Neutras',N.toLocaleString('es-PE'),pc(N)+' del total',T.Neutra)+kt('Negativas',X.toLocaleString('es-PE'),pc(X)+' del total',T.Negativa)+kt('Ahorro publicitario',money(ah,0),'Solo positivas','#6366f1')+kt('Medios distintos',md2.size,'Los 5 primeros concentran '+pc(top5),'#0ea5e9')+kt('Promedio diario',d.length?Math.round(A.length/d.length):0,pd?'Día pico: '+dl(pd[0])+' ('+pd[1]+')':'','#8b5cf6')+kt('Hora pico',hh&&hh[1]?p2(hh[0])+':00':'–',hh&&hh[1]?hh[1]+' menciones':'','#f59e0b');
+const tk=Object.keys(T);mk('c-time',{type:'bar',data:{labels:d.map(dl),datasets:[...tk.map(k=>({label:k,data:d.map(t=>A.filter(r=>r.ts===t&&r.t===k).length),backgroundColor:T[k],borderRadius:3,stack:'a',order:2,datalabels:{display:c=>c.dataset.data[c.dataIndex]>0&&innerWidth>700,color:'#fff',anchor:'center',align:'center',font:{weight:'700',size:11}}})),{type:'line',label:'Total',data:d.map(t=>A.filter(r=>r.ts===t).length),borderColor:'#1f2937',backgroundColor:'#1f2937',borderWidth:2,pointRadius:3,tension:.25,order:1,stack:'z',datalabels:{display:true,align:'top',anchor:'end',color:'#1f2937',font:{weight:'800',size:12}}}]},options:{...O,layout:{padding:{top:26,right:12}},plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grace:'12%',ticks:{precision:0}}}}});
 const tp=grp(A,r=>r.tipo);pie('c-tipo',tp.map(x=>x[0]),tp.map(x=>x[1]),['#C8102E','#8f0b21','#e4606f','#4b5563','#9ca3af','#f59e0b','#fca5a5']);
-bars('c-etq',grp(A,r=>r.etq),'#8b5cf6');note('c-etq',A,r=>r.etq);bars('c-eje',grp(A,r=>r.eje),DK);note('c-eje',A,r=>r.eje);bars('c-ori',grp(A,r=>r.ori),'#e4606f');note('c-ori',A,r=>r.ori)}
+bars('c-etq',grp(A,r=>r.etq),'#8b5cf6');note('c-etq',A,r=>r.etq);bars('c-eje',grp(A,r=>r.eje),DK);note('c-eje',A,r=>r.eje);bars('c-ori',grp(A,r=>r.ori),'#e4606f');note('c-ori',A,r=>r.ori);
+bars('g-med',grp(A,r=>r.medio,10),'#0ea5e9');bars('g-amb',grp(A,r=>r.amb||'(Sin dato)',10),'#14b8a6');const ti=grp(A,r=>r.tier,8);pie('g-tier',ti.map(x=>x[0]),ti.map(x=>x[1]),['#C8102E','#8f0b21','#e4606f','#4b5563','#9ca3af','#f59e0b','#fca5a5','#6366f1']);
+heatmap(A);stories(A)}
 if(tab==='semaforo'){const d=days(A);mk('s-time',{type:'line',data:{labels:d.map(dl),datasets:Object.keys(T).map(k=>({label:k,data:d.map(t=>A.filter(r=>r.ts===t&&r.t===k).length),borderColor:T[k],backgroundColor:T[k],tension:.4,borderWidth:3,pointRadius:3}))},options:{...O,layout:{padding:{top:18,right:14}},plugins:{legend:{position:'bottom'},datalabels:DL({align:'top',anchor:'end',color:c=>T[c.dataset.label],display:c=>c.dataset.data[c.dataIndex]>0})},scales:{y:{beginAtZero:true,grace:'15%',ticks:{precision:0}}}}});const c=Object.keys(T).map(k=>A.filter(r=>r.t===k).length);pie('s-pie',Object.keys(T),c,Object.values(T));
 bars('s-neg',grp(A.filter(r=>r.t==='Negativa'),r=>r.medio,5),T.Negativa);
 const sk=(fn)=>grp(A,fn,8).map(x=>x[0]);const q=sk(r=>r.eje);stack('s-eje',q,(l,k)=>A.filter(r=>r.eje===l&&r.t===k).length,1);note('s-eje',A,r=>r.eje);const tp=sk(r=>r.tipo);stack('s-tipo',tp,(l,k)=>A.filter(r=>r.tipo===l&&r.t===k).length,1)}
@@ -625,7 +666,27 @@ sx('x-etq',r=>r.etq,8,1);note('x-etq',A,r=>r.etq);sx('x-ori',r=>r.ori,8,1);note(
 bars('x-amb',grp(A,r=>r.amb||'(Sin dato)',10));bars('x-med',grp(A,r=>r.medio,10),DK);
 const ti=grp(A,r=>r.tier,8).map(x=>x[0]).sort();stack('x-tier',ti,(l,k)=>A.filter(r=>r.tier===l&&r.t===k).length,0);
 const hs=[...Array(24).keys()],hc=hs.map(h=>A.filter(r=>r.hora>=0&&Math.floor(r.hora/60)===h).length);mk('x-hora',{type:'bar',data:{labels:hs.map(h=>p2(h)+'h'),datasets:[{data:hc,backgroundColor:RED,borderRadius:4}]},options:{...O,layout:{padding:{top:20}},plugins:{legend:{display:false},datalabels:DL({display:c=>c.dataset.data[c.dataIndex]>0})},scales:{y:{beginAtZero:true,grace:'15%',ticks:{precision:0}},x:{grid:{display:false}}}}});
-const P=A.filter(r=>r.t==='Positiva'&&r.val>0);bars('x-aet',grp(P,r=>r.etq,10,r=>r.val),'#8b5cf6',v=>money(v),110);bars('x-amed',grp(P,r=>r.medio,10,r=>r.val),RED,v=>money(v),110)}}
+const P=A.filter(r=>r.t==='Positiva'&&r.val>0);bars('x-aet',grp(P,r=>r.etq,10,r=>r.val),'#8b5cf6',v=>money(v),110);bars('x-amed',grp(P,r=>r.medio,10,r=>r.val),RED,v=>money(v),110);analisisPlus(A)}}
+
+/* === análisis ampliado === */
+const netOf=L=>L.length?Math.round((L.filter(r=>r.t==='Positiva').length-L.filter(r=>r.t==='Negativa').length)/L.length*100):0;
+function nbars(id,e){fitH(id,Math.max(200,e.length*34+50));mk(id,{type:'bar',data:{labels:e.map(x=>wrap(x[0],FIT()?36:(innerWidth<600?17:26))),datasets:[{data:e.map(x=>x[1]),backgroundColor:e.map(x=>x[1]>=0?T.Positiva:T.Negativa),borderRadius:5}]},options:{...O,indexAxis:'y',layout:{padding:{right:70,left:10,top:6,bottom:4}},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'Índice '+(c.raw>0?'+':'')+c.raw+' pts · '+e[c.dataIndex][2]+' menciones'}},datalabels:DL({formatter:(v,c)=>(v>0?'+':'')+v+' ('+e[c.dataIndex][2]+')'})},scales:{x:{display:false,grace:'25%'},y:{grid:{display:false},ticks:{autoSkip:false,font:{size:innerWidth<600?10:11}}}}}})}
+function analisisPlus(A){
+const idx=(fn,n,min)=>grp(A,fn,n).filter(x=>x[1]>=(min||3)).map(([k,c])=>[k,netOf(A.filter(r=>fn(r)===k)),c]);
+nbars('x-nmed',idx(r=>r.medio,10,3));nbars('x-neje',idx(r=>r.eje,12,3));
+const d=days(A),top=grp(A,r=>r.etq,5).map(x=>x[0]),col=['#8b5cf6','#C8102E','#0ea5e9','#f59e0b','#14b8a6'];
+mk('x-tev',{type:'line',data:{labels:d.map(dl),datasets:top.map((k,i)=>({label:k,data:d.map(t=>A.filter(r=>r.ts===t&&r.etq===k).length),borderColor:col[i],backgroundColor:col[i],tension:.2,borderWidth:3,pointRadius:4,pointHoverRadius:6}))},options:{...O,layout:{padding:{top:18,right:14}},plugins:{legend:{position:'bottom'},datalabels:{display:false},tooltip:{mode:'index',intersect:false}},interaction:{mode:'index',intersect:false},scales:{y:{beginAtZero:true,grace:'15%',ticks:{precision:0}}}}});
+const tps=grp(A,r=>r.tipo,6).map(x=>x[0]),pal=['#C8102E','#8f0b21','#e4606f','#4b5563','#9ca3af','#f59e0b'];
+mk('x-tdia',{type:'bar',data:{labels:d.map(dl),datasets:tps.map((k,i)=>({label:k,data:d.map(t=>A.filter(r=>r.ts===t&&r.tipo===k).length),backgroundColor:pal[i],borderRadius:2}))},options:{...O,plugins:{legend:{position:'bottom'},datalabels:DL({color:'#fff',anchor:'center',align:'center',display:c=>c.dataset.data[c.dataIndex]>8&&innerWidth>700})},layout:{padding:{top:8}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,ticks:{precision:0}}}}});
+const au=grp(A,r=>r.tipo||'Otros',8,r=>r.aud);bars('x-aud',au.filter(x=>x[1]>0),'#0ea5e9',v=>v>=1e6?(v/1e6).toFixed(1)+' M':v>=1e3?Math.round(v/1e3)+' mil':v,90);
+const ej=grp(A,r=>r.eje,8).map(x=>x[0]),or=grp(A,r=>r.ori,8).map(x=>x[0]);let mx=0;const cell={};ej.forEach(e=>or.forEach(o=>{const c=A.filter(r=>r.eje===e&&r.ori===o).length;cell[e+'|'+o]=c;if(c>mx)mx=c}));
+$('#x-mx').innerHTML=ej.length&&or.length?'<table class="mx"><tr><th></th>'+or.map(o=>'<th>'+esc(o)+'</th>').join('')+'</tr>'+ej.map(e=>'<tr><td>'+esc(e)+'</td>'+or.map(o=>{const c=cell[e+'|'+o];return'<td style="background:'+heat(c,mx)+';color:'+(c&&c/mx>.3?'#fff':'#333')+'" title="'+esc(e)+' · '+esc(o)+': '+c+'">'+(c||'')+'</td>'}).join('')+'</tr>').join('')+'</table>':'<span class="mu">Sin datos suficientes</span>'}
+const DS=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+function heatmap(A){const g=Array.from({length:7},()=>Array(24).fill(0));A.forEach(r=>{if(!r.ts||r.hora<0)return;const w=(new Date(r.ts).getDay()+6)%7;g[w][Math.floor(r.hora/60)]++});const mx=Math.max(1,...g.flat());
+$('#hm').innerHTML='<div class="hmw"><div class="hmg"><em></em>'+[...Array(24).keys()].map(h=>'<em>'+(h%2?'':p2(h))+'</em>').join('')+g.map((row,w)=>'<em>'+DS[w]+'</em>'+row.map((c,h)=>'<i style="background:'+heat(c,mx)+'" title="'+DS[w]+' '+p2(h)+':00 · '+c+' menciones"></i>').join('')).join('')+'</div></div>'}
+function stories(A){const m={};A.forEach(r=>{const k=String(r.tit||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,' ').trim().slice(0,48);if(k.length<12)return;(m[k]=m[k]||[]).push(r)});
+const L=Object.values(m).map(g=>({t:g[0].tit,n:g.length,md:new Set(g.map(r=>r.medio)).size,g})).filter(x=>x.n>1).sort((a,b)=>b.n-a.n||b.md-a.md).slice(0,6);
+$('#stories').innerHTML=L.map(x=>{const c=k=>x.g.filter(r=>r.t===k).length;return'<div class="sti">'+esc(x.t)+'<small>'+x.n+' notas · '+x.md+' medio'+(x.md>1?'s':'')+'</small><div class="tb">'+Object.keys(T).map(k=>'<i style="flex:'+c(k)+';background:'+T[k]+'"></i>').join('')+'</div></div>'}).join('')||'<span class="mu">Todavía no hay noticias repetidas en el período.</span>'}
 /* MAPA */
 const heat=(c,mx)=>{if(!c)return'#e3e0e1';const t=mx>1?Math.sqrt((c-1)/(mx-1)):1,a=[253,205,212],b=[120,6,24];return'rgb('+a.map((v,i)=>Math.round(v+(b[i]-v)*t)).join(',')+')'};
 function map(A){const n={},e={NACIONAL:0,EXTRANJERO:0,SIN:0};REG.forEach(r=>n[r]=0);A.forEach(r=>{if(!r.regs.length)e.SIN++;r.regs.forEach(x=>x in n?n[x]++:e[x]++)});const mx=Math.max(1,...Object.values(n));
