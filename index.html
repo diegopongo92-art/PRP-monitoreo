@@ -139,12 +139,11 @@ body.fit .main{max-width:none!important}
 .gr{gap:clamp(12px,1.2vw,22px)}.cc{padding:16px 18px}.cc h3{margin:0 0 10px}
 .cv{height:clamp(300px,36vh,430px)}
 .kp{grid-column:span 12;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:clamp(10px,1vw,18px)}
-.kt{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:14px 16px 14px 20px;position:relative;overflow:hidden;box-shadow:0 2px 10px #0001}
-.kt::before{content:'';position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--c,var(--red))}
-.kt small{display:block;font-size:10.5px;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:.04em}
-.kt b{display:block;font-size:clamp(24px,2.2vw,36px);font-weight:900;margin:3px 0 1px;line-height:1.1;color:var(--tx)}
-.kt span{font-size:11.5px;color:var(--mu);font-weight:600}
-.kt.main1{background:linear-gradient(135deg,var(--red),var(--dk));border-color:transparent}.kt.main1::before{display:none}.kt.main1 small,.kt.main1 span{color:#ffe3e7}.kt.main1 b{color:#fff}
+.kt{--c:var(--red);background:linear-gradient(135deg,var(--c),color-mix(in srgb,var(--c) 58%,#000));border:0;border-radius:14px;padding:14px 16px;position:relative;overflow:hidden;box-shadow:0 4px 14px #0002}
+.kt::after{content:'';position:absolute;right:-18px;top:-18px;width:78px;height:78px;border-radius:50%;background:#fff2}
+.kt small{display:block;font-size:10.5px;font-weight:800;color:#ffffffd9;text-transform:uppercase;letter-spacing:.05em}
+.kt b{display:block;font-size:clamp(24px,2.2vw,36px);font-weight:900;margin:3px 0 1px;line-height:1.1;color:#fff}
+.kt span{font-size:11.5px;color:#ffffffe0;font-weight:600}
 .hmw{overflow-x:auto}.hmg{display:grid;grid-template-columns:34px repeat(24,minmax(22px,1fr));gap:3px;min-width:640px;font-size:10px;font-weight:700;color:var(--mu)}
 .hmg i{display:block;height:clamp(24px,4.6vh,46px);border-radius:4px;font-style:normal}.hmg em{font-style:normal;text-align:center;align-self:center}
 .stl{display:grid;gap:8px}@media(max-width:700px){.stl{max-height:420px;overflow:auto}.hmg{min-width:560px}}
@@ -157,6 +156,12 @@ body.fit .main{max-width:none!important}
 
 body[data-tab=tabla] .main{max-width:1280px!important;margin:16px auto!important;padding:0 12px!important}
 .kt.kc b{font-size:clamp(15px,1.5vw,22px)!important;line-height:1.2;word-break:break-word}
+.ins{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:clamp(10px,1vw,16px)}
+.ic{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;box-shadow:0 2px 8px #0001}.ic>i{font-style:normal;font-size:22px;line-height:1;background:#fff1f3;border-radius:10px;padding:8px}
+.ic small{display:block;font-size:10.5px;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:.04em}.ic b{display:block;font-size:17px;line-height:1.2;margin:2px 0}.ic span{font-size:12px;color:var(--mu);font-weight:600}
+.rk{display:grid;gap:9px}.rk .rw{display:grid;grid-template-columns:minmax(90px,36%) 1fr auto;gap:10px;align-items:center;font-size:12.5px}.rk .rw>span{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rk .tr{height:12px;background:#f0e9eb;border-radius:7px;overflow:hidden}.rk .tr i{display:block;height:100%;border-radius:7px}.rk .rw em{font-style:normal;font-weight:800;font-size:12px;white-space:nowrap}.rk .rw small{display:block;color:var(--mu);font-weight:600;font-size:10.5px}
+.rg2{display:flex;flex-wrap:wrap;gap:6px}.rg2 span{background:#f4eef0;border:1px solid var(--bd);border-radius:14px;padding:4px 10px;font-size:12px;font-weight:700}
+.nt2{font-size:12px;color:var(--mu);margin:0 0 10px;font-weight:600}
 .gh{grid-column:1/-1;margin:14px 0 -6px;font-size:12px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--mu);display:flex;align-items:center;gap:10px}.gh::after{content:'';flex:1;height:1px;background:var(--bd)}
 .nbx{position:relative;width:100%}.nbx canvas{display:block;width:100%}
 .nbl{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:11px;font-weight:700;color:var(--mu);margin-top:8px}.nbl i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}.nbl label{cursor:pointer;margin-left:auto;text-transform:none;font-size:12px;display:flex;align-items:center;gap:6px}.nbl label input{width:auto}
@@ -188,7 +193,7 @@ body.pm-res #prep{display:block!important}body.pm-lis #plist{display:block!impor
 <header><div class="hl"><div class="logo"><img src="presidencia.png" alt="Logo Presidencia" onerror="this.style.display='none'"></div><div><h1>Dashboard de Medios</h1><div class="sb">PRESIDENCIA DE LA REPÚBLICA DEL PERÚ</div></div></div><div style="display:flex;align-items:center"><div id="dc">Conectando…</div><button id="rf" onclick="init(true)">↻</button></div></header>
 <nav><button class="tab on" data-t="tabla">Tabla</button><button class="tab" data-t="general">General</button><button class="tab" data-t="semaforo">Semáforo</button><button class="tab" data-t="ahorro">Ahorro</button><button class="tab" data-t="mapa">Mapa</button><button class="tab" data-t="analisis">Análisis</button></nav>
 <div class="main">
-<div class="mbar" id="mbar"><label style="margin:0">Mes:</label><select id="mes"></select><label style="margin:0" class="sp">Contar:</label><select id="est2"><option value="val">Solo validadas</option><option value="todas">Todas</option><option value="pend">Solo pendientes</option></select></div>
+<div class="mbar" id="mbar"><label style="margin:0">Mes:</label><select id="mes"></select><label style="margin:0" class="sp">Contar:</label><select id="est2"><option value="val">Solo validadas</option><option value="todas">Todas</option><option value="pend">Solo pendientes</option></select><button class="bx p" onclick="pdf()" style="margin-left:auto">🖨️ Imprimir / PDF</button></div>
 <div class="warn" id="warn"></div>
 <section class="view on" id="v-tabla">
 <div class="ab"><button class="bx w" id="btn-whatsapp-resumen" onclick="generarResumenWhatsApp()">📋 Copiar resumen</button><button class="bx g" onclick="resetT()">🔄 Restablecer</button><button class="bx x" onclick="excel()">📊 Excel</button><button class="bx p" onclick="pdf()">🖨️ Imprimir / PDF</button></div>
@@ -252,18 +257,29 @@ body.pm-res #prep{display:block!important}body.pm-lis #plist{display:block!impor
 <section class="view" id="v-mapa"><div class="mp"><div class="pn" style="position:relative"><button class="ba mz" id="mz" onclick="sel=null;draw()">↺ Ver todo el Perú</button><svg id="map" viewBox="-3 -4 386 560"></svg><div class="lg"><span>Sin menciones</span><span style="width:14px;height:10px;background:#e3e0e1;border:1px solid #8d8186;border-radius:2px"></span><i></i><span id="lg1">1</span></div><div class="ch" id="chips"></div></div><div class="pn" id="panel"></div></div></section>
 
 <section class="view" id="v-analisis"><div class="gr">
+<div class="gh">Lectura rápida del período</div>
+<div class="ins" id="ins"></div>
+<div class="gh">Cuándo se habla</div>
+<div class="cc c8"><h3>Menciones por día (el día más fuerte resaltado)</h3><div class="cv"><canvas id="x-dia"></canvas></div></div>
+<div class="cc c4"><h3>Menciones por día de la semana</h3><div class="cv"><canvas id="x-sem"></canvas></div></div>
+<div class="cc c6"><h3>Menciones por día según tipo de medio</h3><div class="cv"><canvas id="x-tdia"></canvas></div></div>
+<div class="cc c6"><h3>Menciones por hora del día</h3><div class="cv"><canvas id="x-hora"></canvas></div></div>
 <div class="gh">De qué se habla</div>
 <div class="cc c8"><h3>Nube de palabras de los titulares</h3><div class="nbx"><canvas id="x-nube"></canvas></div><div class="nbl"><span><i style="background:#16a34a"></i>titulares más positivos</span><span><i style="background:#475569"></i>neutros / mixtos</span><span><i style="background:#dc2626"></i>más negativos</span><label><input type="checkbox" id="nb-inc"> Incluir Keiko, Fujimori y presidenta</label></div></div>
 <div class="cc c4"><h3>Palabras más repetidas</h3><div class="cv"><canvas id="x-pal"></canvas></div></div>
 <div class="cc c6"><h3>Frases más repetidas (pares de palabras)</h3><div class="cv"><canvas id="x-frase"></canvas></div></div>
 <div class="cc c6"><h3>Evolución diaria de los temas principales</h3><div class="cv"><canvas id="x-tev"></canvas></div></div>
-<div class="gh">Cuándo y por dónde</div>
-<div class="cc c6"><h3>Menciones por día según tipo de medio</h3><div class="cv"><canvas id="x-tdia"></canvas></div></div>
-<div class="cc c6"><h3>Menciones por hora del día</h3><div class="cv"><canvas id="x-hora"></canvas></div></div>
+<div class="gh">Focos de atención y oportunidades</div>
+<div class="cc c6"><h3>⚠ Temas con mayor proporción de negativas</h3><p class="nt2">Temas (etiquetas) con al menos 5 menciones. Dónde conviene preparar mensaje o respuesta.</p><div class="rk" id="r-neg"></div></div>
+<div class="cc c6"><h3>✅ Temas con mayor proporción de positivas</h3><p class="nt2">Lo que está funcionando: temas para reforzar en la comunicación.</p><div class="rk" id="r-pos"></div></div>
+<div class="cc c6"><h3>💡 Medios con más menciones neutras</h3><p class="nt2">Oportunidad: medios que ya cubren a la Presidencia sin una valoración clara; conviene acercar información y vocerías.</p><div class="rk" id="r-neu"></div></div>
+<div class="cc c6"><h3>🗺 Regiones sin ninguna mención</h3><p class="nt2">Territorios sin cobertura en el período. Oportunidad para actividades o medios regionales.</p><div class="rg2" id="r-reg"></div></div>
+<div class="gh">Concentración de medios</div>
+<div class="cc c12"><h3>¿Cuántos medios concentran las menciones?</h3><p class="nt2" id="par-n"></p><div class="cv"><canvas id="x-par"></canvas></div></div>
 </div></section>
 </div>
 <div id="prep" class="pr-only"></div><div id="plist" class="pr-only"></div>
-<div id="pdlg"><div class="bx2"><h3>¿Qué quieres imprimir?</h3><p id="pdn"></p><button class="op rc" data-pm="res"><b>📄 Resumen ejecutivo (recomendado)</b><span id="pd1"></span></button><button class="op" data-pm="lis"><b>📋 Listado compacto</b><span id="pd2"></span></button><button class="op" data-pm="full"><b>🗂️ Con resúmenes de cada nota</b><span id="pd3"></span></button><button class="cx" id="pdx">Cancelar</button></div></div>
+<div id="pdlg"><div class="bx2"><h3>Imprimir / guardar como PDF</h3><p id="pdn"></p><button class="op" data-pm="tab"><b>📊 Esta pestaña con sus gráficos</b><span id="pdt"></span></button><button class="op rc" data-pm="res"><b>📄 Resumen ejecutivo (recomendado)</b><span id="pd1"></span></button><button class="op" data-pm="lis"><b>📋 Listado compacto</b><span id="pd2"></span></button><button class="op" data-pm="full"><b>🗂️ Con resúmenes de cada nota</b><span id="pd3"></span></button><button class="cx" id="pdx">Cancelar</button></div></div>
 <div class="vw" id="vw"><div class="vb"><div class="vh"><div><div class="vt" id="vt"></div><div class="vme" id="vme"></div></div><button class="vx" id="vx" aria-label="Cerrar">✕</button></div><div class="vc" id="vc"></div><div class="vf"><button class="ba g" id="vp">← Anterior</button><span id="vi" class="mu" style="font-weight:700"></span><button class="ba g" id="vn">Siguiente →</button><a class="bl" id="vo" target="_blank" rel="noopener" style="text-decoration:none">Abrir en nueva pestaña ↗</a></div></div></div>
 <script>
 const CSV_URL='https://docs.google.com/spreadsheets/d/e/2PACX-1vR7eZSddSZhr0reqtoZ9QjBvu49PprHC7MXq-JrMqT_VsSgd7FZvGOFf3qo02qA0ijlwC4F_KP1YjtV/pub?gid=783105383&single=true&output=csv';
@@ -344,15 +360,19 @@ function togAyer(){mostrarAyer=!mostrarAyer;runT()}
 function setHdr(){let t;if(tab==='tabla'){t=({hoy:mostrarAyer?'Hoy + rezagos de ayer':'Solo hoy',ayer:'Ayer + hoy',specific:'Fecha seleccionada',rango:'Rango personalizado',month:'Este mes'})[mode]+' · '+CUR.length+' notas'}else{const m=$('#mes').value;t=(!m||m==='all')?'Todo el período':MN[+m.slice(5)-1]+' '+m.slice(0,4);t=t[0].toUpperCase()+t.slice(1)+' · '+MD().length+' notas'}$('#dc').textContent=t}
 function excel(){const csv='﻿'+Papa.unparse(CUR.map(r=>({FECHA:r.fecha,HORA:r.hr,MEDIO:r.medio,'TIPO DE MEDIO':r.tipo,TIER:r.tier,TITULAR:r.tit,RESUMEN:r.res,'CRITERIO DE IMAGEN':r.t,'COSTO US$':r.val,AUDIENCIA:r.aud,'EJE DE GESTIÓN':r.eje,'ÁMBITO GEOGRÁFICO':r.amb,'ORIGEN DE POSICIONAMIENTO':r.ori,'ETIQUETA':r.etq,LINK:r.link})));const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='Monitoreo_Presidencia.csv';a.click()}
 /* ===== IMPRIMIR: resumen ejecutivo / listado compacto / completo ===== */
-function pdf(){if(tab!=='tabla'||CUR.length<=40){window.print();return}
-const n=CUR.length;$('#pdn').textContent='Tienes '+n.toLocaleString('es-PE')+' menciones en pantalla. Imprimirlas todas con su resumen sería un documento enorme.';
-$('#pd1').textContent='1–2 páginas: indicadores, gráficos de barras, temas por etiqueta, palabras clave y las notas negativas y positivas más relevantes.';
-$('#pd2').textContent='Una fila por nota con color según el tono (fecha, medio, titular y enlace), sin resúmenes: unas '+Math.ceil(n/48)+' páginas.';
-$('#pd3').textContent='Una tarjeta por nota con su resumen: unas '+Math.ceil(n/7)+' páginas.';$('#pdlg').classList.add('on')}
+const PL2=()=>tab==='tabla'?CUR:MD();
+function pdf(){const L=PL2(),n=L.length,T0=tab==='tabla';
+$('#pdn').textContent=T0?'Tienes '+n.toLocaleString('es-PE')+' menciones en pantalla. Elige cómo quieres el documento:':'Período: '+$('#dc').textContent+'. Elige cómo quieres el documento:';
+$('#pd1').textContent='1–2 páginas: indicadores, barras por medio, eje, tema y origen, palabras clave y las notas negativas y positivas más relevantes con su enlace.';
+$('#pd2').textContent='Una fila por nota con color según el tono (fecha, medio, titular y enlace), sin resúmenes: unas '+Math.max(1,Math.ceil(n/48))+' páginas.';
+$('#pd3').textContent='Una tarjeta por nota con su resumen: unas '+Math.max(1,Math.ceil(n/7))+' páginas.';
+$('#pdt').textContent='Los gráficos de la pestaña «'+(({general:'General',semaforo:'Semáforo',ahorro:'Ahorro',mapa:'Mapa',analisis:'Análisis'})[tab]||'')+'» tal como se ven.';
+document.querySelector('[data-pm=full]').style.display=T0?'block':'none';document.querySelector('[data-pm=tab]').style.display=T0?'none':'block';$('#pdlg').classList.add('on')}
+addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='p'){e.preventDefault();pdf()}});
 $('#pdx').onclick=()=>$('#pdlg').classList.remove('on');
 $('#pdlg').addEventListener('click',e=>{if(e.target.id==='pdlg')$('#pdlg').classList.remove('on')});
 $('#pdlg').addEventListener('click',e=>{const b=e.target.closest('[data-pm]');if(!b)return;$('#pdlg').classList.remove('on');printMode(b.dataset.pm)});
-function printMode(m){const old=LIM;if(m==='res')buildPrep(CUR);else if(m==='lis')buildList(CUR);else{LIM=CUR.length;runT(true)}
+function printMode(m){const old=LIM;if(m==='tab'){window.print();return}if(m==='res')buildPrep(PL2());else if(m==='lis')buildList(PL2());else{LIM=CUR.length;runT(true)}
 document.body.classList.add('pm-'+m);const done=()=>{document.body.classList.remove('pm-res','pm-lis','pm-full');if(m==='full'){LIM=old;runT(true)}removeEventListener('afterprint',done)};addEventListener('afterprint',done);setTimeout(()=>window.print(),m==='full'?400:150)}
 const lnk=u=>{if(!u)return'<span style="color:#999">sin enlace</span>';const t=String(u).replace(/^https?:\/\/(www\.)?/,'');return'<a href="'+esc(u)+'">'+esc(t.length>44?t.slice(0,43)+'…':t)+'</a>'};
 const BGT={Positiva:'#dcfce7',Neutra:'#fef9c3',Negativa:'#fee2e2'};
@@ -743,7 +763,41 @@ for(let k=0;k<2400&&!placed;k++){const a=k*.35,rr=1.6*a,x=w/2+rr*Math.cos(a)*1.7
 cv.onmousemove=e=>{const r=cv.getBoundingClientRect(),x=(e.clientX-r.left)*(w/r.width),y=(e.clientY-r.top)*(h/r.height),q=NBX.find(b=>x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h);cv.title=q?q.o.w+': en '+q.o.n+' titulares · '+(q.o.t>.15?'tono positivo':q.o.t<-.15?'tono negativo':'tono neutro/mixto'):'';cv.style.cursor=q?'help':'default'};
 bars('x-pal',W.slice(0,12).map(o=>[o.w,o.n]),'#0ea5e9');const F=frases(A,inc);bars('x-frase',F.slice(0,10),'#8b5cf6')}
 $('#nb-inc').addEventListener('change',()=>{if(tab==='analisis')draw()});
+const DSL=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+function insights(A){const n=A.length;if(!n)return'<span class="mu">Sin datos en el período.</span>';
+const cnt=k=>A.filter(r=>r.t===k).length,P=cnt('Positiva'),N=cnt('Neutra'),X=cnt('Negativa'),pc=v=>Math.round(v/n*100)+'%';
+const per=days(A).map(t=>[t,A.filter(r=>r.ts===t).length]),pk=[...per].sort((a,b)=>b[1]-a[1])[0];
+const FR=[['Madrugada (0–6 h)',0,6],['Mañana (6–12 h)',6,12],['Tarde (12–18 h)',12,18],['Noche (18–24 h)',18,24]].map(([l,a,b])=>[l,A.filter(r=>r.hora>=0&&r.hora/60>=a&&r.hora/60<b).length]).sort((a,b)=>b[1]-a[1])[0];
+const md=grp(A,r=>r.medio,5),top5=md.reduce((s,x)=>s+x[1],0),et=grp(A,r=>r.etq,1)[0];
+const risk=grp(A,r=>r.etq,40).filter(x=>x[1]>=5).map(([k,c])=>[k,c,A.filter(r=>r.etq===k&&r.t==='Negativa').length]).filter(x=>x[2]>0).sort((a,b)=>b[2]/b[1]-a[2]/a[1]||b[2]-a[2])[0];
+let tr=['Último día vs. días previos','–','Hace falta más de un día de datos'];if(per.length>=3){const last=per[per.length-1],prev=per.slice(0,-1),avg=prev.reduce((s,x)=>s+x[1],0)/prev.length,df=Math.round((last[1]-avg)/avg*100),hoy=ymd(new Date())===ymd(new Date(last[0]));tr=['Último día vs. días previos',(df>=0?'▲ +':'▼ ')+df+'%',last[1]+' menciones el '+dl(last[0])+(hoy?' (día en curso, aún suma)':'')+' · promedio previo '+Math.round(avg)]}
+const rc=new Set();A.forEach(r=>r.regs.forEach(x=>rc.add(x)));const nr=REG.filter(x=>rc.has(x)).length;
+const C=(ic,t,b,sub)=>'<div class="ic"><i>'+ic+'</i><div><small>'+t+'</small><b>'+esc(b)+'</b><span>'+esc(sub)+'</span></div></div>';
+const dd=pk?new Date(pk[0]):null;
+return C('📅','Día con más menciones',dd?DSL[dd.getDay()]+' '+dl(pk[0]):'–',pk?pk[1]+' menciones · '+pc(pk[1])+' del período':'')+
+C('🕐','Franja más activa',FR[0],FR[1]+' menciones · '+pc(FR[1]))+
+C('🚦','Balance del criterio',pc(P)+' positivas',N+' neutras ('+pc(N)+') y '+X+' negativas ('+pc(X)+')')+
+C('📰','Medio que más habla',md[0]?md[0][0]:'–',md[0]?md[0][1]+' menciones · los 5 primeros concentran '+pc(top5):'')+
+C('🏷','Tema dominante',et?et[0]:'–',et?et[1]+' menciones · '+pc(et[1]):'')+
+C('⚠','Tema con más negativas',risk?risk[0]:'Sin focos negativos',risk?Math.round(risk[2]/risk[1]*100)+'% negativas ('+risk[2]+' de '+risk[1]+')':'No hay temas con negativas en el período')+
+C('📈',tr[0],tr[1],tr[2])+
+C('🗺','Cobertura territorial',nr+' de '+REG.length+' regiones',(REG.length-nr)+' sin ninguna mención')}
+function rankHTML(rows,col,fmt){return rows.length?rows.map(r=>'<div class="rw"><span title="'+esc(r.l)+'">'+esc(r.l)+'</span><div class="tr"><i style="width:'+Math.max(3,Math.round(r.p*100))+'%;background:'+col+'"></i></div><em>'+fmt(r)+'</em></div>').join(''):'<span class="mu" style="font-size:12px">Todavía no hay datos suficientes (se necesitan al menos 5 menciones por tema).</span>'}
 function analisisPlus(A){
+$('#ins').innerHTML=insights(A);
+const pk0=Math.max(0,...days(A).map(t=>A.filter(r=>r.ts===t).length)),dd=days(A),dc=dd.map(t=>A.filter(r=>r.ts===t).length);
+mk('x-dia',{type:'bar',data:{labels:dd.map(dl),datasets:[{data:dc,backgroundColor:dc.map(v=>v===pk0?RED:'#e8a9b3'),borderRadius:5}]},options:{...O,layout:{padding:{top:22}},plugins:{legend:{display:false},datalabels:DL({anchor:'end',align:'top',font:{weight:'800',size:12}})},scales:{y:{beginAtZero:true,grace:'12%',ticks:{precision:0}},x:{grid:{display:false}}}}});
+const sw=[1,2,3,4,5,6,0].map(g=>A.filter(r=>r.ts&&new Date(r.ts).getDay()===g).length),swm=Math.max(...sw);
+mk('x-sem',{type:'bar',data:{labels:['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'],datasets:[{data:sw,backgroundColor:sw.map(v=>v===swm&&v>0?RED:'#e8a9b3'),borderRadius:5}]},options:{...O,layout:{padding:{top:22}},plugins:{legend:{display:false},datalabels:DL({anchor:'end',align:'top',font:{weight:'800',size:12}})},scales:{y:{beginAtZero:true,grace:'12%',ticks:{precision:0}},x:{grid:{display:false}}}}});
+const eg=grp(A,r=>r.etq,60).filter(x=>x[1]>=5).map(([k,c])=>({l:k,n:c,neg:A.filter(r=>r.etq===k&&r.t==='Negativa').length,pos:A.filter(r=>r.etq===k&&r.t==='Positiva').length}));
+$('#r-neg').innerHTML=rankHTML(eg.filter(x=>x.neg>0).map(x=>({...x,p:x.neg/x.n})).sort((a,b)=>b.p-a.p||b.neg-a.neg).slice(0,6),T.Negativa,r=>Math.round(r.p*100)+'% <small>'+r.neg+' de '+r.n+'</small>');
+$('#r-pos').innerHTML=rankHTML(eg.filter(x=>x.pos>0).map(x=>({...x,p:x.pos/x.n})).sort((a,b)=>b.p-a.p||b.pos-a.pos).slice(0,6),T.Positiva,r=>Math.round(r.p*100)+'% <small>'+r.pos+' de '+r.n+'</small>');
+const mn=grp(A,r=>r.medio,60).map(([k,c])=>({l:k,n:c,neu:A.filter(r=>r.medio===k&&r.t==='Neutra').length})).filter(x=>x.n>=5&&x.neu>0).sort((a,b)=>b.neu-a.neu).slice(0,6),mxn=Math.max(1,...mn.map(x=>x.neu));
+$('#r-neu').innerHTML=rankHTML(mn.map(x=>({...x,p:x.neu/mxn})),T.Neutra,r=>r.neu+' <small>de '+r.n+' ('+Math.round(r.neu/r.n*100)+'%)</small>');
+const rc=new Set();A.forEach(r=>r.regs.forEach(x=>rc.add(x)));const sin=REG.filter(x=>!rc.has(x));$('#r-reg').innerHTML=sin.length?sin.map(x=>'<span>'+esc(tit(x))+'</span>').join(''):'<span class="mu" style="font-size:12px">Hay menciones en todas las regiones.</span>';
+const pm=grp(A,r=>r.medio,15);let acc=0;const cum=pm.map(x=>Math.round((acc+=x[1])/Math.max(1,A.length)*100)),all=grp(A,r=>r.medio,999);let a2=0,k80=0;for(const x of all){a2+=x[1];k80++;if(a2>=A.length*.8)break}
+$('#par-n').textContent=all.length?'Se necesitan '+k80+' medios (de '+all.length+') para llegar al 80% de las menciones. Mientras más baja esa cifra, más concentrada está la cobertura en pocos medios.':'';
+mk('x-par',{type:'bar',data:{labels:pm.map(x=>x[0].length>16?x[0].slice(0,15)+'…':x[0]),datasets:[{type:'bar',label:'Menciones',data:pm.map(x=>x[1]),backgroundColor:'#0ea5e9',borderRadius:4,yAxisID:'y',order:2},{type:'line',label:'% acumulado',data:cum,borderColor:RED,backgroundColor:RED,yAxisID:'y1',tension:.25,pointRadius:3,order:1,datalabels:{display:true,align:'top',anchor:'end',formatter:v=>v+'%',color:RED,font:{weight:'700',size:11}}}]},options:{...O,plugins:{legend:{position:'bottom'},datalabels:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}},y1:{position:'right',min:0,max:100,grid:{drawOnChartArea:false},ticks:{callback:v=>v+'%'}},x:{grid:{display:false},ticks:{maxRotation:45,autoSkip:false,font:{size:10}}}}}});
 nube(A);
 const hs=[...Array(24).keys()],hc=hs.map(h=>A.filter(r=>r.hora>=0&&Math.floor(r.hora/60)===h).length);mk('x-hora',{type:'bar',data:{labels:hs.map(h=>p2(h)+'h'),datasets:[{data:hc,backgroundColor:RED,borderRadius:4}]},options:{...O,layout:{padding:{top:20}},plugins:{legend:{display:false},datalabels:{display:false}},scales:{y:{beginAtZero:true,grace:'15%',ticks:{precision:0}},x:{grid:{display:false},ticks:{maxRotation:0,autoSkip:true}}}}});
 const d=days(A),top=grp(A,r=>r.etq,5).map(x=>x[0]),col=['#8b5cf6','#C8102E','#0ea5e9','#f59e0b','#14b8a6'];
