@@ -181,7 +181,7 @@ body.pm-res header,body.pm-lis header{display:none!important}
 #prep,#plist{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:#111827}
 .pdh{background:#fff;border-top:5px solid #C8102E;border-bottom:1px solid #e5e7eb;padding:9px 2px 8px;margin:0 0 9px;column-span:all}
 .pdh h1{font-size:19px;margin:0;color:#111827;line-height:1.15;letter-spacing:-.01em;font-weight:900}.pdh h1 em{font-style:normal;color:#C8102E}.pdh small{display:block;font-size:9.5px;color:#6b7280;margin-top:3px;font-weight:600}
-.ptl{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:0 0 10px;column-span:all}.ptl div{background:#fff;border:1px solid #e5e7eb;border-top:4px solid var(--c);border-radius:8px;padding:6px 10px 5px;color:#6b7280;font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}.ptl b{display:block;font-size:24px;line-height:1.1;color:var(--c);letter-spacing:-.02em}
+.ptl{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:0 0 10px;column-span:all}.ptl div{border-radius:10px;padding:7px 11px 6px;color:#fff;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;background:var(--c)}.ptl b{display:block;font-size:24px;line-height:1.1;color:#fff;letter-spacing:-.02em}
 .pgh{display:flex;align-items:center;gap:8px;margin:10px 0 5px;font-size:10.5px;font-weight:900;text-transform:uppercase;letter-spacing:.07em;color:#374151;column-span:all;break-after:avoid}.pgh::before{content:'';width:5px;height:14px;border-radius:3px;background:#C8102E}.pgh span{margin-left:auto;background:#eef2f5;border-radius:10px;padding:1px 9px;font-size:9.5px;text-transform:none;letter-spacing:0;font-weight:700}
 .pcol2{column-count:2;column-gap:9px}
 a.pcard,div.pcard{display:flex;align-items:stretch;gap:9px;break-inside:avoid;border:1px solid #d1d5db;border-left:6px solid var(--tc);border-radius:9px;padding:5px 6px 5px 9px;margin:0 0 5px;background:var(--tb);color:#111827;text-decoration:none}
@@ -198,6 +198,7 @@ a.pcard,div.pcard{display:flex;align-items:stretch;gap:9px;break-inside:avoid;bo
 .pnt{font-size:9px;color:#6b7280;margin-top:10px;border-top:1px solid #e5e7eb;padding-top:6px}
 #pdlg{display:none!important}
 }
+.hz{display:grid;grid-template-columns:minmax(78px,1.1fr) repeat(4,2fr) .8fr;gap:5px;max-width:860px}.hz-s{margin:0 0 10px;font-size:13px;color:#4b5563}.hz-s b{color:#C8102E}.hz-h{text-align:center;font-size:12px;line-height:1.2}.hz-h small{display:block;color:#6b7280;font-size:10.5px}.hz-d{display:flex;align-items:center;font-size:12px;font-weight:700;color:#374151}.hz-c{border-radius:8px;min-height:38px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800}.hz-c.pk{outline:3px solid #111827;outline-offset:1px}.hz-t{display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#6b7280}@media(max-width:600px){.hz-c{min-height:32px;font-size:13px}.hz-h b{font-size:10.5px}.hz{gap:3px}}
 </style></head><body>
 <header><div class="hl"><div class="logo"><img src="presidencia.png" alt="Logo Presidencia" onerror="this.style.display='none'"></div><div><h1>Dashboard de Medios</h1><div class="sb">PRESIDENCIA DE LA REPÚBLICA DEL PERÚ</div></div></div><div style="display:flex;align-items:center"><div id="dc">Conectando…</div><button id="rf" onclick="init(true)">↻</button></div></header>
 <nav><button class="tab on" data-t="tabla">Tabla</button><button class="tab" data-t="general">General</button><button class="tab" data-t="semaforo">Semáforo</button><button class="tab" data-t="ahorro">Ahorro</button><button class="tab" data-t="mapa">Mapa</button><button class="tab" data-t="analisis">Análisis</button></nav>
@@ -238,7 +239,7 @@ a.pcard,div.pcard{display:flex;align-items:stretch;gap:9px;break-inside:avoid;bo
 <div class="cc c4"><h3>Origen de posicionamiento</h3><div class="cv"><canvas id="c-ori"></canvas></div></div>
 <div class="cc c6"><h3>Medios con más menciones</h3><div class="cv"><canvas id="g-med"></canvas></div></div>
 <div class="cc c6"><h3>Ámbito geográfico (top 10)</h3><div class="cv"><canvas id="g-amb"></canvas></div></div>
-<div class="cc c12"><h3>Cuándo se habla: día de la semana y hora</h3><div id="hm"></div></div>
+<div class="cc c12"><h3>Cuándo se habla: día de la semana y franja horaria</h3><div id="hm"></div></div>
 </div></section>
 
 <section class="view" id="v-semaforo"><div class="gr">
@@ -847,8 +848,14 @@ const tps=grp(A,r=>r.tipo,6).map(x=>x[0]),pal=PAL;
 mk('x-tdia',{type:'bar',data:{labels:d.map(dl),datasets:tps.map((k,i)=>({label:k,data:d.map(t=>A.filter(r=>r.ts===t&&r.tipo===k).length),backgroundColor:pal[i],borderRadius:2}))},options:{...O,plugins:{legend:{position:'bottom'},datalabels:DL({color:'#fff',anchor:'center',align:'center',display:c=>c.dataset.data[c.dataIndex]>8&&innerWidth>700})},layout:{padding:{top:8}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,ticks:{precision:0}}}}});
 }
 const DS=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
-function heatmap(A){const g=Array.from({length:7},()=>Array(24).fill(0));A.forEach(r=>{if(!r.ts||r.hora<0)return;const w=(new Date(r.ts).getDay()+6)%7;g[w][Math.floor(r.hora/60)]++});const mx=Math.max(1,...g.flat());
-$('#hm').innerHTML='<div class="hmw"><div class="hmg"><em></em>'+[...Array(24).keys()].map(h=>'<em>'+(h%2?'':p2(h))+'</em>').join('')+g.map((row,w)=>'<em>'+DS[w]+'</em>'+row.map((c,h)=>'<i style="background:'+heat(c,mx)+'" title="'+DS[w]+' '+p2(h)+':00 · '+c+' menciones"></i>').join('')).join('')+'</div></div>'}
+function heatmap(A){const FJ=[['Madrugada','0–6 h',0,6],['Mañana','6–12 h',6,12],['Tarde','12–18 h',12,18],['Noche','18–24 h',18,24]],DN=['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+const g=DN.map(()=>FJ.map(()=>0));A.forEach(r=>{if(!r.ts||r.hora<0)return;const w=(new Date(r.ts).getDay()+6)%7,f=FJ.findIndex(x=>r.hora/60>=x[2]&&r.hora/60<x[3]);if(f>=0)g[w][f]++});
+const mx=Math.max(1,...g.flat()),tot=Math.max(1,g.flat().reduce((x,y)=>x+y,0));let bw=0,bf=0;g.forEach((row,w)=>row.forEach((c,f)=>{if(c>g[bw][bf]){bw=w;bf=f}}));
+const dt=g.map(r=>r.reduce((x,y)=>x+y,0)),ft=FJ.map((_,f)=>g.reduce((x,r)=>x+r[f],0));
+$('#hm').innerHTML=(g[bw][bf]?'<p class="hz-s">Momento más fuerte: <b>'+DN[bw]+' por la '+(FJ[bf][0]==='Madrugada'?'madrugada':FJ[bf][0].toLowerCase())+'</b> ('+g[bw][bf]+' menciones · '+Math.round(g[bw][bf]/tot*100)+'% del total). Mientras más oscuro el rojo, más menciones.</p>':'')+
+'<div class="hz"><div class="hz-h"></div>'+FJ.map(f=>'<div class="hz-h"><b>'+f[0]+'</b><small>'+f[1]+'</small></div>').join('')+'<div class="hz-h"><b>Total</b></div>'+
+g.map((row,w)=>'<div class="hz-d">'+DN[w]+'</div>'+row.map((c,f)=>{const t=c?Math.sqrt(c/mx):0;return'<div class="hz-c'+(w===bw&&f===bf?' pk':'')+'" style="background:'+(c?heat(c,mx):'#eceaeb')+';color:'+(t>.55?'#fff':'#5b1a24')+'" title="'+DN[w]+' · '+FJ[f][0]+' ('+FJ[f][1]+'): '+c+' menciones">'+(c||'–')+'</div>'}).join('')+'<div class="hz-t">'+dt[w]+'</div>').join('')+
+'<div class="hz-d">Total</div>'+ft.map(v=>'<div class="hz-t">'+v+'</div>').join('')+'<div class="hz-t">'+tot+'</div></div>'}
 /* MAPA */
 const heat=(c,mx)=>{if(!c)return'#e3e0e1';const t=mx>1?Math.sqrt((c-1)/(mx-1)):1,a=[253,205,212],b=[120,6,24];return'rgb('+a.map((v,i)=>Math.round(v+(b[i]-v)*t)).join(',')+')'};
 function map(A){const n={},e={NACIONAL:0,EXTRANJERO:0,SIN:0};REG.forEach(r=>n[r]=0);A.forEach(r=>{if(!r.regs.length)e.SIN++;r.regs.forEach(x=>x in n?n[x]++:e[x]++)});const mx=Math.max(1,...Object.values(n));
