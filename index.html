@@ -156,6 +156,7 @@ body.fit .main{max-width:none!important}
 @media print{.kt{box-shadow:none}.main{padding:0!important}}
 
 body[data-tab=tabla] .main{max-width:1280px!important;margin:16px auto!important;padding:0 12px!important}
+.kt.kc b{font-size:clamp(15px,1.5vw,22px)!important;line-height:1.2;word-break:break-word}
 .gh{grid-column:1/-1;margin:14px 0 -6px;font-size:12px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--mu);display:flex;align-items:center;gap:10px}.gh::after{content:'';flex:1;height:1px;background:var(--bd)}
 .nbx{position:relative;width:100%}.nbx canvas{display:block;width:100%}
 .nbl{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:11px;font-weight:700;color:var(--mu);margin-top:8px}.nbl i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}.nbl label{cursor:pointer;margin-left:auto;text-transform:none;font-size:12px;display:flex;align-items:center;gap:6px}.nbl label input{width:auto}
@@ -221,11 +222,9 @@ body.pm-res #prep{display:block!important}body.pm-lis #plist{display:block!impor
 <div class="cc c4"><h3>Temas (etiquetas)</h3><div class="cv"><canvas id="c-etq"></canvas></div></div>
 <div class="cc c4"><h3>Eje de gestión</h3><div class="cv"><canvas id="c-eje"></canvas></div></div>
 <div class="cc c4"><h3>Origen de posicionamiento</h3><div class="cv"><canvas id="c-ori"></canvas></div></div>
-<div class="cc c4"><h3>Medios con más menciones</h3><div class="cv"><canvas id="g-med"></canvas></div></div>
-<div class="cc c4"><h3>Ámbito geográfico (top 10)</h3><div class="cv"><canvas id="g-amb"></canvas></div></div>
-<div class="cc c4"><h3>Menciones por tier</h3><div class="cv"><canvas id="g-tier"></canvas></div></div>
-<div class="cc c8"><h3>Cuándo se habla: día de la semana y hora</h3><div id="hm"></div></div>
-<div class="cc c4"><h3>Noticias con más cobertura</h3><div id="stories" class="stl"></div></div>
+<div class="cc c6"><h3>Medios con más menciones</h3><div class="cv"><canvas id="g-med"></canvas></div></div>
+<div class="cc c6"><h3>Ámbito geográfico (top 10)</h3><div class="cv"><canvas id="g-amb"></canvas></div></div>
+<div class="cc c12"><h3>Cuándo se habla: día de la semana y hora</h3><div id="hm"></div></div>
 </div></section>
 
 <section class="view" id="v-semaforo"><div class="gr">
@@ -233,9 +232,8 @@ body.pm-res #prep{display:block!important}body.pm-lis #plist{display:block!impor
 <div class="cc c8"><h3>Línea de tiempo por criterio de imagen</h3><div class="cv"><canvas id="s-time"></canvas></div></div>
 <div class="cc c4"><h3>Proporción</h3><div class="cv"><canvas id="s-pie"></canvas></div></div>
 <div class="gh">Dónde se concentra el criterio</div>
-<div class="cc c4"><h3>Criterio por eje de gestión</h3><div class="cv"><canvas id="s-eje"></canvas></div></div>
-<div class="cc c4"><h3>Criterio por tipo de medio</h3><div class="cv"><canvas id="s-tipo"></canvas></div></div>
-<div class="cc c4"><h3>Criterio por tier</h3><div class="cv"><canvas id="x-tier"></canvas></div></div>
+<div class="cc c6"><h3>Criterio por eje de gestión</h3><div class="cv"><canvas id="s-eje"></canvas></div></div>
+<div class="cc c6"><h3>Criterio por tipo de medio</h3><div class="cv"><canvas id="s-tipo"></canvas></div></div>
 <div class="cc c6"><h3>Criterio por tema (etiqueta)</h3><div class="cv"><canvas id="x-etq"></canvas></div></div>
 <div class="cc c6"><h3>Criterio por origen de posicionamiento</h3><div class="cv"><canvas id="x-ori"></canvas></div></div>
 <div class="gh">Qué medios pesan en el criterio</div>
@@ -348,7 +346,7 @@ function excel(){const csv='﻿'+Papa.unparse(CUR.map(r=>({FECHA:r.fecha,HORA:r.
 /* ===== IMPRIMIR: resumen ejecutivo / listado compacto / completo ===== */
 function pdf(){if(tab!=='tabla'||CUR.length<=40){window.print();return}
 const n=CUR.length;$('#pdn').textContent='Tienes '+n.toLocaleString('es-PE')+' menciones en pantalla. Imprimirlas todas con su resumen sería un documento enorme.';
-$('#pd1').textContent='1–2 páginas: indicadores, gráficos de barras, palabras clave, noticias con más cobertura y las notas negativas y positivas más relevantes.';
+$('#pd1').textContent='1–2 páginas: indicadores, gráficos de barras, temas por etiqueta, palabras clave y las notas negativas y positivas más relevantes.';
 $('#pd2').textContent='Una fila por nota con color según el tono (fecha, medio, titular y enlace), sin resúmenes: unas '+Math.ceil(n/48)+' páginas.';
 $('#pd3').textContent='Una tarjeta por nota con su resumen: unas '+Math.ceil(n/7)+' páginas.';$('#pdlg').classList.add('on')}
 $('#pdx').onclick=()=>$('#pdlg').classList.remove('on');
@@ -363,8 +361,6 @@ function buildPrep(L){const n=L.length||1,c=k=>L.filter(r=>r.t===k).length,P=c('
 const ejP=grp(L,r=>r.eje,1)[0];const kk=(l,v,col)=>'<div style="--c:'+col+'"><small>'+l+'</small><b>'+v+'</b></div>';
 const bl=(t,e,col)=>{const m=Math.max(1,...e.map(x=>x[1]));return'<div class="pbl"><h2>'+t+'</h2>'+e.map(x=>'<div class="pbr"><span>'+esc(x[0])+'</span><i style="width:'+Math.round(x[1]/m*45)+'%;background:'+(col||'#C8102E')+'"></i><em>'+x[1]+'</em></div>').join('')+'</div>'};
 const W=palabras(L,false).slice(0,18),F=frases(L,false).slice(0,6);
-const stm={};L.forEach(r=>{const k=String(r.tit||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,' ').trim().slice(0,48);if(k.length<12)return;(stm[k]=stm[k]||[]).push(r)});
-const ST=Object.values(stm).filter(g=>g.length>1).map(g=>({t:g[0].tit,n:g.length,md:new Set(g.map(r=>r.medio)).size})).sort((a,b)=>b.n-a.n||b.md-a.md).slice(0,6);
 const rel=(a,k)=>a.filter(r=>r.t===k).sort((x,y)=>(y.aud||0)-(x.aud||0)||(y.tm||0)-(x.tm||0)),row=r=>'<tr style="background:'+(BGT[r.t]||'#fff')+'"><td style="width:12%">'+esc(r.fecha)+' '+esc(r.hr)+'</td><td style="width:14%">'+esc(r.medio)+'</td><td>'+esc(r.tit)+'</td><td style="width:22%">'+lnk(r.link)+'</td></tr>';
 const NG=rel(L,'Negativa').slice(0,12),PS=rel(L,'Positiva').slice(0,8);
 $('#prep').innerHTML='<h1>Monitoreo de medios · Presidencia de la República</h1><div class="sub">'+esc($('#dc').textContent)+' · generado '+new Date().toLocaleString('es-PE')+'</div>'+
@@ -372,7 +368,6 @@ $('#prep').innerHTML='<h1>Monitoreo de medios · Presidencia de la República</h
 '<div class="tbar"><i style="flex:'+P+';background:'+T.Positiva+'"></i><i style="flex:'+N+';background:'+T.Neutra+'"></i><i style="flex:'+X+';background:'+T.Negativa+'"></i></div>'+
 '<div class="pc2">'+bl('Medios con más menciones',grp(L,r=>r.medio,8),'#0ea5e9')+bl('Tipo de medio',grp(L,r=>r.tipo,6))+bl('Eje de gestión',grp(L,r=>r.eje,8),DK)+bl('Temas (etiquetas)',grp(L,r=>r.etq,8),'#8b5cf6')+bl('Origen de posicionamiento',grp(L,r=>r.ori,6),'#e4606f')+bl('Ámbito geográfico',grp(L,r=>r.amb||'(Sin dato)',6),'#14b8a6')+'</div>'+
 (W.length?'<div class="pbl"><h2>Palabras más repetidas en titulares</h2><div class="pwd">'+W.map(o=>'<span><b style="color:'+(o.t>.15?T.Positiva:o.t<-.15?T.Negativa:'#334155')+'">'+esc(o.w)+'</b> '+o.n+'</span>').join('')+'</div>'+(F.length?'<div class="pst" style="margin-top:5px">Frases: '+F.map(f=>esc(f[0])+' ('+f[1]+')').join(' · ')+'</div>':'')+'</div>':'')+
-(ST.length?'<div class="pbl"><h2>Noticias con más cobertura</h2>'+ST.map(x=>'<div class="pst">• '+esc(x.t)+' <b>('+x.n+' notas, '+x.md+' medio'+(x.md>1?'s':'')+')</b></div>').join('')+'</div>':'')+
 (NG.length?'<div class="pbl"><h2>Notas negativas más relevantes (por audiencia)</h2><table><tbody>'+NG.map(row).join('')+'</tbody></table></div>':'')+
 (PS.length?'<div class="pbl"><h2>Notas positivas más relevantes (por audiencia)</h2><table><tbody>'+PS.map(row).join('')+'</tbody></table></div>':'')+
 '<div class="pnt">Ahorro publicitario estimado (solo positivas): '+money(ah,0)+'. El detalle de las '+L.length.toLocaleString('es-PE')+' menciones está disponible en Excel o en «Imprimir → Listado compacto».</div>'}
@@ -718,8 +713,7 @@ $('#kp').innerHTML=kt('Total de menciones',A.length.toLocaleString('es-PE'),tr,R
 const tk=Object.keys(T);mk('c-time',{type:'bar',data:{labels:d.map(dl),datasets:[...tk.map(k=>({label:k,data:d.map(t=>A.filter(r=>r.ts===t&&r.t===k).length),backgroundColor:T[k],borderRadius:3,stack:'a',order:2,datalabels:{display:c=>c.dataset.data[c.dataIndex]>0&&innerWidth>700,color:'#fff',anchor:'center',align:'center',font:{weight:'700',size:11}}})),{type:'line',label:'Total',data:d.map(t=>A.filter(r=>r.ts===t).length),borderColor:'#1f2937',backgroundColor:'#1f2937',borderWidth:2,pointRadius:3,tension:.25,order:1,stack:'z',datalabels:{display:true,align:'top',anchor:'end',color:'#1f2937',font:{weight:'800',size:12}}}]},options:{...O,layout:{padding:{top:26,right:12}},plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grace:'12%',ticks:{precision:0}}}}});
 const tp=grp(A,r=>r.tipo);pie('c-tipo',tp.map(x=>x[0]),tp.map(x=>x[1]),['#C8102E','#8f0b21','#e4606f','#4b5563','#9ca3af','#f59e0b','#fca5a5']);
 bars('c-etq',grp(A,r=>r.etq),'#8b5cf6');note('c-etq',A,r=>r.etq);bars('c-eje',grp(A,r=>r.eje),DK);note('c-eje',A,r=>r.eje);bars('c-ori',grp(A,r=>r.ori),'#e4606f');note('c-ori',A,r=>r.ori);
-bars('g-med',grp(A,r=>r.medio,10),'#0ea5e9');bars('g-amb',grp(A,r=>r.amb||'(Sin dato)',10),'#14b8a6');const ti=grp(A,r=>r.tier,8);pie('g-tier',ti.map(x=>x[0]),ti.map(x=>x[1]),['#C8102E','#8f0b21','#e4606f','#4b5563','#9ca3af','#f59e0b','#fca5a5','#6366f1']);
-heatmap(A);stories(A)}
+bars('g-med',grp(A,r=>r.medio,10),'#0ea5e9');bars('g-amb',grp(A,r=>r.amb||'(Sin dato)',10),'#14b8a6');heatmap(A)}
 if(tab==='semaforo'){const d=days(A);mk('s-time',{type:'line',data:{labels:d.map(dl),datasets:Object.keys(T).map(k=>({label:k,data:d.map(t=>A.filter(r=>r.ts===t&&r.t===k).length),borderColor:T[k],backgroundColor:T[k],tension:.4,borderWidth:3,pointRadius:3}))},options:{...O,layout:{padding:{top:18,right:14}},plugins:{legend:{position:'bottom'},datalabels:DL({align:'top',anchor:'end',color:c=>T[c.dataset.label],display:c=>c.dataset.data[c.dataIndex]>0})},scales:{y:{beginAtZero:true,grace:'15%',ticks:{precision:0}}}}});const c=Object.keys(T).map(k=>A.filter(r=>r.t===k).length);pie('s-pie',Object.keys(T),c,Object.values(T));
 const sk=(fn)=>grp(A,fn,8).map(x=>x[0]);const q=sk(r=>r.eje);stack('s-eje',q,(l,k)=>A.filter(r=>r.eje===l&&r.t===k).length,1);note('s-eje',A,r=>r.eje);const tp=sk(r=>r.tipo);stack('s-tipo',tp,(l,k)=>A.filter(r=>r.tipo===l&&r.t===k).length,1);semPlus(A)}
 if(tab==='ahorro'){const P=A.filter(r=>r.t==='Positiva'&&r.val>0);$('#a-tot').textContent=money(P.reduce((s,r)=>s+r.val,0),0);bars('a-tipo',grp(P,r=>r.tipo||'Otros',10,r=>r.val),RED,v=>money(v),110);bars('a-eje',grp(P,r=>r.eje||'Sin eje asignado',10,r=>r.val),DK,v=>money(v),110);bars('x-aet',grp(P,r=>r.etq,10,r=>r.val),'#8b5cf6',v=>money(v),110);bars('x-amed',grp(P,r=>r.medio,10,r=>r.val),RED,v=>money(v),110)}
@@ -729,7 +723,6 @@ if(tab==='analisis'){analisisPlus(A)}}
 /* === análisis ampliado === */
 function semPlus(A){const sx=(id,fn,n,hz)=>{const ls=grp(A,fn,n).map(x=>x[0]);stack(id,ls,(l,k)=>A.filter(r=>fn(r)===l&&r.t===k).length,hz)};
 sx('x-etq',r=>r.etq,8,1);note('x-etq',A,r=>r.etq);sx('x-ori',r=>r.ori,8,1);note('x-ori',A,r=>r.ori);
-const ti=grp(A,r=>r.tier,8).map(x=>x[0]).sort();stack('x-tier',ti,(l,k)=>A.filter(r=>r.tier===l&&r.t===k).length,0);
 bars('s-pos',grp(A.filter(r=>r.t==='Positiva'),r=>r.medio,5),T.Positiva);bars('s-neg',grp(A.filter(r=>r.t==='Negativa'),r=>r.medio,5),T.Negativa)}
 /* ===== palabras de titulares ===== */
 const STOP=new Set(('de la que el en y a los del se las por un para con no una su al lo como mas pero sus le ya o este si porque esta entre cuando muy sin sobre tambien me hasta hay donde quien desde todo nos durante todos uno les ni contra otros ese eso ante ellos e esto antes algunos que unos yo otro otras otra tanto esa estos mucho quienes nada muchos cual poco ella estar estas algunas algo nosotros mi mis tu te ti tus ellas nosotras vosotros vosotras os mio mia mios mias tuyo tuya suyo suya nuestro nuestra nuestros nuestras es son fue fueron ser sera seran sido esta estan estado era eran ha han he hemos habia hubo tiene tienen tener tendra hace hacen hacer hizo dijo dice dicen afirmo afirma senalo senala anuncio anuncia sostuvo sostiene indico indica segun tras ante bajo hacia mediante ademas asi aun aunque solo otra vez cada cuatro tres dos uno seis cinco anos ano dia dias hoy ayer nuevo nueva nuevos nuevas pais peruano peruana peruanos peruanas lima sera podria podra puede pueden debe deben van vamos va ir lleva llevo llegar caso casos parte tema temas forma manera luego entonces mientras sino cuyo cuya donde adonde como cual cuales video fotos foto minutos hora horas').split(' '));
@@ -761,9 +754,6 @@ mk('x-tdia',{type:'bar',data:{labels:d.map(dl),datasets:tps.map((k,i)=>({label:k
 const DS=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
 function heatmap(A){const g=Array.from({length:7},()=>Array(24).fill(0));A.forEach(r=>{if(!r.ts||r.hora<0)return;const w=(new Date(r.ts).getDay()+6)%7;g[w][Math.floor(r.hora/60)]++});const mx=Math.max(1,...g.flat());
 $('#hm').innerHTML='<div class="hmw"><div class="hmg"><em></em>'+[...Array(24).keys()].map(h=>'<em>'+(h%2?'':p2(h))+'</em>').join('')+g.map((row,w)=>'<em>'+DS[w]+'</em>'+row.map((c,h)=>'<i style="background:'+heat(c,mx)+'" title="'+DS[w]+' '+p2(h)+':00 · '+c+' menciones"></i>').join('')).join('')+'</div></div>'}
-function stories(A){const m={};A.forEach(r=>{const k=String(r.tit||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,' ').trim().slice(0,48);if(k.length<12)return;(m[k]=m[k]||[]).push(r)});
-const L=Object.values(m).map(g=>({t:g[0].tit,n:g.length,md:new Set(g.map(r=>r.medio)).size,g})).filter(x=>x.n>1).sort((a,b)=>b.n-a.n||b.md-a.md).slice(0,6);
-$('#stories').innerHTML=L.map(x=>{const c=k=>x.g.filter(r=>r.t===k).length;return'<div class="sti">'+esc(x.t)+'<small>'+x.n+' notas · '+x.md+' medio'+(x.md>1?'s':'')+'</small><div class="tb">'+Object.keys(T).map(k=>'<i style="flex:'+c(k)+';background:'+T[k]+'"></i>').join('')+'</div></div>'}).join('')||'<span class="mu">Todavía no hay noticias repetidas en el período.</span>'}
 /* MAPA */
 const heat=(c,mx)=>{if(!c)return'#e3e0e1';const t=mx>1?Math.sqrt((c-1)/(mx-1)):1,a=[253,205,212],b=[120,6,24];return'rgb('+a.map((v,i)=>Math.round(v+(b[i]-v)*t)).join(',')+')'};
 function map(A){const n={},e={NACIONAL:0,EXTRANJERO:0,SIN:0};REG.forEach(r=>n[r]=0);A.forEach(r=>{if(!r.regs.length)e.SIN++;r.regs.forEach(x=>x in n?n[x]++:e[x]++)});const mx=Math.max(1,...Object.values(n));
