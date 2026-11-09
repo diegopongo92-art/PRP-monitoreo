@@ -190,8 +190,8 @@ a.pcard,div.pcard{display:flex;align-items:stretch;gap:9px;break-inside:avoid;bo
 .pcard .pl{color:#fff;border-radius:9px;padding:1px 8px;font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
 .pcard .t{font-size:11.5px;font-weight:800;line-height:1.22;margin:2px 0 0}
 .pcard .r{font-size:9.3px;line-height:1.33;color:#1f2937;margin:2px 0 0}
-.pcard .go{flex:0 0 auto;display:flex;align-items:center;justify-content:center;background:#C8102E;color:#fff;border-radius:8px;padding:0 11px;font-weight:800;font-size:9.5px;text-align:center;line-height:1.2;min-width:54px}
-.pcard .go.no{background:#9ca3af}
+.pcard .rt{display:flex;align-items:center;gap:5px}.pcard .go{background:#fff!important;color:#111827!important;border:1px solid #9ca3af;border-radius:9px;padding:0 8px;font-size:8px;font-weight:800;white-space:nowrap}.pcard .goX{flex:0 0 auto;display:flex;align-items:center;justify-content:center;background:#C8102E;color:#fff;border-radius:8px;padding:0 11px;font-weight:800;font-size:9.5px;text-align:center;line-height:1.2;min-width:54px}
+.pcard .goX.no{background:#9ca3af}
 .pbx{display:grid;grid-template-columns:1fr 1fr;gap:3px 20px}.pbl2{break-inside:avoid;margin-bottom:3px}
 .pb{display:flex;align-items:center;gap:7px;font-size:10px;margin:2.5px 0}.pb span{width:40%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}.pb i{display:block;height:9px;border-radius:5px;background:#2f5d73}.pb em{font-style:normal;font-weight:800;min-width:20px}
 .pwd{display:flex;flex-wrap:wrap;gap:5px}.pwd span{background:#eef2f5;border-radius:12px;padding:2px 10px;font-size:10.5px;font-weight:700}.pwd span b{font-weight:900}
@@ -279,7 +279,8 @@ a.pcard,div.pcard{display:flex;align-items:stretch;gap:9px;break-inside:avoid;bo
 <div class="cc c6"><h3>Frases más repetidas (pares de palabras)</h3><div class="cv"><canvas id="x-frase"></canvas></div></div>
 <div class="cc c12"><h3>Evolución diaria de los temas principales (top 6 etiquetas)</h3><div class="cv cvt"><canvas id="x-tev"></canvas></div></div>
 <div class="gh">Focos de atención y oportunidades</div>
-<div class="cc c6"><h3>⚠ Temas con mayor proporción de negativas</h3><p class="nt2">Temas (etiquetas) con al menos 5 menciones. Dónde conviene preparar mensaje o respuesta.</p><div class="rk" id="r-neg"></div></div>
+<div class="cc c6"><h3>⚠ Temas con más notas negativas</h3><p class="nt2">Ranking por cantidad de notas negativas (volumen). Es el tema que más pesa en negativo.</p><div class="rk" id="r-negn"></div></div>
+<div class="cc c6"><h3>⚠ Temas con mayor % de negativas</h3><p class="nt2">Temas (etiquetas) con al menos 5 menciones. Dónde conviene preparar mensaje o respuesta.</p><div class="rk" id="r-neg"></div></div>
 <div class="cc c6"><h3>✅ Temas con mayor proporción de positivas</h3><p class="nt2">Lo que está funcionando: temas para reforzar en la comunicación.</p><div class="rk" id="r-pos"></div></div>
 <div class="cc c6"><h3>💡 Medios con más menciones neutras</h3><p class="nt2">Oportunidad: medios que ya cubren a la Presidencia sin una valoración clara; conviene acercar información y vocerías.</p><div class="rk" id="r-neu"></div></div>
 <div class="cc c6"><h3>🗺 Regiones sin ninguna mención</h3><p class="nt2">Territorios sin cobertura en el período. Oportunidad para actividades o medios regionales.</p><div class="rg2" id="r-reg"></div></div>
@@ -401,16 +402,16 @@ const cut=(t,n)=>{t=String(t||'').replace(/\s+/g,' ').trim();return t.length>n?t
 const fdm=t=>{const d=new Date(t);return p2(d.getDate())+'/'+p2(d.getMonth()+1)+' '+p2(d.getHours())+':'+p2(d.getMinutes())};
 const rng=L=>{const T=L.map(r=>r.tm).filter(Boolean);if(!T.length)return'–';const a=Math.min(...T),b=Math.max(...T);return fdm(a)+' → '+fdm(b)};
 const pdHead=(title,L)=>'<div class="pdh"><h1>'+title+' · '+L.length.toLocaleString('es-PE')+' notas</h1><small>Presidencia de la República del Perú · '+esc($('#dc').textContent)+' · del '+rng(L).replace(' → ',' al ')+' · generado '+new Date().toLocaleString('es-PE')+'</small></div>';
-const tones4=L=>{const c=k=>L.filter(r=>r.t===k),t=(l,v,col,sub)=>'<div style="background:'+col+'">'+l+'<b>'+v+'</b><u>'+sub+'</u></div>';return'<div class="ptl">'+t('Total de notas',L.length.toLocaleString('es-PE'),'#33556b',rng(L))+t('Positivas',c('Positiva').length,'#16a34a',rng(c('Positiva')))+t('Neutras',c('Neutra').length,'#d97706',rng(c('Neutra')))+t('Negativas',c('Negativa').length,'#dc2626',rng(c('Negativa')))+'</div>'};
+const tones4=L=>{const c=k=>L.filter(r=>r.t===k),t=(l,v,col,sub)=>'<div style="background:'+col+'">'+l+'<b>'+v+'</b></div>';return'<div class="ptl">'+t('Total de notas',L.length.toLocaleString('es-PE'),'#33556b',rng(L))+t('Positivas',c('Positiva').length,'#16a34a',rng(c('Positiva')))+t('Neutras',c('Neutra').length,'#d97706',rng(c('Neutra')))+t('Negativas',c('Negativa').length,'#dc2626',rng(c('Negativa')))+'</div>'};
 const pcard=(r,o)=>{const c=TCOL[r.t]||'#6b7280',tb=(o.col==='sua'?BGT:BG)[r.t]||'#f9fafb',pl='<span class="pl" style="background:'+c+'">'+esc(r.sinT?'Sin tono':r.t)+'</span>',meta='<b>'+esc(r.medio)+'</b>'+(o.tip&&r.tipo?' · '+esc(r.tipo):'')+' · '+esc(r.fecha)+' '+esc(r.hr);
-const body='<div class="m"><div class="a"><span>'+meta+'</span>'+pl+'</div><div class="t">'+esc(r.tit)+'</div>'+(o.res&&r.res?'<div class="r">'+esc(cut(r.res,o.len))+'</div>':'')+'</div>';
+const body='<div class="m"><div class="a"><span>'+meta+'</span><span class="rt">'+(r.link?'<span class="go">Abrir nota ↗</span>':'')+pl+'</span></div><div class="t">'+esc(r.tit)+'</div>'+(o.res&&r.res?'<div class="r">'+esc(cut(r.res,o.len))+'</div>':'')+'</div>';
 const st='--tc:'+c+';--tb:'+tb;
-return r.link?'<a class="pcard" href="'+esc(r.link)+'" style="'+st+'">'+body+'<span class="go">Ver<br>nota ↗</span></a>':'<div class="pcard" style="'+st+'">'+body+'<span class="go no">sin<br>enlace</span></div>'};
+return r.link?'<a class="pcard" href="'+esc(r.link)+'" style="'+st+'">'+body+'</a>':'<div class="pcard" style="'+st+'">'+body+'</div>'};
 function buildCards(L0,o){let L=L0.filter(r=>!o.ton||r.t===o.ton);const ord={Negativa:0,Neutra:1,Positiva:2};
 if(o.ord==='ton')L=[...L].sort((a,b)=>(ord[a.t]??3)-(ord[b.t]??3)||(b.tm||0)-(a.tm||0));else if(o.ord==='med')L=[...L].sort((a,b)=>String(a.medio).localeCompare(String(b.medio),'es')||(b.tm||0)-(a.tm||0));
-let h=pdHead('Monitoreo de medios · Listado',L)+tones4(L)+'<div style="font-size:9px;color:#6b7280;margin:-3px 0 6px;column-span:all">Toca cualquier tarjeta (o el botón rojo «Ver nota») para abrir la nota.</div>';
+let h=pdHead('Monitoreo de medios · Listado',L)+tones4(L)+'<div style="font-size:9px;color:#6b7280;margin:-3px 0 6px;column-span:all">Toca cualquier tarjeta para abrir la nota.</div>';
 const key=r=>o.ord==='ton'?(r.sinT?'Sin tono':r.t+'s'):(r.medio||'Sin medio');let last=null;
-L.forEach(r=>{if(o.ord!=='rec'){const k=key(r);if(k!==last){last=k;const g=L.filter(x=>key(x)===k);h+='<div class="pgh">'+esc(k)+'<span>'+g.length+' · '+rng(g)+'</span></div>'}}h+=pcard(r,o)});
+L.forEach(r=>{if(o.ord!=='rec'){const k=key(r);if(k!==last){last=k;const g=L.filter(x=>key(x)===k);h+='<div class="pgh">'+esc(k)+'<span>'+g.length+' notas</span></div>'}}h+=pcard(r,o)});
 $('#plist').className='pr-only'+(o.cols===2?' pcol2':'');$('#plist').innerHTML=h}
 function buildPrep(L){const n=L.length||1,c=k=>L.filter(r=>r.t===k).length,ah=L.filter(r=>r.t==='Positiva').reduce((a,r)=>a+r.val,0);
 const bl=(t,e,col)=>{const m=Math.max(1,...e.map(x=>x[1]));return'<div class="pbl2"><div class="pgh">'+t+'</div>'+e.map(x=>'<div class="pb"><span>'+esc(x[0])+'</span><i style="width:'+Math.round(x[1]/m*46)+'%;background:'+(col||INK)+'"></i><em>'+x[1]+'</em></div>').join('')+'</div>'};
@@ -800,6 +801,7 @@ const cnt=k=>A.filter(r=>r.t===k).length,P=cnt('Positiva'),N=cnt('Neutra'),X=cnt
 const per=days(A).map(t=>[t,A.filter(r=>r.ts===t).length]),pk=[...per].sort((a,b)=>b[1]-a[1])[0];
 const FR=[['Madrugada (0–6 h)',0,6],['Mañana (6–12 h)',6,12],['Tarde (12–18 h)',12,18],['Noche (18–24 h)',18,24]].map(([l,a,b])=>[l,A.filter(r=>r.hora>=0&&r.hora/60>=a&&r.hora/60<b).length]).sort((a,b)=>b[1]-a[1])[0];
 const md=grp(A,r=>r.medio,5),top5=md.reduce((s,x)=>s+x[1],0),et=grp(A,r=>r.etq,1)[0];
+const riskN=grp(A,r=>r.etq,60).map(([k,c])=>[k,c,A.filter(r=>r.etq===k&&r.t==='Negativa').length]).filter(x=>x[2]>0).sort((a,b)=>b[2]-a[2]||a[1]-b[1])[0];
 const risk=grp(A,r=>r.etq,40).filter(x=>x[1]>=5).map(([k,c])=>[k,c,A.filter(r=>r.etq===k&&r.t==='Negativa').length]).filter(x=>x[2]>0).sort((a,b)=>b[2]/b[1]-a[2]/a[1]||b[2]-a[2])[0];
 let tr=['Último día vs. días previos','–','Hace falta más de un día de datos'];if(per.length>=3){const last=per[per.length-1],prev=per.slice(0,-1),avg=prev.reduce((s,x)=>s+x[1],0)/prev.length,df=Math.round((last[1]-avg)/avg*100),hoy=ymd(new Date())===ymd(new Date(last[0]));tr=['Último día vs. días previos',(df>=0?'▲ +':'▼ ')+df+'%',last[1]+' menciones el '+dl(last[0])+(hoy?' (día en curso, aún suma)':'')+' · promedio previo '+Math.round(avg)]}
 const rc=new Set();A.forEach(r=>r.regs.forEach(x=>rc.add(x)));const nr=REG.filter(x=>rc.has(x)).length;
@@ -810,7 +812,8 @@ C('🕐','Franja más activa',FR[0],FR[1]+' menciones · '+pc(FR[1]))+
 C('🚦','Balance del criterio',pc(P)+' positivas',N+' neutras ('+pc(N)+') y '+X+' negativas ('+pc(X)+')')+
 C('📰','Medio que más habla',md[0]?md[0][0]:'–',md[0]?md[0][1]+' menciones · los 5 primeros concentran '+pc(top5):'')+
 C('🏷','Tema dominante',et?et[0]:'–',et?et[1]+' menciones · '+pc(et[1]):'')+
-C('⚠','Tema con más negativas',risk?risk[0]:'Sin focos negativos',risk?Math.round(risk[2]/risk[1]*100)+'% negativas ('+risk[2]+' de '+risk[1]+')':'No hay temas con negativas en el período')+
+C('⚠','Tema con más notas negativas',riskN?riskN[0]:'Sin notas negativas',riskN?riskN[2]+' negativas · '+Math.round(riskN[2]/riskN[1]*100)+'% de sus '+riskN[1]+' notas':'No hay notas negativas en el período')+
+C('📉','Mayor % de negativas (mín. 5 notas)',risk?risk[0]:'Sin focos',risk?Math.round(risk[2]/risk[1]*100)+'% negativas ('+risk[2]+' de '+risk[1]+')':'Ningún tema con 5+ notas tiene negativas')+
 C('📈',tr[0],tr[1],tr[2])+
 C('🗺','Cobertura territorial',nr+' de '+REG.length+' regiones',(REG.length-nr)+' sin ninguna mención')}
 function rankHTML(rows,col,fmt){return rows.length?rows.map(r=>'<div class="rw"><span title="'+esc(r.l)+'">'+esc(r.l)+'</span><div class="tr"><i style="width:'+Math.max(3,Math.round(r.p*100))+'%;background:'+col+'"></i></div><em>'+fmt(r)+'</em></div>').join(''):'<span class="mu" style="font-size:12px">Todavía no hay datos suficientes (se necesitan al menos 5 menciones por tema).</span>'}
@@ -821,6 +824,7 @@ mk('x-dia',{type:'bar',data:{labels:dd.map(dl),datasets:[{data:dc,backgroundColo
 const sw=[1,2,3,4,5,6,0].map(g=>A.filter(r=>r.ts&&new Date(r.ts).getDay()===g).length),swm=Math.max(...sw);
 mk('x-sem',{type:'bar',data:{labels:['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'],datasets:[{data:sw,backgroundColor:sw.map(v=>v===swm&&v>0?RED:'#c9d6de'),borderRadius:5}]},options:{...O,layout:{padding:{top:22}},plugins:{legend:{display:false},datalabels:DL({anchor:'end',align:'top',font:{weight:'800',size:12}})},scales:{y:{beginAtZero:true,grace:'12%',ticks:{precision:0}},x:{grid:{display:false}}}}});
 const eg=grp(A,r=>r.etq,60).filter(x=>x[1]>=5).map(([k,c])=>({l:k,n:c,neg:A.filter(r=>r.etq===k&&r.t==='Negativa').length,pos:A.filter(r=>r.etq===k&&r.t==='Positiva').length}));
+$('#r-negn').innerHTML=rankHTML(eg.filter(x=>x.neg>0).map(x=>({...x,p:x.neg/Math.max(1,...eg.map(y=>y.neg))})).sort((a,b)=>b.neg-a.neg||b.n-a.n).slice(0,6),T.Negativa,r=>r.neg+' <small>de '+r.n+' ('+Math.round(r.neg/r.n*100)+'%)</small>');
 $('#r-neg').innerHTML=rankHTML(eg.filter(x=>x.neg>0).map(x=>({...x,p:x.neg/x.n})).sort((a,b)=>b.p-a.p||b.neg-a.neg).slice(0,6),T.Negativa,r=>Math.round(r.p*100)+'% <small>'+r.neg+' de '+r.n+'</small>');
 $('#r-pos').innerHTML=rankHTML(eg.filter(x=>x.pos>0).map(x=>({...x,p:x.pos/x.n})).sort((a,b)=>b.p-a.p||b.pos-a.pos).slice(0,6),T.Positiva,r=>Math.round(r.p*100)+'% <small>'+r.pos+' de '+r.n+'</small>');
 const mn=grp(A,r=>r.medio,60).map(([k,c])=>({l:k,n:c,neu:A.filter(r=>r.medio===k&&r.t==='Neutra').length})).filter(x=>x.n>=5&&x.neu>0).sort((a,b)=>b.neu-a.neu).slice(0,6),mxn=Math.max(1,...mn.map(x=>x.neu));
