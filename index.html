@@ -327,16 +327,35 @@ tbody tr td{border-bottom-color:rgba(255,255,255,.08)}
 .ph small,.nt2{color:var(--mu)}
 h2.sh,.sh{font-family:var(--mono);font-weight:500;letter-spacing:.09em;color:#cfcfd2}
 }
+
+@media screen{
+.ic{position:relative;display:grid!important;grid-template-columns:auto 1fr;gap:14px!important;align-items:start;padding:18px 20px!important;transition:border-color .2s var(--ease-out,ease)}
+.ic>i{font-family:var(--mono)!important;font-style:normal;font-size:11px!important;font-weight:500;letter-spacing:.08em;color:var(--peri)!important;background:none!important;border:var(--dash);border-radius:999px!important;padding:5px 9px!important;line-height:1;margin-top:1px}
+.ic small{color:var(--mu)!important;margin-bottom:6px}
+.ic b{font-size:clamp(18px,1.6vw,24px)!important;line-height:1.1!important;letter-spacing:-.04em!important;font-weight:800!important}
+.ic span{display:block;margin-top:6px;font-size:12.5px!important;line-height:1.4}
+.ic:nth-child(3)>i{color:#f5b82e!important}
+.ic:nth-child(6)>i,.ic:nth-child(7)>i{color:#ff5a66!important}
+.ic:nth-child(9)>i{color:#7089ba!important}
+@media(hover:hover) and (pointer:fine){.ic:hover{border-color:rgba(255,255,255,.4)!important}}
+.gh{font-family:var(--mono)!important;font-weight:500!important;font-size:11px!important;letter-spacing:.12em!important;color:var(--peri)!important;margin:26px 0 -4px!important;counter-increment:sec}
+.gh::before{content:'§ ' counter(sec,decimal-leading-zero);color:var(--mu);margin-right:2px}
+.gh::after{background:none!important;border-top:var(--dash);height:0!important}
+#v-analisis,.view[data-v="analisis"]{counter-reset:sec}
+.cc h3.hx::before{background:#ff5a66}.cc h3.hp::before{background:#34d27b}.cc h3.hn::before{background:#f5b82e}.cc h3.hm::before{background:var(--mu)}
+.rk .rw>span{font-family:var(--mono);font-size:11.5px;letter-spacing:.02em;font-weight:500}
+.rk .tr{height:6px!important;border-radius:999px}
+}
 </style>
 
 </head><body>
 <header><div class="hl"><div class="logo"><img src="presidencia.png" alt="Logo Presidencia" onerror="this.style.display='none'"></div><div><h1>Dashboard de Medios</h1><div class="sb">PRESIDENCIA DE LA REPÚBLICA DEL PERÚ</div></div></div><div style="display:flex;align-items:center"><div id="dc">Conectando…</div><button id="rf" onclick="init(true)">↻</button></div></header>
 <nav><button class="tab on" data-t="tabla">Tabla</button><button class="tab" data-t="general">General</button><button class="tab" data-t="semaforo">Semáforo</button><button class="tab" data-t="ahorro">Ahorro</button><button class="tab" data-t="mapa">Mapa</button><button class="tab" data-t="analisis">Análisis</button></nav>
 <div class="main">
-<div class="mbar" id="mbar"><label style="margin:0">Mes:</label><select id="mes"></select><label style="margin:0" class="sp">Contar:</label><select id="est2"><option value="val">Solo validadas</option><option value="todas">Todas</option><option value="pend">Solo pendientes</option></select><button class="bx p" onclick="pdf()" style="margin-left:auto">🖨️ Imprimir / PDF</button></div>
+<div class="mbar" id="mbar"><label style="margin:0">Mes:</label><select id="mes"></select><label style="margin:0" class="sp">Contar:</label><select id="est2"><option value="val">Solo validadas</option><option value="todas">Todas</option><option value="pend">Solo pendientes</option></select><button class="bx p" onclick="pdf()" style="margin-left:auto">Imprimir / PDF</button></div>
 <div class="warn" id="warn"></div>
 <section class="view on" id="v-tabla">
-<div class="ab"><button class="bx w" id="btn-whatsapp-resumen" onclick="generarResumenWhatsApp()">📋 Copiar resumen</button><button class="bx g" onclick="resetT()">🔄 Restablecer</button><button class="bx x" onclick="excel()">📊 Excel</button><button class="bx p" onclick="pdf()">🖨️ Imprimir / PDF</button></div>
+<div class="ab"><button class="bx w" id="btn-whatsapp-resumen" onclick="generarResumenWhatsApp()">Copiar resumen</button><button class="bx g" onclick="resetT()">Restablecer</button><button class="bx x" onclick="excel()">Excel</button><button class="bx p" onclick="pdf()">Imprimir / PDF</button></div>
 <div id="resumen-preview" style="display:none;background:#fff;border-radius:12px;border:1px solid var(--bd);padding:16px;margin-bottom:12px;white-space:pre-wrap;font-family:Menlo,Consolas,monospace;font-size:13px;line-height:1.7;position:relative"><button onclick="document.getElementById('resumen-preview').style.display='none'" style="position:absolute;top:10px;right:10px;background:#6b5d61;color:#fff;border:0;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer">✕ Cerrar</button><div style="font-size:11px;font-weight:800;color:#6b5d61;text-transform:uppercase;margin-bottom:10px">Vista previa del resumen (ya copiado al portapapeles)</div><div id="resumen-preview-text"></div></div>
 <div class="sc"><div class="cd"><div class="t"># Menciones</div><div class="v" id="n-t">0</div></div><div class="cd p"><div class="t"># Positivas</div><div class="v" id="n-p">0</div></div><div class="cd n"><div class="t"># Neutras</div><div class="v" id="n-n">0</div></div><div class="cd x"><div class="t"># Negativas</div><div class="v" id="n-x">0</div></div></div>
 <div class="ct">
@@ -410,20 +429,20 @@ h2.sh,.sh{font-family:var(--mono);font-weight:500;letter-spacing:.09em;color:#cf
 <div class="cc c6"><h3>Frases más repetidas (pares de palabras)</h3><div class="cv"><canvas id="x-frase"></canvas></div></div>
 <div class="cc c12"><h3>Evolución diaria de los temas principales (top 6 etiquetas)</h3><div class="cv cvt"><canvas id="x-tev"></canvas></div></div>
 <div class="gh">Focos de atención y oportunidades</div>
-<div class="cc c6"><h3>⚠ Temas con más notas negativas</h3><p class="nt2">Ranking por cantidad de notas negativas (volumen). Es el tema que más pesa en negativo.</p><div class="rk" id="r-negn"></div></div>
-<div class="cc c6"><h3>⚠ Temas con mayor % de negativas</h3><p class="nt2">Temas (etiquetas) con al menos 5 menciones. Dónde conviene preparar mensaje o respuesta.</p><div class="rk" id="r-neg"></div></div>
-<div class="cc c6"><h3>✅ Temas con mayor proporción de positivas</h3><p class="nt2">Lo que está funcionando: temas para reforzar en la comunicación.</p><div class="rk" id="r-pos"></div></div>
-<div class="cc c6"><h3>💡 Medios con más menciones neutras</h3><p class="nt2">Oportunidad: medios que ya cubren a la Presidencia sin una valoración clara; conviene acercar información y vocerías.</p><div class="rk" id="r-neu"></div></div>
-<div class="cc c6"><h3>🗺 Regiones sin ninguna mención</h3><p class="nt2">Territorios sin cobertura en el período. Oportunidad para actividades o medios regionales.</p><div class="rg2" id="r-reg"></div></div>
+<div class="cc c6"><h3 class="hx">Temas con más notas negativas</h3><p class="nt2">Ranking por cantidad de notas negativas (volumen). Es el tema que más pesa en negativo.</p><div class="rk" id="r-negn"></div></div>
+<div class="cc c6"><h3 class="hx">Temas con mayor % de negativas</h3><p class="nt2">Temas (etiquetas) con al menos 5 menciones. Dónde conviene preparar mensaje o respuesta.</p><div class="rk" id="r-neg"></div></div>
+<div class="cc c6"><h3 class="hp">Temas con mayor proporción de positivas</h3><p class="nt2">Lo que está funcionando: temas para reforzar en la comunicación.</p><div class="rk" id="r-pos"></div></div>
+<div class="cc c6"><h3 class="hn">Medios con más menciones neutras</h3><p class="nt2">Oportunidad: medios que ya cubren a la Presidencia sin una valoración clara; conviene acercar información y vocerías.</p><div class="rk" id="r-neu"></div></div>
+<div class="cc c6"><h3 class="hm">Regiones sin ninguna mención</h3><p class="nt2">Territorios sin cobertura en el período. Oportunidad para actividades o medios regionales.</p><div class="rg2" id="r-reg"></div></div>
 <div class="gh">Concentración de medios</div>
 <div class="cc c12"><h3>¿Cuántos medios concentran las menciones?</h3><p class="nt2" id="par-n"></p><div class="cv"><canvas id="x-par"></canvas></div></div>
 </div></section>
 </div>
 <div id="prep" class="pr-only"></div><div id="plist" class="pr-only"></div>
 <div id="pdlg"><div class="bx2"><h3>Imprimir / guardar como PDF</h3><p id="pdn"></p>
-<button class="op" data-pm="tab"><b>📊 Esta pestaña con sus gráficos</b><span id="pdt"></span></button>
-<button class="op rc" data-pm="res"><b>📄 Resumen ejecutivo (recomendado)</b><span id="pd1"></span></button>
-<div class="lo"><b>🗂️ Listado de notas en tarjetas</b><span class="lsub">Cada nota con su botón «Ver nota» para abrirla desde el celular o la PC.</span>
+<button class="op" data-pm="tab"><b>Esta pestaña con sus gráficos</b><span id="pdt"></span></button>
+<button class="op rc" data-pm="res"><b>Resumen ejecutivo (recomendado)</b><span id="pd1"></span></button>
+<div class="lo"><b>Listado de notas en tarjetas</b><span class="lsub">Cada nota con su botón «Ver nota» para abrirla desde el celular o la PC.</span>
 <label class="ck"><input type="checkbox" id="po-res" checked> Incluir el resumen de cada nota</label>
 <div class="g2"><label>Largo del resumen<select id="po-len"><option value="260">Corto</option><option value="560">Medio</option><option value="99999">Completo</option></select></label>
 <label>Ordenar<select id="po-ord"><option value="rec">Más recientes</option><option value="ton">Agrupar por tono</option><option value="med">Agrupar por medio</option></select></label>
@@ -456,7 +475,7 @@ const BG={Positiva:'var(--rp)',Neutra:'var(--rn)',Negativa:'var(--rx)'},BD={Posi
 document.body.dataset.tab='tabla';let PTOT=[],ALL=[],CUR=[],mode='hoy',tab='tabla',sel=null,first=true,acortarLinkApiKey='',mostrarAyer=true,LIM=200,RAW='';
 async function init(manual){try{const r=await fetch(CSV_URL+'&t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('Google respondió '+r.status);const txt=await r.text();if(/<html/i.test(txt.slice(0,300)))throw new Error('La hoja no está publicada como CSV');
 if(txt===RAW&&!manual){return}RAW=txt;let rows=[];Papa.parse(txt,{header:true,skipEmptyLines:'greedy',transformHeader:h=>!h||!h.trim()?'VACIO':h.trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,''),complete:x=>rows=x.data});load(rows);$('#warn').style.display='none'}
-catch(e){const m=/fetch|network|load failed/i.test(e.message)?'No se pudo conectar con Google Sheets (internet, bloqueador, o la hoja no está publicada).':e.message;if(ALL.length){const w=$('#warn');w.style.display='block';w.textContent='⚠ No se pudo actualizar ('+m+'). Se muestran los últimos datos cargados; se reintenta solo.'}else{$('#tbody').innerHTML=`<tr><td colspan="5" class="err">Error: ${esc(m)}</td></tr>`;$('#dc').textContent='Sin conexión'}}}
+catch(e){const m=/fetch|network|load failed/i.test(e.message)?'No se pudo conectar con Google Sheets (internet, bloqueador, o la hoja no está publicada).':e.message;if(ALL.length){const w=$('#warn');w.style.display='block';w.textContent='No se pudo actualizar ('+m+'). Se muestran los últimos datos cargados; se reintenta solo.'}else{$('#tbody').innerHTML=`<tr><td colspan="5" class="err">Error: ${esc(m)}</td></tr>`;$('#dc').textContent='Sin conexión'}}}
 function load(rows){const h=Object.keys(rows[0]||{}),f=k=>h.find(x=>x===k)||'';if(!f('TITULAR')||!f('FECHA'))throw new Error('La hoja publicada no trae las columnas TITULAR y FECHA. Revisa que el enlace sea el de la pestaña «Menciones».');
 const c={id:f('ID'),fe:f('FECHA'),me:f('MEDIO'),ti:f('TIPO'),pr:f('PROGRAMA'),tr:f('TIER'),tt:f('TITULAR'),re:f('RESUMEN'),li:f('URL'),va:f('COSTO'),au:f('AUDIENCIA'),to:f('TONO'),am:f('AMBITO'),or:f('ORIGEN'),ej:f('EJE'),es:f('ESTADO'),po:f('REVISADO_POR'),el:f('ELIMINADA'),et:f('ETIQUETA'),se:f('SECCION'),im:f('IMPORTADO')};
 ALL=rows.map(r=>{const g=k=>c[k]&&r[c[k]]!=null?String(r[c[k]]).trim():'',d=pdt(g('fe'));return{id:g('id'),tm:d?d.getTime():0,ts:d?new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime():0,hora:d?d.getHours()*60+d.getMinutes():-1,fecha:d?dmy(d):g('fe'),hr:d?hmm(d):'',medio:g('me'),tipo:g('ti'),prog:g('pr'),tier:g('tr')||'Sin tier',tit:g('tt'),res:g('re'),val:num(g('va')),aud:num(g('au')),link:g('li'),etq:g('et'),tono:g('to'),t:tone(g('to')),sinT:!/pos|neu|neg/i.test(g('to')),eje:g('ej'),ori:g('or'),amb:g('am'),regs:regs(g('am')),est:g('es')||'Pendiente',por:g('po'),del:g('el'),sec:g('se'),imp:(()=>{const x=pdt(g('im'));return x?new Date(x.getFullYear(),x.getMonth(),x.getDate()).getTime():0})()}}).filter(r=>r.tit&&!r.del);
@@ -508,7 +527,7 @@ return`<tr style="background:${c[1]}"><td><div style="font-weight:700">${esc(r.f
 $('#mas').style.display=CUR.length>LIM?'inline-block':'none'}
 function hourOK(r,hm){if(hm<0||r.hora<0)return true;if(mode==='ayer'){if(r.ts===AT)return r.imp===HT||r.hora>=hm;return true}if(mode==='hoy'&&r.ts===AT)return true;return r.hora>=hm}
 function statusT(P){const m={hoy:mostrarAyer?'Mostrando: Hoy + rezagos de ayer (notas de ayer registradas hoy)':'Mostrando: solo hoy',ayer:'Mostrando: Ayer y Hoy',specific:'Mostrando fecha seleccionada',rango:($('#rd').value&&$('#rh').value)?'Mostrando rango: '+$('#rd').value+' a '+$('#rh').value:'Elige fecha Desde y Hasta',month:'Mostrando: este mes'};let t=m[mode]||'';if($('#fh').value)t+=mode==='ayer'?' (ayer desde las '+$('#fh').value+' y todo hoy)':' (desde las '+$('#fh').value+')';
-const st=CUR.filter(r=>r.sinT).length;if(st)t+=' · '+st+' sin tono (cuentan como neutras)';$('#stt').textContent=t;$('#ayer-c').style.display=mode==='hoy'?'block':'none';$('#btn-ayer').textContent=mostrarAyer?'➖ Ocultar notas de ayer (registradas hoy)':'➕ Incluir notas de ayer (registradas hoy)'}
+const st=CUR.filter(r=>r.sinT).length;if(st)t+=' · '+st+' sin tono (cuentan como neutras)';$('#stt').textContent=t;$('#ayer-c').style.display=mode==='hoy'?'block':'none';$('#btn-ayer').textContent=mostrarAyer?'− Ocultar notas de ayer (registradas hoy)':'+ Incluir notas de ayer (registradas hoy)'}
 function togAyer(){mostrarAyer=!mostrarAyer;runT()}
 function setHdr(){let t;if(tab==='tabla'){t=({hoy:mostrarAyer?'Hoy + rezagos de ayer':'Solo hoy',ayer:'Ayer + hoy',specific:'Fecha seleccionada',rango:'Rango personalizado',month:'Este mes'})[mode]+' · '+CUR.length+' notas'}else{const m=$('#mes').value;t=(!m||m==='all')?'Todo el período':MN[+m.slice(5)-1]+' '+m.slice(0,4);t=t[0].toUpperCase()+t.slice(1)+' · '+MD().length+' notas'}$('#dc').textContent=t}
 function excel(){const csv='﻿'+Papa.unparse(CUR.map(r=>({FECHA:r.fecha,HORA:r.hr,MEDIO:r.medio,'TIPO DE MEDIO':r.tipo,TIER:r.tier,TITULAR:r.tit,RESUMEN:r.res,'CRITERIO DE IMAGEN':r.t,'COSTO US$':r.val,AUDIENCIA:r.aud,'EJE DE GESTIÓN':r.eje,'ÁMBITO GEOGRÁFICO':r.amb,'ORIGEN DE POSICIONAMIENTO':r.ori,'ETIQUETA':r.etq,LINK:r.link})));const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='Monitoreo_Presidencia.csv';a.click()}
@@ -800,7 +819,7 @@ $('#prep').innerHTML=pdHead('Monitoreo de medios · Resumen ejecutivo',L)+tones4
         copiarAlPortapapeles(textoCompleto);
 
         if (btn) {
-            btn.innerHTML = '✅ Copiado';
+            btn.innerHTML = 'Copiado';
             btn.disabled = false;
             setTimeout(() => { btn.innerHTML = textoOriginalBtn; }, 1800);
         }
@@ -942,15 +961,15 @@ let tr=['Último día vs. días previos','–','Hace falta más de un día de da
 const rc=new Set();A.forEach(r=>r.regs.forEach(x=>rc.add(x)));const nr=REG.filter(x=>rc.has(x)).length;
 const C=(ic,t,b,sub)=>'<div class="ic"><i>'+ic+'</i><div><small>'+t+'</small><b>'+esc(b)+'</b><span>'+esc(sub)+'</span></div></div>';
 const dd=pk?new Date(pk[0]):null;
-return C('📅','Día con más menciones',dd?DSL[dd.getDay()]+' '+dl(pk[0]):'–',pk?pk[1]+' menciones · '+pc(pk[1])+' del período':'')+
-C('🕐','Franja más activa',FR[0],FR[1]+' menciones · '+pc(FR[1]))+
-C('🚦','Balance del criterio',pc(P)+' positivas',N+' neutras ('+pc(N)+') y '+X+' negativas ('+pc(X)+')')+
-C('📰','Medio que más habla',md[0]?md[0][0]:'–',md[0]?md[0][1]+' menciones · los 5 primeros concentran '+pc(top5):'')+
-C('🏷','Tema dominante',et?et[0]:'–',et?et[1]+' menciones · '+pc(et[1]):'')+
-C('⚠','Tema con más notas negativas',riskN?riskN[0]:'Sin notas negativas',riskN?riskN[2]+' negativas · '+Math.round(riskN[2]/riskN[1]*100)+'% de sus '+riskN[1]+' notas':'No hay notas negativas en el período')+
-C('📉','Mayor % de negativas (mín. 5 notas)',risk?risk[0]:'Sin focos',risk?Math.round(risk[2]/risk[1]*100)+'% negativas ('+risk[2]+' de '+risk[1]+')':'Ningún tema con 5+ notas tiene negativas')+
-C('📈',tr[0],tr[1],tr[2])+
-C('🗺','Cobertura territorial',nr+' de '+REG.length+' regiones',(REG.length-nr)+' sin ninguna mención')}
+return C('01','Día con más menciones',dd?DSL[dd.getDay()]+' '+dl(pk[0]):'–',pk?pk[1]+' menciones · '+pc(pk[1])+' del período':'')+
+C('02','Franja más activa',FR[0],FR[1]+' menciones · '+pc(FR[1]))+
+C('03','Balance del criterio',pc(P)+' positivas',N+' neutras ('+pc(N)+') y '+X+' negativas ('+pc(X)+')')+
+C('04','Medio que más habla',md[0]?md[0][0]:'–',md[0]?md[0][1]+' menciones · los 5 primeros concentran '+pc(top5):'')+
+C('05','Tema dominante',et?et[0]:'–',et?et[1]+' menciones · '+pc(et[1]):'')+
+C('06','Tema con más notas negativas',riskN?riskN[0]:'Sin notas negativas',riskN?riskN[2]+' negativas · '+Math.round(riskN[2]/riskN[1]*100)+'% de sus '+riskN[1]+' notas':'No hay notas negativas en el período')+
+C('07','Mayor % de negativas (mín. 5 notas)',risk?risk[0]:'Sin focos',risk?Math.round(risk[2]/risk[1]*100)+'% negativas ('+risk[2]+' de '+risk[1]+')':'Ningún tema con 5+ notas tiene negativas')+
+C('08',tr[0],tr[1],tr[2])+
+C('09','Cobertura territorial',nr+' de '+REG.length+' regiones',(REG.length-nr)+' sin ninguna mención')}
 function rankHTML(rows,col,fmt){return rows.length?rows.map(r=>'<div class="rw"><span title="'+esc(r.l)+'">'+esc(r.l)+'</span><div class="tr"><i style="width:'+Math.max(3,Math.round(r.p*100))+'%;background:'+col+'"></i></div><em>'+fmt(r)+'</em></div>').join(''):'<span class="mu" style="font-size:12px">Todavía no hay datos suficientes (se necesitan al menos 5 menciones por tema).</span>'}
 function analisisPlus(A){
 $('#ins').innerHTML=insights(A);
